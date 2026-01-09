@@ -1,7 +1,9 @@
 package com.sprint.mission.discodeit.service.file;
 
 import com.sprint.mission.discodeit.entity.Message;
+import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.MessageService;
+import com.sprint.mission.discodeit.service.UserService;
 
 import java.io.*;
 import java.util.HashMap;
@@ -12,11 +14,11 @@ import java.util.UUID;
 public class FileMessageService implements MessageService {
 
     private final File file;    // 클래스가 사용할 파일 저장소 객체 - 경로를 생성자에서 주입해 저장/불러오기 사용
-    private FileUserService userService;
-    private FileChannelService channelService;
+    private final UserService userService;
+    private final ChannelService channelService;
 
     // path : 파일이름 - 메인에서 저장 위치 지정
-    public FileMessageService(String path, FileUserService userService, FileChannelService channelService) {
+    public FileMessageService(String path, UserService userService, ChannelService channelService) {
         this.file = new File(path);
         this.userService = userService;
         this.channelService = channelService;
