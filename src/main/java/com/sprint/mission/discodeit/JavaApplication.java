@@ -44,6 +44,7 @@ public class JavaApplication {
         System.out.println("\n업데이트 확인");
         System.out.println(user1);
         user1.updateStatus(UserStatus.DONOTDISTURB);
+        userService.update(user1);
         System.out.println(user1);
         System.out.println();
 
