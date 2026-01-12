@@ -26,7 +26,7 @@ public class Channel extends BaseEntity implements Serializable {
         this.name = name;
     }
     public void updatePrivate(IsPrivate isPrivate) {
-        isPrivate = isPrivate;
+        this.isPrivate = isPrivate;
     }
 
     @Override

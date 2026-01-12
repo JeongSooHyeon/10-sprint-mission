@@ -8,7 +8,6 @@ import com.sprint.mission.discodeit.service.ClearMemory;
 import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.service.UserService;
 
-import java.io.*;
 import java.util.*;
 
 public class FileMessageService extends AbstractFileService implements MessageService,  ClearMemory {
@@ -42,18 +41,20 @@ public class FileMessageService extends AbstractFileService implements MessageSe
     @Override
     public Message create(User user, Channel channel, String content) {
         Message message = new Message(user, channel, content);
-        userService.read(message.getSender().getId());
-        channelService.read(message.getChannelId());
+        try {
+            userService.findById(message.getSender().getId());
+            channelService.findById(message.getChannelId());
+        } catch (NoSuchElementException e) {
+            throw new NoSuchElementException("메시지 생성 실패 - " + e.getMessage());
+        }
         save(message);
         return message;
     }
 
     @Override
-    public Message read(UUID id) {
+    public Message findById(UUID id) {
         Map<UUID, Message> data = load();
-        if(!data.containsKey(id)){
-            throw new NoSuchElementException("조회 실패 : 해당 ID의 메시지를 찾을 수 없습니다.");
-        }
+        validateExistence(data, id, "조회");
         return data.get(id);
     }
 
@@ -65,7 +66,8 @@ public class FileMessageService extends AbstractFileService implements MessageSe
 
     @Override
     public Message update(Message message) {
-        read(message.getId());
+        Map<UUID, Message> data = load();
+        validateExistence(data, message.getId(), "수정");
         save(message);
         return message;
     }
@@ -77,9 +79,7 @@ public class FileMessageService extends AbstractFileService implements MessageSe
 
     private void remove(UUID id) {
         Map<UUID, Message> data = load();
-        if (!data.containsKey(id)) {
-            throw new NoSuchElementException("삭제 실패 : 존재하지 않는 메시지 ID입니다.");
-        }
+        validateExistence(data, id, "삭제");
         data.remove(id);
         writeToFile(data);
     }
@@ -89,4 +89,9 @@ public class FileMessageService extends AbstractFileService implements MessageSe
         writeToFile(new HashMap<UUID, Message>());
     }
 
+    private void validateExistence(Map<UUID, Message> data, UUID id, String action){
+        if (!data.containsKey(id)) {
+            throw new NoSuchElementException(action + " 실패 : 존재하지 않는 메시지 ID입니다.");
+        }
+    }
 }

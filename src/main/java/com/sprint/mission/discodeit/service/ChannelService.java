@@ -12,7 +12,7 @@ public interface ChannelService {
     public Channel create(String name, IsPrivate isPrivate);
 
     // Read
-    Channel read(UUID id);
+    Channel findById(UUID id);
 
     // ReadAll
     List<Channel> readAll();

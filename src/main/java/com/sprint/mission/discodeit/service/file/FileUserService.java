@@ -1,13 +1,10 @@
 package com.sprint.mission.discodeit.service.file;
 
-import com.sprint.mission.discodeit.entity.Channel;
-import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.service.ClearMemory;
 import com.sprint.mission.discodeit.service.UserService;
 
-import java.io.*;
 import java.util.*;
 
 public class FileUserService extends AbstractFileService implements UserService, ClearMemory {
@@ -45,11 +42,9 @@ public class FileUserService extends AbstractFileService implements UserService,
     }
 
     @Override
-    public User read(UUID id) {
+    public User findById(UUID id) {
         Map<UUID, User> data = load();
-        if (!data.containsKey(id)) {
-            throw new NoSuchElementException("조회 실패 : 해당 ID의 사용자를 찾을 수 없습니다.");
-        }
+        validateExistence(data, id, "조회");
         return data.get(id);
     }
 
@@ -61,7 +56,8 @@ public class FileUserService extends AbstractFileService implements UserService,
 
     @Override
     public User update(User user) {
-        read(user.getId());
+        Map<UUID, User> data = load();
+        validateExistence(data, user.getId(), "수정");
         save(user);
         return user;
     }
@@ -73,9 +69,7 @@ public class FileUserService extends AbstractFileService implements UserService,
 
     private void remove(UUID id) {
         Map<UUID, User> data = load();
-        if (!data.containsKey(id)) {
-            throw new NoSuchElementException("삭제 실패 : 존재하지 않는 사용자 ID입니다.");
-        }
+        validateExistence(data, id, "삭제");
         data.remove(id);
         writeToFile(data);
     }
@@ -83,5 +77,11 @@ public class FileUserService extends AbstractFileService implements UserService,
     @Override
     public void clear() {
         writeToFile(new HashMap<UUID, User>());
+    }
+
+    private void validateExistence(Map<UUID, User> data, UUID id, String action){
+        if (!data.containsKey(id)) {
+            throw new NoSuchElementException(action + " 실패 : 존재하지 않는 사용자 ID입니다.");
+        }
     }
 }

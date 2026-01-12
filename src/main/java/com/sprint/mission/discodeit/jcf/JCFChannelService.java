@@ -21,10 +21,8 @@ public class JCFChannelService implements ChannelService {
     }
 
     @Override
-    public Channel read(UUID id) {
-        if(!data.containsKey(id)){
-            throw new NoSuchElementException("조회 실패 : 해당 ID의 채널을 찾을 수 없습니다.");
-        }
+    public Channel findById(UUID id) {
+        validateExistence(data, id, "조회");
         return data.get(id);
     }
 
@@ -35,19 +33,20 @@ public class JCFChannelService implements ChannelService {
 
     @Override
     public Channel update(Channel channel) {
-        if (!data.containsKey(channel.getId())) {
-            throw new NoSuchElementException("수정 실패 : 존재하지 않는 채널 ID입니다.");
-        }
+        validateExistence(data, channel.getId(), "수정");
         data.put(channel.getId(), channel);
         return channel;
     }
 
     @Override
     public void delete(UUID id) {
-        if (!data.containsKey(id)) {
-            throw new NoSuchElementException("삭제 실패 : 존재하지 않는 채널 ID입니다.");
-        }
+        validateExistence(data, id, "삭제");
         data.remove(id);
     }
 
+    private void validateExistence(Map<UUID, Channel> data, UUID id, String action){
+        if (!data.containsKey(id)) {
+            throw new NoSuchElementException(action + " 실패 : 존재하지 않는 채널 ID입니다.");
+        }
+    }
 }
