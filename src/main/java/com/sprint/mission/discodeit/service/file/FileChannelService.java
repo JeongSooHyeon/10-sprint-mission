@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.service.file;
 
 import com.sprint.mission.discodeit.entity.Channel;
+import com.sprint.mission.discodeit.entity.IsPrivate;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.ChannelService;
@@ -33,7 +34,8 @@ public class FileChannelService extends AbstractFileService implements ChannelSe
     }
 
     @Override
-    public Channel create(Channel channel) {
+    public Channel create(String name, IsPrivate isPrivate) {
+        Channel channel = new Channel(name, isPrivate);
         save(channel);
         return channel;
     }
@@ -55,9 +57,7 @@ public class FileChannelService extends AbstractFileService implements ChannelSe
 
     @Override
     public Channel update(Channel channel) {
-        if (read(channel.getId()) == null) {
-            throw new IllegalArgumentException("존재하지 않는 채널입니다.");
-        }
+        read(channel.getId());
         save(channel);
         return channel;
     }

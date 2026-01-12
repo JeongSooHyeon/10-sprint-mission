@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.jcf;
 
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.service.UserService;
 
 import java.util.*;
@@ -13,7 +14,8 @@ public class JCFUserService implements UserService {
     }
 
     @Override
-    public User create(User user) {
+    public User create(String name, UserStatus status) {
+        User user = new User(name, status);
         data.put(user.getId(), user);
         return user;
     }

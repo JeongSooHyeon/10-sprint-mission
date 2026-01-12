@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.jcf;
 
 import com.sprint.mission.discodeit.entity.Channel;
+import com.sprint.mission.discodeit.entity.IsPrivate;
 import com.sprint.mission.discodeit.service.ChannelService;
 
 import java.util.*;
@@ -13,7 +14,8 @@ public class JCFChannelService implements ChannelService {
     }
 
     @Override
-    public Channel create(Channel channel) {
+    public Channel create(String name, IsPrivate isPrivate){
+        Channel channel = new Channel(name, isPrivate);
         data.put(channel.getId(), channel);
         return channel;
     }

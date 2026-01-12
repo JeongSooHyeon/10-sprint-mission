@@ -1,13 +1,13 @@
 package com.sprint.mission.discodeit.service;
 
-import com.sprint.mission.discodeit.entity.Message;
+import com.sprint.mission.discodeit.entity.*;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface MessageService {
     // Create
-    Message create(Message message);
+    Message create(User user, Channel channel, String content);
 
     // Read
     Message read(UUID id);
