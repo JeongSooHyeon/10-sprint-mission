@@ -35,7 +35,7 @@ public class JCFMessageService implements MessageService {
 
     @Override
     public Message findById(UUID id) {
-        validateExistence(data, id, "조회");
+        validateExistence(data, id);
         return data.get(id);
     }
 
@@ -46,20 +46,20 @@ public class JCFMessageService implements MessageService {
 
     @Override
     public Message update(Message message) {
-        validateExistence(data, message.getId(), "수정");
+        validateExistence(data, message.getId());
         data.put(message.getId(), message);
         return message;
     }
 
     @Override
     public void delete(UUID id) {
-        validateExistence(data, id, "삭제");
+        validateExistence(data, id);
         data.remove(id);
     }
 
-    private void validateExistence(Map<UUID, Message> data, UUID id, String action){
+    private void validateExistence(Map<UUID, Message> data, UUID id){
         if (!data.containsKey(id)) {
-            throw new NoSuchElementException(action + " 실패 : 존재하지 않는 메시지 ID입니다.");
+            throw new NoSuchElementException("실패 : 존재하지 않는 메시지 ID입니다.");
         }
     }
 }

@@ -54,7 +54,7 @@ public class FileMessageService extends AbstractFileService implements MessageSe
     @Override
     public Message findById(UUID id) {
         Map<UUID, Message> data = load();
-        validateExistence(data, id, "조회");
+        validateExistence(data, id);
         return data.get(id);
     }
 
@@ -67,7 +67,7 @@ public class FileMessageService extends AbstractFileService implements MessageSe
     @Override
     public Message update(Message message) {
         Map<UUID, Message> data = load();
-        validateExistence(data, message.getId(), "수정");
+        validateExistence(data, message.getId());
         save(message);
         return message;
     }
@@ -79,7 +79,7 @@ public class FileMessageService extends AbstractFileService implements MessageSe
 
     private void remove(UUID id) {
         Map<UUID, Message> data = load();
-        validateExistence(data, id, "삭제");
+        validateExistence(data, id);
         data.remove(id);
         writeToFile(data);
     }
@@ -89,9 +89,9 @@ public class FileMessageService extends AbstractFileService implements MessageSe
         writeToFile(new HashMap<UUID, Message>());
     }
 
-    private void validateExistence(Map<UUID, Message> data, UUID id, String action){
+    private void validateExistence(Map<UUID, Message> data, UUID id){
         if (!data.containsKey(id)) {
-            throw new NoSuchElementException(action + " 실패 : 존재하지 않는 메시지 ID입니다.");
+            throw new NoSuchElementException("실패 : 존재하지 않는 메시지 ID입니다.");
         }
     }
 }

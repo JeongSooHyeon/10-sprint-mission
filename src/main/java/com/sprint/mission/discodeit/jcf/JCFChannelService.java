@@ -22,7 +22,7 @@ public class JCFChannelService implements ChannelService {
 
     @Override
     public Channel findById(UUID id) {
-        validateExistence(data, id, "조회");
+        validateExistence(data, id);
         return data.get(id);
     }
 
@@ -33,20 +33,20 @@ public class JCFChannelService implements ChannelService {
 
     @Override
     public Channel update(Channel channel) {
-        validateExistence(data, channel.getId(), "수정");
+        validateExistence(data, channel.getId());
         data.put(channel.getId(), channel);
         return channel;
     }
 
     @Override
     public void delete(UUID id) {
-        validateExistence(data, id, "삭제");
+        validateExistence(data, id);
         data.remove(id);
     }
 
-    private void validateExistence(Map<UUID, Channel> data, UUID id, String action){
+    private void validateExistence(Map<UUID, Channel> data, UUID id){
         if (!data.containsKey(id)) {
-            throw new NoSuchElementException(action + " 실패 : 존재하지 않는 채널 ID입니다.");
+            throw new NoSuchElementException("실패 : 존재하지 않는 채널 ID입니다.");
         }
     }
 }
