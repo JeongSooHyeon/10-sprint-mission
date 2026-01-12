@@ -92,6 +92,8 @@ public class JavaApplication {
 
 
         // 삭제
+
+//        User user4 = new User("달콩", UserStatus.ONLINE); // 예외 테스트
         System.out.println("유저 삭제 후");
         userService.delete(user3.getId());
         System.out.println(userService.readAll());
