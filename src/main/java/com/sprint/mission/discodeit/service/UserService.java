@@ -1,6 +1,5 @@
 package com.sprint.mission.discodeit.service;
 
-import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
 
@@ -12,7 +11,7 @@ public interface UserService {
     User create(String name, UserStatus status);
 
     // Read
-    User read(UUID id);
+    User findById(UUID id);
 
     // ReadAll
     List<User> readAll();

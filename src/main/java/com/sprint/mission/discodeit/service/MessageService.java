@@ -10,7 +10,7 @@ public interface MessageService {
     Message create(User user, Channel channel, String content);
 
     // Read
-    Message read(UUID id);
+    Message findById(UUID id);
 
     // ReadAll
     List<Message> readAll();

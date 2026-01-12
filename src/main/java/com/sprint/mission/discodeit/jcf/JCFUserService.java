@@ -15,16 +15,19 @@ public class JCFUserService implements UserService {
 
     @Override
     public User create(String name, UserStatus status) {
+        boolean isDuplicate = data.values().stream()
+                .anyMatch(user -> user.getName().equals(name));
+        if (isDuplicate) {
+            throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
+        }
         User user = new User(name, status);
         data.put(user.getId(), user);
         return user;
     }
 
     @Override
-    public User read(UUID id) {
-        if(!data.containsKey(id)){
-            throw new NoSuchElementException("조회 실패 : 해당 ID의 사용자를 찾을 수 없습니다.");
-        }
+    public User findById(UUID id) {
+        validateExistence(data, id, "조회");
         return data.get(id);
     }
 
@@ -35,18 +38,20 @@ public class JCFUserService implements UserService {
 
     @Override
     public User update(User user) {
-        if (!data.containsKey(user.getId())) {
-            throw new NoSuchElementException("수정 실패 : 존재하지 않는 사용자 ID입니다.");
-        }
+        validateExistence(data, user.getId(), "수정");
         data.put(user.getId(), user);
         return user;
     }
 
     @Override
     public void delete(UUID id) {
-        if (!data.containsKey(id)) {
-            throw new NoSuchElementException("삭제 실패 : 존재하지 않는 사용자 ID입니다.");
-        }
+        validateExistence(data, id, "삭제");
         data.remove(id);
+    }
+
+    private void validateExistence(Map<UUID, User> data, UUID id, String action){
+        if (!data.containsKey(id)) {
+            throw new NoSuchElementException(action + " 실패 : 존재하지 않는 사용자 ID입니다.");
+        }
     }
 }
