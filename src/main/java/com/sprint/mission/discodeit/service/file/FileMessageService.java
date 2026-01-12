@@ -2,6 +2,7 @@ package com.sprint.mission.discodeit.service.file;
 
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
+import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.ClearMemory;
 import com.sprint.mission.discodeit.service.MessageService;
@@ -38,17 +39,11 @@ public class FileMessageService extends AbstractFileService implements MessageSe
         writeToFile(data);
     }
 
-
-
     @Override
-    public Message create(Message message) {
-        if ((userService.read(message.getSender().getId())) == null) {
-            throw new IllegalArgumentException("존재하지 않는 유저입니다.");
-        }
-        if ((channelService.read(message.getChannelId())) == null) {
-            throw new IllegalArgumentException("존재하지 않는 채널입니다.");
-        }
-
+    public Message create(User user, Channel channel, String content) {
+        Message message = new Message(user, channel, content);
+        userService.read(message.getSender().getId());
+        channelService.read(message.getChannelId());
         save(message);
         return message;
     }
@@ -70,9 +65,7 @@ public class FileMessageService extends AbstractFileService implements MessageSe
 
     @Override
     public Message update(Message message) {
-        if (read(message.getId()) == null) {
-            throw new IllegalArgumentException("존재하지 않는 메시지입니다.");
-        }
+        read(message.getId());
         save(message);
         return message;
     }

@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.service;
 
 import com.sprint.mission.discodeit.entity.Channel;
+import com.sprint.mission.discodeit.entity.IsPrivate;
 
 import java.util.List;
 import java.util.UUID;
@@ -8,7 +9,7 @@ import java.util.UUID;
 public interface ChannelService {
 
     // Create
-    Channel create(Channel channel);
+    public Channel create(String name, IsPrivate isPrivate);
 
     // Read
     Channel read(UUID id);

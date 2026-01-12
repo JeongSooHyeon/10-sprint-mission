@@ -2,6 +2,7 @@ package com.sprint.mission.discodeit.jcf;
 
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
+import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.service.UserService;
@@ -20,7 +21,8 @@ public class JCFMessageService implements MessageService {
     }
 
     @Override
-    public Message create(Message message) {
+    public Message create(User user, Channel channel, String content) {
+        Message message = new Message(user, channel, content);
         userService.read(message.getSender().getId());
         channelService.read(message.getChannelId());
 

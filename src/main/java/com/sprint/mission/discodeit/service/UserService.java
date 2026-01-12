@@ -2,13 +2,14 @@ package com.sprint.mission.discodeit.service;
 
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.entity.UserStatus;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
     // Create
-    User create(User user);
+    User create(String name, UserStatus status);
 
     // Read
     User read(UUID id);

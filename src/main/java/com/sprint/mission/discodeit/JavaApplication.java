@@ -21,22 +21,18 @@ public class JavaApplication {
         //JCFChannelService channelService = new JCFChannelService();
         FileChannelService channelService = new FileChannelService("channel.ser");
         channelService.clear();
-        Channel channel1 = new Channel("달선이 채널", IsPrivate.PUBLIC);
-        Channel channel2 = new Channel("달룡이 채널", IsPrivate.PUBLIC);
-        Channel channel3 = new Channel("달례 채널", IsPrivate.PUBLIC);
-        channelService.create(channel1);
-        channelService.create(channel2);
-        channelService.create(channel3);
+        Channel channel1 = channelService.create("달선이 채널", IsPrivate.PUBLIC);
+        Channel channel2 = channelService.create("달룡이 채널", IsPrivate.PUBLIC);
+        Channel channel3 = channelService.create("달례 채널", IsPrivate.PUBLIC);
 
         // 유저 등록
         FileUserService userService = new FileUserService("user.ser");
         userService.clear();
-        User user1 = new User("달선", UserStatus.ONLINE);
-        User user2 = new User("달룡", UserStatus.OFFLINE);
-        User user3 = new User("달례", UserStatus.AWAY);
-        userService.create(user1);
-        userService.create(user2);
-        userService.create(user3);
+        User user1 = userService.create("달선", UserStatus.ONLINE);
+        User user2 = userService.create("달룡", UserStatus.ONLINE);
+        User user3 = userService.create("달례", UserStatus.ONLINE);
+        User user = userService.create("달달", UserStatus.ONLINE);
+        //userService.delete(user.getId());
 
         System.out.println("\n업데이트 확인");
         System.out.println(user1);
@@ -48,12 +44,9 @@ public class JavaApplication {
         // 메시지 등록
         FileMessageService messageService = new FileMessageService("message.ser", userService, channelService);
         messageService.clear();
-        Message message1 = new Message(user1, channel1, "언니 보고싶어");
-        Message message2 = new Message(user2, channel2, "얘들아 배고파");
-        Message message3 = new Message(user3, channel3, "엄마 보고싶어");
-        messageService.create(message1);
-        messageService.create(message2);
-        messageService.create(message3);
+        Message message1 = messageService.create(user1, channel1, "언니 보고싶어");
+        Message message2 = messageService.create(user2, channel2, "얘들아 배고파");
+        Message message3 = messageService.create(user3, channel3, "엄마 보고싶어");
 
         // 조회(단건, 다건)
         System.out.println("=====채널 조회=====");
@@ -97,14 +90,12 @@ public class JavaApplication {
         System.out.println("유저 삭제 후");
         userService.delete(user3.getId());
         System.out.println(userService.readAll());
-        userService.create(user3); // 유저 예외 발생
+        user3 = userService.create("달례", UserStatus.OFFLINE); // 유저 예외 발생
 
         // 심화 요구 사항
         System.out.println("심화 요구 사항");
-        Message message4 = new Message(user3, channel2, "오빠 놀쟈!");
-        Message message5 = new Message(user3, channel2, "언니 놀쟈!");
-        messageService.create(message4);
-        messageService.create(message5);
+        Message message4 = messageService.create(user3, channel2, "오빠 놀쟈!");
+        Message message5 = messageService.create(user3, channel2, "언니 놀쟈!");
         System.out.println("보낸 사람 : " + userService.read(message4.getSender().getId()));
         System.out.println("보낸 채널 : " + channelService.read(message4.getChannelId()));
         System.out.println("보낸 메시지 : " + messageService.read(message4.getId()));
