@@ -37,7 +37,9 @@ public class JavaApplication {
         Channel channel1 = channelService.create("달선이 채널", IsPrivate.PUBLIC, user1.getId());
         Channel channel2 = channelService.create("달룡이 채널", IsPrivate.PUBLIC, user2.getId());
         Channel channel3 = channelService.create("달례 채널", IsPrivate.PUBLIC, user3.getId());
-
+        channel1.addUser(user2);
+        channel1.addUser(user3);
+        channel2.addUser(user3);
 
 
 
@@ -53,9 +55,19 @@ public class JavaApplication {
         Message message1 = messageService.create(user1.getId(), channel1.getId(), "언니 보고싶어");
         Message message2 = messageService.create(user2.getId(), channel2.getId(), "얘들아 배고파");
         Message message3 = messageService.create(user3.getId(), channel3.getId(), "엄마 보고싶어");
-//        userService.delete(user1.getId());
-//        channelService.delete(channel1.getId());
-//        messageService.create(user1, channel1, "테스트 예외");
+        Message message4 = messageService.create(user1.getId(), channel1.getId(), "아 배고파");
+        Message message5 = messageService.create(user1.getId(), channel2.getId(), "아 배고파");
+
+
+        System.out.println("\n테스트");
+        System.out.println(channel1);
+        System.out.println();
+        System.out.println(channel2);
+        System.out.println();
+        System.out.println(channel3);
+        System.out.println();
+
+
 
         // 조회(단건, 다건)
         System.out.println("=====채널 조회=====");
@@ -103,8 +115,8 @@ public class JavaApplication {
 
         // 심화 요구 사항
         System.out.println("심화 요구 사항");
-        Message message4 = messageService.create(user3.getId(), channel2.getId(), "오빠 놀쟈!");
-        Message message5 = messageService.create(user3.getId(), channel2.getId(), "언니 놀쟈!");
+        //Message message4 = messageService.create(user3.getId(), channel2.getId(), "오빠 놀쟈!");
+        //Message message5 = messageService.create(user3.getId(), channel2.getId(), "언니 놀쟈!");
 //        messageService.delete(message4.getId());  // 예외 발생
 //        messageService.update(message4);
         System.out.println("보낸 사람 : " + userService.findById(message4.getSender().getId()));

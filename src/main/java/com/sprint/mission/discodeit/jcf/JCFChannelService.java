@@ -21,6 +21,7 @@ public class JCFChannelService implements ChannelService {
     public Channel create(String name, IsPrivate isPrivate, UUID ownerId){
         User owner = userService.findById(ownerId);
         Channel channel = new Channel(name, isPrivate, owner);
+        channel.addUser(owner); // 나도 멤버에 넣어주기
         data.put(channel.getId(), channel);
         return channel;
     }

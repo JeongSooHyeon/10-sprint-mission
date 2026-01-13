@@ -14,13 +14,21 @@ public class Message extends BaseEntity implements  Serializable {
         super(UUID.randomUUID(), System.currentTimeMillis());
         this.channel = channel;
         this.content = content;
-        this.addUser(user);
+        this.addSender(user);
     }
 
-    public void addUser(User user) {
+    public void addSender(User user) {
         this.sender = user;
         if (!user.getMessages().contains(this)) {
             user.addMessages(this);
+        }
+    }
+
+    public void setChannel(Channel channel) {
+        this.channel = channel;
+
+        if (!channel.getMessages().contains(this)) {
+            channel.addMessage(this);
         }
     }
 
