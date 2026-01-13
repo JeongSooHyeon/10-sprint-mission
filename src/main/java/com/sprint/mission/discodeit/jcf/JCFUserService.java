@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.jcf;
 
+import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
@@ -59,6 +60,21 @@ public class JCFUserService implements UserService {
         }
         else{
             System.out.println(user.getName() + "님이 보낸 메시지가 없습니다.");
+        }
+    }
+
+    @Override
+    public void printUserChannels(UUID id) {
+        User user = findById(id);
+        String result = user.getChannels().stream()
+                .map(Channel::getName)
+                .collect(Collectors.joining("\n"));
+        System.out.println("[" + user.getName() + "님의 채널들]");
+        if(result.isEmpty()){
+            System.out.println("보유 채널이 없습니다.");
+        }
+        else {
+            System.out.println(result);
         }
     }
 

@@ -70,9 +70,12 @@ public class JavaApplication {
         channelService.printChannelMessages(dmId);
 
         System.out.println();
-        System.out.println("달선이 보낸 메시지");
+        System.out.println("===달선이 보낸 메시지===");
         userService.printUserMessages(user1.getId());
 
+        System.out.println();
+        System.out.println("달선이의 채널들");
+        userService.printUserChannels(user1.getId());
 //        messageService.searchMessage(channel1.getId(), "배고파");
 //        messageService.searchMessage(channel2.getId(), "배고파");
 //        messageService.searchMessage(channel3.getId(), "배고파");
