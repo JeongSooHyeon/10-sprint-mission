@@ -59,9 +59,14 @@ public class JavaApplication {
 
 
         System.out.println("\n테스트");
-        userService.printUserMessages(user1.getId());
-        userService.printUserMessages(user2.getId());
-        userService.printUserMessages(user3.getId());
+
+        messageService.searchMessage(channel1.getId(), "배고파");
+        messageService.searchMessage(channel2.getId(), "배고파");
+        messageService.searchMessage(channel3.getId(), "배고파");
+
+//        userService.printUserMessages(user1.getId());
+//        userService.printUserMessages(user2.getId());
+//        userService.printUserMessages(user3.getId());
 
 //        System.out.println(channel1);
 //        System.out.println();

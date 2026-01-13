@@ -9,6 +9,7 @@ import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.service.UserService;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class FileMessageService extends AbstractFileService implements MessageService, ClearMemory {
 
@@ -67,6 +68,23 @@ public class FileMessageService extends AbstractFileService implements MessageSe
         Message message = findById(id);
         save(message);
         return message;
+    }
+
+    @Override
+    public void searchMessage(UUID channelId, String msg) {
+        Channel channel = channelService.findById(channelId);
+        String result = channel.getMessages().stream()
+                .filter(m -> m.getContent().contains(msg))
+                .map(m -> "- " + m.getContent())
+                .collect(Collectors.joining("\n"));
+        System.out.println("[" + channel.getName() + "] : " + msg);
+
+        if (!result.isEmpty()) {
+            System.out.println(result);
+        }
+        else {
+            System.out.println("찾는 내용이 없습니다.");
+        }
     }
 
     @Override
