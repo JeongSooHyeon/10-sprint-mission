@@ -79,6 +79,7 @@ public class Channel extends BaseEntity implements Serializable {
         this.isPrivate = isPrivate;
     }
 
+
     @Override
     public String toString() {
         String memberNames = users.stream()

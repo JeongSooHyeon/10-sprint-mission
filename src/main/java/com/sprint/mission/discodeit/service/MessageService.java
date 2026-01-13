@@ -4,6 +4,7 @@ import com.sprint.mission.discodeit.entity.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public interface MessageService {
     // Create
@@ -17,6 +18,8 @@ public interface MessageService {
 
     // Update
     Message update(UUID id);
+
+    void searchMessage(UUID channelId, String msg);
 
     // Delete
     void delete(UUID id);
