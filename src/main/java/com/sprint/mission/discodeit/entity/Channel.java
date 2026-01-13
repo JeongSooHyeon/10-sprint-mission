@@ -1,7 +1,10 @@
 package com.sprint.mission.discodeit.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class Channel extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -9,14 +12,46 @@ public class Channel extends BaseEntity implements Serializable {
     private String name;
     private IsPrivate isPrivate;
     private User owner; // 채널 주인
+    private List<User> users;   // 채널 멤버
+    private List<Message> messages; // 채널에서 주고받은 메시지들
 
     public Channel(String name, IsPrivate isPrivate, User owner) {
         super(UUID.randomUUID(), System.currentTimeMillis());
         this.name = name;
         this.isPrivate = isPrivate;
+        this.users = new ArrayList<>();
+        this.messages = new ArrayList<>();
         addOwner(owner);
     }
 
+    public void addMessage(Message message) {
+        if (message == null) {
+            return;
+        }
+        if(!messages.contains(message)) {
+            messages.add(message);
+        }
+        if (message.getChannelId() != this.id) {
+            message.setChannel(this);
+        }
+    }
+
+    public List<Message> getMessages(){
+        return messages;
+    }
+
+    public void addUser(User user) {
+        if (!this.users.contains(user)) {
+            this.users.add(user);
+        }
+        if (!user.getChannels().contains(this)) {
+            user.addChannel(this);
+        }
+    }
+
+    public List<User> getUsers(){
+        return users;
+    }
     public void addOwner(User owner){
         this.owner = owner;
         if (!owner.getChannels().contains(this)) {
@@ -46,6 +81,13 @@ public class Channel extends BaseEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "채널명 : " + name + ", 공개여부 : " + isPrivate + ", 채널장 : " + owner.getName();
+        String memberNames = users.stream()
+                .map(User::getName)
+                .collect(Collectors.joining(", "));
+        String messages = this.messages.stream()
+                .map(Message::toString)
+                .collect(Collectors.joining("\n"));
+        return "채널명 : " + name + ", 공개여부 : " + isPrivate + ", 채널장 : " + owner.getName() + ", 채널 멤버 : " + memberNames + "\n대화 내용 : \n" + messages;
     }
+
 }

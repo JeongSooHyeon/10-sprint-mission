@@ -26,6 +26,7 @@ public class JCFMessageService implements MessageService {
         Channel channel = channelService.findById(channelId);
 
         Message message = new Message(user, channel, content);
+        channel.addMessage(message);    // 채널에 메시지 추가
         data.put(message.getId(), message);
         return message;
     }

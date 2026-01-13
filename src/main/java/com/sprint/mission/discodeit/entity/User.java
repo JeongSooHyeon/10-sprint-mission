@@ -1,10 +1,10 @@
 package com.sprint.mission.discodeit.entity;
 
 import java.io.Serializable;
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class User extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -25,14 +25,23 @@ public class User extends BaseEntity implements Serializable {
     public void addMessages(Message message) {
         this.messages.add(message);
         if (message.getSender() != this) {
-            message.addUser(this);
+            message.addSender(this);
         }
     }
 
     public void addChannel(Channel channel) {
-        this.channels.add(channel);
-        if (channel.getOwner() != this) {
+        if (!this.channels.contains(channel)) {
+            this.channels.add(channel);
+        }
+
+        // 채널장이 비어있으면 방장 등록
+        if (channel.getOwner() == null) {
             channel.addOwner(this);
+        }
+
+        // 채널에 멤버로 추가
+        if (!channel.getUsers().contains(this)) {
+            channel.addUser(this);
         }
     }
 
@@ -62,7 +71,10 @@ public class User extends BaseEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "유저명 : " + name + ", 상태 : " + status + ", 보유 채널들 : " + getChannels();
+        String channleNames = channels.stream()
+                .map(Channel::getName)
+                .collect(Collectors.joining(","));
+        return "유저명 : " + name + ", 상태 : " + status + ", 보유 채널들 : [" + channleNames + "]";
     }
 
 
