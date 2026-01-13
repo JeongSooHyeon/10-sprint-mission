@@ -1,10 +1,12 @@
 package com.sprint.mission.discodeit.jcf;
 
+import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.service.UserService;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class JCFUserService implements UserService {
     private final Map<UUID, User> data;
@@ -42,6 +44,16 @@ public class JCFUserService implements UserService {
         User user = findById(id);
         data.put(user.getId(), user);
         return user;
+    }
+
+    @Override
+    public void printUserMessages(UUID id) {
+        User user = findById(id);
+        String allMessages = user.getMessages().stream()
+                .map(Message::getContent)
+                .collect(Collectors.joining("\n"));
+
+        System.out.println("[" + user.getName() + "님이 보낸 메시지 내역]\n" + allMessages);
     }
 
     @Override
