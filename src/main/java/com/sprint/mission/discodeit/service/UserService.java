@@ -22,6 +22,9 @@ public interface UserService {
     // User가 보낸 모든 메시지 조회
     void printUserMessages(UUID id);
 
+    // 내가 속한 채널들 조회
+    void printUserChannels(UUID id);
+
     // Delete
     void delete(UUID id);
 
