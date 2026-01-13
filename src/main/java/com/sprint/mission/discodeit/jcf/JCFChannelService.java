@@ -2,6 +2,7 @@ package com.sprint.mission.discodeit.jcf;
 
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.IsPrivate;
+import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.ChannelService;
 
 import java.util.*;
@@ -14,8 +15,11 @@ public class JCFChannelService implements ChannelService {
     }
 
     @Override
-    public Channel create(String name, IsPrivate isPrivate){
-        Channel channel = new Channel(name, isPrivate);
+    public Channel create(String name, IsPrivate isPrivate, User owner){
+        Channel channel = new Channel(name, isPrivate, owner);
+        if (!owner.getChannels().contains(channel)) {
+            owner.addChannel(channel);
+        }
         data.put(channel.getId(), channel);
         return channel;
     }

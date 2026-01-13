@@ -5,28 +5,23 @@ import com.sprint.mission.discodeit.jcf.JCFChannelService;
 import com.sprint.mission.discodeit.jcf.JCFMessageService;
 import com.sprint.mission.discodeit.jcf.JCFUserService;
 import com.sprint.mission.discodeit.service.ChannelService;
-import com.sprint.mission.discodeit.service.file.FileChannelService;
-import com.sprint.mission.discodeit.service.file.FileMessageService;
-import com.sprint.mission.discodeit.service.file.FileUserService;
+//import com.sprint.mission.discodeit.service.file.FileChannelService;
+//import com.sprint.mission.discodeit.service.file.FileMessageService;
+//import com.sprint.mission.discodeit.service.file.FileUserService;
 
 public class JavaApplication {
     public static void main(String[] args) {
         // 등록
 
-//        JCFChannelService channelService = new JCFChannelService();
-//        JCFUserService userService = new JCFUserService();
-//        JCFMessageService messageService = new JCFMessageService(userService, channelService);
-        FileChannelService channelService = new FileChannelService("channel.ser");
-        channelService.clear();
-         FileUserService userService = new FileUserService("user.ser");
-        userService.clear();
-        FileMessageService messageService = new FileMessageService("message.ser", userService, channelService);
-        messageService.clear();
-
-        // 채널 등록
-        Channel channel1 = channelService.create("달선이 채널", IsPrivate.PUBLIC);
-        Channel channel2 = channelService.create("달룡이 채널", IsPrivate.PUBLIC);
-        Channel channel3 = channelService.create("달례 채널", IsPrivate.PUBLIC);
+        JCFUserService userService = new JCFUserService();
+        JCFChannelService channelService = new JCFChannelService();
+        JCFMessageService messageService = new JCFMessageService(userService, channelService);
+//        FileChannelService channelService = new FileChannelService("channel.ser");
+//        channelService.clear();
+//        FileUserService userService = new FileUserService("user.ser");
+//        userService.clear();
+//        FileMessageService messageService = new FileMessageService("message.ser", userService, channelService);
+//        messageService.clear();
 
         // 사용자 등록
         User user1 = userService.create("달선", UserStatus.ONLINE);
@@ -37,6 +32,17 @@ public class JavaApplication {
         } catch (IllegalArgumentException e) {
             System.out.println("중복 예외 확인 : " + e.getMessage());
         }
+
+        // 채널 등록
+        Channel channel1 = channelService.create("달선이 채널", IsPrivate.PUBLIC, user1);
+        Channel channel2 = channelService.create("달룡이 채널", IsPrivate.PUBLIC, user2);
+        Channel channel3 = channelService.create("달례 채널", IsPrivate.PUBLIC, user3);
+
+        // 사용자에 채널 넣기
+        System.out.println(user1);
+
+
+
         System.out.println("\n업데이트 확인");
         System.out.println(user1);
         user1.updateStatus(UserStatus.DONOTDISTURB);
