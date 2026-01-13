@@ -19,6 +19,9 @@ public interface UserService {
     // Update
     User update(UUID id);
 
+    // User가 보낸 모든 메시지 조회
+    void printUserMessages(UUID id);
+
     // Delete
     void delete(UUID id);
 

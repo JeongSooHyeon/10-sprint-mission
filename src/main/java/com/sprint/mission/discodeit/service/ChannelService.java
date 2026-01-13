@@ -21,6 +21,9 @@ public interface ChannelService {
     // Update
     Channel update(UUID id);
 
+    // 채널 참여
+    void joinChannel(UUID userId, UUID channelId);
+
     // Delete
     void delete(UUID id);
 

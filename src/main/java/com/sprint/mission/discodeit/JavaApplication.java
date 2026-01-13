@@ -41,14 +41,6 @@ public class JavaApplication {
         channelService.joinChannel(user3.getId(), channel1.getId());
         channelService.joinChannel(user1.getId(), channel3.getId());
 
-        System.out.println("\n테스트");
-        System.out.println(channel1);
-        System.out.println();
-        System.out.println(channel2);
-        System.out.println();
-        System.out.println(channel3);
-        System.out.println();
-
         // 사용자 update 확인
         System.out.println("\n업데이트 확인");
         System.out.println(user1);
@@ -62,16 +54,21 @@ public class JavaApplication {
         Message message2 = messageService.create(user2.getId(), channel2.getId(), "얘들아 배고파");
         Message message3 = messageService.create(user3.getId(), channel3.getId(), "엄마 보고싶어");
         Message message4 = messageService.create(user1.getId(), channel1.getId(), "아 배고파");
-        Message message5 = messageService.create(user1.getId(), channel2.getId(), "아 배고파");
+        Message message5 = messageService.create(user1.getId(), channel2.getId(), "언니 배고파");
+        Message message6 = messageService.create(user3.getId(), channel2.getId(), "안녕하시개");
 
 
         System.out.println("\n테스트");
-        System.out.println(channel1);
-        System.out.println();
-        System.out.println(channel2);
-        System.out.println();
-        System.out.println(channel3);
-        System.out.println();
+        userService.printUserMessages(user1.getId());
+        userService.printUserMessages(user2.getId());
+        userService.printUserMessages(user3.getId());
+
+//        System.out.println(channel1);
+//        System.out.println();
+//        System.out.println(channel2);
+//        System.out.println();
+//        System.out.println(channel3);
+//        System.out.println();
 
 
 
