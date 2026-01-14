@@ -12,4 +12,5 @@ public interface MessageService {
     Message updateMessage(UUID id, String newContent);
     List<Message> findAllMessages();
     List<Message> findMessagesByChannelId(UUID channelId);
+    List<Message> findMessagesByUserId(UUID userId);
 }

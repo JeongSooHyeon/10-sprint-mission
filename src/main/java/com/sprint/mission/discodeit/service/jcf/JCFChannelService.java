@@ -1,7 +1,9 @@
 package com.sprint.mission.discodeit.service.jcf;
 
 import com.sprint.mission.discodeit.entity.Channel;
+import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.ChannelService;
+import com.sprint.mission.discodeit.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,9 +11,11 @@ import java.util.UUID;
 
 public class JCFChannelService implements ChannelService {
     private final List<Channel> channelList;
+    private final UserService userService;
 
-    public JCFChannelService(){
+    public JCFChannelService(UserService userService){
         this.channelList = new ArrayList<>();
+        this.userService = userService;
     }
 
     @Override
@@ -45,5 +49,28 @@ public class JCFChannelService implements ChannelService {
         Channel targetChannel = findChannelById(id); // 예외 처리가 구현되어있는 findChannelById(id) 사용
         targetChannel.updateChannelInfo(channelName);
         return targetChannel;
+    }
+
+    @Override
+    public void joinChannel(UUID userID, UUID channelID) {
+        Channel targetChannel = findChannelById(channelID);
+        User targetUser = userService.findUserById(userID);
+
+        boolean isAlreadyExist = targetChannel.getParticipants().stream()
+                        .anyMatch(participant -> participant.getId().equals(targetUser.getId()));
+
+        if(isAlreadyExist) {
+            throw new IllegalArgumentException("이미 채널에 참여중인 사용자입니다.");
+        }
+
+        targetChannel.getParticipants().add(targetUser);
+        System.out.println(targetUser.getUsername() + "님이 "
+                                + targetChannel.getChannelName() + " 채널에 입장했습니다.");
+    }
+
+    @Override
+    public List<User> findParticipants(UUID channelID){
+        Channel targetChannel = findChannelById(channelID);
+        return targetChannel.getParticipants();
     }
 }

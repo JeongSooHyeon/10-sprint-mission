@@ -83,4 +83,5 @@ public class JCFUserService implements UserService {
         targetUser.updatePassword(newPassword);
         return targetUser;
     }
+
 }

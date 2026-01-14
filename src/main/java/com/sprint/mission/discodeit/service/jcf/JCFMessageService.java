@@ -39,6 +39,12 @@ public class JCFMessageService implements MessageService {
                 .collect(Collectors.toList());
     }
 
+    public List<Message> findMessagesByUserId(UUID userId){
+        return messageList.stream()
+                .filter(message -> message.getUser().getId().equals(userId))
+                .collect(Collectors.toList());
+    }
+
     public List<Message> findAllMessages(){
         return messageList;
     }
