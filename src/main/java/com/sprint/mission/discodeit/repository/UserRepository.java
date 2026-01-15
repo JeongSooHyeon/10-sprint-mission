@@ -19,4 +19,5 @@ public interface UserRepository {
 
     public void delete(UUID uuid);
 
+    public void clear();
 }
