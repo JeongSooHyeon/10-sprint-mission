@@ -4,6 +4,8 @@ import com.sprint.mission.discodeit.entity.*;
 import com.sprint.mission.discodeit.jcf.JCFChannelService;
 import com.sprint.mission.discodeit.jcf.JCFMessageService;
 import com.sprint.mission.discodeit.jcf.JCFUserService;
+import com.sprint.mission.discodeit.repository.UserRepository;
+import com.sprint.mission.discodeit.repository.jcf.JCFUserRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
 
 import java.util.UUID;
@@ -15,7 +17,8 @@ public class JavaApplication {
     public static void main(String[] args) {
         // 등록
 
-        JCFUserService userService = new JCFUserService();
+        UserRepository userRepository = new JCFUserRepository();
+        JCFUserService userService = new JCFUserService(userRepository);
         JCFChannelService channelService = new JCFChannelService(userService);
         JCFMessageService messageService = new JCFMessageService(userService, channelService);
 //        FileChannelService channelService = new FileChannelService("channel.ser");
