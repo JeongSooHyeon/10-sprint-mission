@@ -4,75 +4,68 @@ import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.IsPrivate;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.UserService;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class JCFChannelService implements ChannelService {
-    private final Map<UUID, Channel> data;
     private final UserService userService;
+    private final ChannelRepository channelRepository;
 
-    public JCFChannelService(UserService userService) {
-        this.data = new HashMap<>();
+    public JCFChannelService(UserService userService, ChannelRepository channelRepository) {
         this.userService = userService;
+        this.channelRepository = channelRepository;
     }
 
     @Override
-    public Channel create(String name, IsPrivate isPrivate, UUID ownerId){
+    public Channel create(String name, IsPrivate isPrivate, UUID ownerId) {
         User owner = userService.findById(ownerId);
         Channel channel = new Channel(name, isPrivate, owner);
         channel.addUser(owner); // 나도 멤버에 넣어주기
-        data.put(channel.getId(), channel);
-        return channel;
+        return channelRepository.save(channel);
     }
 
     @Override
     public Channel findById(UUID id) {
-        validateExistence(data, id);
-        return data.get(id);
+        Channel channel = channelRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("실패 : 존재하지 않는 채널 ID입니다."));
+
+        return channel;
     }
 
     @Override
     public List<Channel> readAll() {
-        return new ArrayList<>(data.values());
+        return channelRepository.readAll();
     }
 
     @Override
-    public Channel update(UUID id) {
-        validateExistence(data, id);
+    public Channel update(UUID id, String name, IsPrivate isPrivate, User owner) {
         Channel channel = findById(id);
-        data.put(channel.getId(), channel);
-        return channel;
+        channel.updateName(name);
+        channel.updatePrivate(isPrivate);
+        channel.updateOwner(owner);
+        return channelRepository.save(channel);
     }
 
     public void joinChannel(UUID userId, UUID channelId) {
         Channel channel = findById(channelId);
         User user = userService.findById(userId);
         channel.addUser(user);
+        user.getChannels().add(channel); // 양방향 연결
     }
+
     @Override
     public void delete(UUID id) {
-        validateExistence(data, id);
-        data.remove(id);
+        findById(id);
+        channelRepository.delete(id);
     }
 
     // 채널에서 주고받은 메시지 출력
-    public void printChannelMessages(UUID channelId) {
+    public List<Message> getChannelMessages(UUID channelId) {
         Channel channel = findById(channelId);
-        System.out.println("[" + channel.getName() + "]");
-        String result = channel.getMessages().stream()
-                .map(msg -> String.format("- [%s] %s",
-                                msg.getSender().getName(),
-                                msg.getContent()))
-                .collect(Collectors.joining("\n"));
-        System.out.println(result);
+        return channel.getMessages();
     }
 
-    private void validateExistence(Map<UUID, Channel> data, UUID id){
-        if (!data.containsKey(id)) {
-            throw new NoSuchElementException("실패 : 존재하지 않는 채널 ID입니다.");
-        }
-    }
 }

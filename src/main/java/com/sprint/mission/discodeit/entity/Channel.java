@@ -59,6 +59,10 @@ public class Channel extends BaseEntity implements Serializable {
         }
     }
 
+    public void updateOwner(User owner) {
+        this.owner = owner;
+    }
+
     public User getOwner() {
         return owner;
     }

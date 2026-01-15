@@ -2,6 +2,7 @@ package com.sprint.mission.discodeit.service;
 
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.IsPrivate;
+import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
 
 import java.util.List;
@@ -19,12 +20,12 @@ public interface ChannelService {
     List<Channel> readAll();
 
     // Update
-    Channel update(UUID id);
+    Channel update(UUID id, String name, IsPrivate isPrivate, User owner);
 
     // 채널 참여
     void joinChannel(UUID userId, UUID channelId);
 
-    void printChannelMessages(UUID channelId);
+    List<Message> getChannelMessages(UUID channelId);
 
     // Delete
     void delete(UUID id);
