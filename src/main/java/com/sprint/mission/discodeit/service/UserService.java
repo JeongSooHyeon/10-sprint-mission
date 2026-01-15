@@ -17,7 +17,7 @@ public interface UserService {
     List<User> readAll();
 
     // Update
-    User update(UUID id);
+    User update(UUID id, String newName, UserStatus newStatus);
 
     // User가 보낸 모든 메시지 조회
     void printUserMessages(UUID id);
