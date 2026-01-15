@@ -17,9 +17,9 @@ public interface MessageService {
     List<Message> readAll();
 
     // Update
-    Message update(UUID id);
+    Message update(UUID messageId, String content);
 
-    void searchMessage(UUID channelId, String msg);
+    List<Message> searchMessage(UUID channelId, String msg);
 
     UUID sendDirectMessage(UUID senderId, UUID receiverId, String content);
 
