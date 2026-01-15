@@ -10,7 +10,7 @@ import javax.swing.text.html.Option;
 import java.util.*;
 
 public class JCFUserRepository implements UserRepository {
-    private final Map<UUID, User> data;
+    private Map<UUID, User> data;
 
     public JCFUserRepository(){
         data = new HashMap<>();
@@ -41,5 +41,10 @@ public class JCFUserRepository implements UserRepository {
     @Override
     public void delete(UUID id) {
         data.remove(id);
+    }
+
+    @Override
+    public void clear(){
+        data = new HashMap<>();
     }
 }

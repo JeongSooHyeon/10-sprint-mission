@@ -5,8 +5,10 @@ import com.sprint.mission.discodeit.jcf.JCFChannelService;
 import com.sprint.mission.discodeit.jcf.JCFMessageService;
 import com.sprint.mission.discodeit.jcf.JCFUserService;
 import com.sprint.mission.discodeit.repository.UserRepository;
+import com.sprint.mission.discodeit.repository.file.FileUserRepository;
 import com.sprint.mission.discodeit.repository.jcf.JCFUserRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
+import com.sprint.mission.discodeit.service.file.FileUserService;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,17 +21,18 @@ public class JavaApplication {
     public static void main(String[] args) {
         // 등록
 
-        UserRepository userRepository = new JCFUserRepository();
-        JCFUserService userService = new JCFUserService(userRepository);
-        JCFChannelService channelService = new JCFChannelService(userService);
-        JCFMessageService messageService = new JCFMessageService(userService, channelService);
+//        UserRepository userRepository = new JCFUserRepository();
+//        JCFUserService userService = new JCFUserService(userRepository);
+
+        UserRepository userRepository = new FileUserRepository("User.ser");
 //        FileChannelService channelService = new FileChannelService("channel.ser");
 //        channelService.clear();
-//        FileUserService userService = new FileUserService("user.ser");
-//        userService.clear();
+        FileUserService userService = new FileUserService(userRepository);
+        userService.clear();
 //        FileMessageService messageService = new FileMessageService("message.ser", userService, channelService);
 //        messageService.clear();
-
+        JCFChannelService channelService = new JCFChannelService(userService);
+        JCFMessageService messageService = new JCFMessageService(userService, channelService);
         // 사용자 등록
         User user1 = userService.create("달선", UserStatus.ONLINE);
         User user2 = userService.create("달룡", UserStatus.ONLINE);
