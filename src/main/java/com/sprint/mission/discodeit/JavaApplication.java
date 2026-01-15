@@ -4,8 +4,11 @@ import com.sprint.mission.discodeit.entity.*;
 import com.sprint.mission.discodeit.jcf.JCFChannelService;
 import com.sprint.mission.discodeit.jcf.JCFMessageService;
 import com.sprint.mission.discodeit.jcf.JCFUserService;
+import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
+import com.sprint.mission.discodeit.repository.file.FileChannelRepository;
 import com.sprint.mission.discodeit.repository.file.FileUserRepository;
+import com.sprint.mission.discodeit.repository.jcf.JCFChannelRepository;
 import com.sprint.mission.discodeit.repository.jcf.JCFUserRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.file.FileUserService;
@@ -21,17 +24,18 @@ public class JavaApplication {
     public static void main(String[] args) {
         // 등록
 
-//        UserRepository userRepository = new JCFUserRepository();
-//        JCFUserService userService = new JCFUserService(userRepository);
+        UserRepository userRepository = new JCFUserRepository();
+        JCFUserService userService = new JCFUserService(userRepository);
 
-        UserRepository userRepository = new FileUserRepository("User.ser");
+//        UserRepository userRepository = new FileUserRepository("User.ser");
 //        FileChannelService channelService = new FileChannelService("channel.ser");
 //        channelService.clear();
-        FileUserService userService = new FileUserService(userRepository);
-        userService.clear();
+//        FileUserService userService = new FileUserService(userRepository);
+//        userService.clear();
 //        FileMessageService messageService = new FileMessageService("message.ser", userService, channelService);
 //        messageService.clear();
-        JCFChannelService channelService = new JCFChannelService(userService);
+        ChannelRepository channelRepository = new JCFChannelRepository();
+        JCFChannelService channelService = new JCFChannelService(userService, channelRepository);
         JCFMessageService messageService = new JCFMessageService(userService, channelService);
         // 사용자 등록
         User user1 = userService.create("달선", UserStatus.ONLINE);
@@ -75,13 +79,11 @@ public class JavaApplication {
 
         System.out.println();
         System.out.println("===DM 채널 대화 내용===");
-        channelService.printChannelMessages(dmId);
+        printChannelMessage(channelService.findById(dmId).getName(), channelService.getChannelMessages(dmId));
 
         System.out.println();
         System.out.println("사용자 메시지 조회");
         printUserMessage(user1.getName(), userService.getUserMessages(user1.getId()));
-
-
 
 
         System.out.println();
@@ -160,7 +162,8 @@ public class JavaApplication {
 //        System.out.println("보낸 메시지 : " + messageService.findById(message4.getId()));
 //        System.out.println("메시지 리스트 : " + user3.getMessages());
     }
-    private static void printUserMessage(String userName, List<Message> messages){
+
+    private static void printUserMessage(String userName, List<Message> messages) {
         if (!messages.isEmpty()) {
             System.out.println("[" + userName + "님이 보낸 메시지 내역]");
             messages.forEach(msg
@@ -174,9 +177,17 @@ public class JavaApplication {
         if (!channels.isEmpty()) {
             System.out.println("[" + userName + "님의 채널들]");
             channels.forEach(ch -> System.out.printf("- %s%n", ch.getName()));
-        }
-        else {
+        } else {
             System.out.println(userName + "님이 보유하신 채널이 없습니다.");
+        }
+    }
+
+    private static void printChannelMessage(String channelName, List<Message> messages) {
+        if (!messages.isEmpty()) {
+            System.out.println("[" + channelName + " 채널의 대화 내용]");
+            messages.forEach(msg -> System.out.printf("- [%s] %s%n", msg.getSender().getName(), msg.getContent()));
+        } else {
+            System.out.println(channelName + "채널에 대화 내용이 없습니다.");
         }
     }
 }
