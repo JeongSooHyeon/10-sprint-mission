@@ -6,6 +6,7 @@ import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
+import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.ClearMemory;
 import com.sprint.mission.discodeit.service.MessageService;
@@ -25,6 +26,7 @@ public class BasicMessageService implements MessageService, ClearMemory {
     private final ChannelService channelService;
     private final MessageRepository messageRepository;
     private final ChannelRepository channelRepository;
+    private final UserStatusRepository userStatusRepository;
 
     @Override
     public Message create(UUID userId, UUID channelId, String content) {
@@ -33,6 +35,7 @@ public class BasicMessageService implements MessageService, ClearMemory {
         Message message = new Message(user, channel, content);
         channel.addMessage(message);    // 채널에 메시지 추가
         channelRepository.save(channel);
+        userService.updateLastActiveTime(userId);
         return messageRepository.save(message);
     }
 
@@ -102,4 +105,5 @@ public class BasicMessageService implements MessageService, ClearMemory {
     public void clear() {
         messageRepository.clear();
     }
+
 }

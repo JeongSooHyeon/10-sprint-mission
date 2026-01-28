@@ -7,9 +7,8 @@ import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.file.FileChannelRepository;
 import com.sprint.mission.discodeit.repository.file.FileMessageRepository;
 import com.sprint.mission.discodeit.repository.file.FileUserRepository;
-import com.sprint.mission.discodeit.repository.jcf.JCFChannelRepository;
-import com.sprint.mission.discodeit.repository.jcf.JCFMessageRepository;
-import com.sprint.mission.discodeit.repository.jcf.JCFUserRepository;
+import com.sprint.mission.discodeit.repository.UserStatusRepository;
+import com.sprint.mission.discodeit.repository.file.FileUserStatusRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.service.UserService;
@@ -21,7 +20,7 @@ import java.util.UUID;
 
 public class JavaApplication {
     static User setupUser(UserService userService) {
-        User user = userService.create("woody", UserStatus.AWAY);
+        User user = userService.create("woody", UserStatusEnum.AWAY);
         return user;
     }
 
@@ -44,9 +43,10 @@ public class JavaApplication {
         UserRepository userRepository = new FileUserRepository();
         ChannelRepository channelRepository = new FileChannelRepository();
         MessageRepository messageRepository = new FileMessageRepository();
-        UserService userService = new BasicUserService(userRepository, channelRepository, messageRepository);
+        UserStatusRepository userStatusRepository = new FileUserStatusRepository();
+        UserService userService = new BasicUserService(userRepository, channelRepository, messageRepository, userStatusRepository);
         ChannelService channelService = new BasicChannelService(userService, userRepository, channelRepository, messageRepository);
-        MessageService messageService = new BasicMessageService(userService, channelService, messageRepository, channelRepository);
+        MessageService messageService = new BasicMessageService(userService, channelService, messageRepository, channelRepository, userStatusRepository);
 
         // 셋업
         User user = setupUser(userService);
