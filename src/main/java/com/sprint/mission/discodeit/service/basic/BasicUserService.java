@@ -1,22 +1,17 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.entity.Channel;
-import com.sprint.mission.discodeit.entity.Message;
-import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.entity.UserStatus;
+import com.sprint.mission.discodeit.entity.*;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
+import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.ClearMemory;
 import com.sprint.mission.discodeit.service.UserService;
+import jdk.jfr.Percentage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -24,9 +19,10 @@ public class BasicUserService implements UserService, ClearMemory {
     private final UserRepository userRepository;
     private final ChannelRepository channelRepository;
     private final MessageRepository messageRepository;
+    private final UserStatusRepository userStatusRepository;
 
     @Override
-    public User create(String name, UserStatus status) {
+    public User create(String name, UserStatusEnum status) {
         userRepository.findByName(name)
                 .ifPresent(u -> {
                     throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
@@ -35,6 +31,17 @@ public class BasicUserService implements UserService, ClearMemory {
         return userRepository.save(user);
     }
 
+    // 프로필 이미지 등록 create
+    @Override
+    public User create(String name, UserStatusEnum status, BinaryContent profileImg) {
+        userRepository.findByName(name)
+                .ifPresent(u -> {
+                    throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
+                });
+        User user = new User(name, status, profileImg.getId());
+        return userRepository.save(user);
+
+    }
     @Override
     public User findById(UUID id) {
         User user = userRepository.findById(id).orElseThrow(()
@@ -48,9 +55,9 @@ public class BasicUserService implements UserService, ClearMemory {
     }
 
     @Override
-    public User update(UUID id, String newName, UserStatus newStatus) {
+    public User update(UUID id, String newName, UserStatusEnum newStatus) {
         User user = findById(id);   // 예외 검사
-
+        updateLastActiveTime(id);   // 마지막 접속 시간 갱신
         user.updateName(newName);
         user.updateStatus(newStatus);
 
@@ -112,4 +119,14 @@ public class BasicUserService implements UserService, ClearMemory {
     public void clear() {
         userRepository.clear();
     }
+
+    @Override
+    public void updateLastActiveTime(UUID id){
+        Optional<UserStatus> userStatus = userStatusRepository.findByUserId(id);
+        userStatus.ifPresent(us -> {
+            us.updateLastActiveTime();
+            userStatusRepository.save(us);
+        });
+    }
+
 }

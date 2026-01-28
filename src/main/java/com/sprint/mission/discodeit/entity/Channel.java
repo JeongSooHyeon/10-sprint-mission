@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.entity;
 import lombok.Getter;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -19,7 +20,7 @@ public class Channel extends BaseEntity implements Serializable {
     private List<Message> messages; // 채널에서 주고받은 메시지들
 
     public Channel(String name, IsPrivate isPrivate, User owner) {
-        super(UUID.randomUUID(), System.currentTimeMillis());
+        super(UUID.randomUUID(), Instant.now());
         this.name = name;
         this.isPrivate = isPrivate;
         this.users = new ArrayList<>();

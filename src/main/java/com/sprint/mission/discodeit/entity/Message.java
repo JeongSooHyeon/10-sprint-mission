@@ -3,6 +3,9 @@ package com.sprint.mission.discodeit.entity;
 import lombok.Getter;
 
 import java.io.Serializable;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -12,12 +15,14 @@ public class Message extends BaseEntity implements  Serializable {
     private User sender;
     private Channel channel;
     private String content;
+    private List<UUID> attachmentIds;   // 첨부파일
 
     public Message(User user, Channel channel, String content) {
-        super(UUID.randomUUID(), System.currentTimeMillis());
+        super(UUID.randomUUID(), Instant.now());
         this.channel = channel;
         this.content = content;
         this.addSender(user);
+        this.attachmentIds = new ArrayList<>();
     }
 
     public void addSender(User user) {

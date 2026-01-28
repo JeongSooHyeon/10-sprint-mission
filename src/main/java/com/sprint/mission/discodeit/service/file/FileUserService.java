@@ -4,12 +4,10 @@ import com.sprint.mission.discodeit.entity.*;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
-import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.ClearMemory;
 import com.sprint.mission.discodeit.service.UserService;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class FileUserService implements UserService, ClearMemory {
     UserRepository userRepository;
@@ -23,7 +21,7 @@ public class FileUserService implements UserService, ClearMemory {
     }
 
     @Override
-    public User create(String name, UserStatus status) {
+    public User create(String name, UserStatusEnum status) {
         userRepository.findByName(name)
                 .ifPresent(u -> {
                     throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
@@ -45,7 +43,7 @@ public class FileUserService implements UserService, ClearMemory {
     }
 
     @Override
-    public User update(UUID id, String newName, UserStatus newStatus) {
+    public User update(UUID id, String newName, UserStatusEnum newStatus) {
         User user = findById(id);
         user.updateName(newName);
         user.updateStatus(newStatus);

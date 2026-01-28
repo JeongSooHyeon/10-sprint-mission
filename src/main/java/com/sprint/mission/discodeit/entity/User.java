@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.entity;
 import lombok.Getter;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -12,16 +13,26 @@ public class User extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String name;
-    private UserStatus status;
+    private UserStatusEnum status;
     private List<Message> messages;
     private List<Channel> channels;
+    private UUID profileId;
 
-    public User(String name, UserStatus status) {
-        super(UUID.randomUUID(), System.currentTimeMillis());
+    public User(String name, UserStatusEnum status) {
+        super(UUID.randomUUID(), Instant.now());
         this.name = name;
         this.status = status;
         this.messages = new ArrayList<Message>();
         this.channels = new ArrayList<Channel>();
+    }
+
+    public User(String name, UserStatusEnum status, UUID profileId) {
+        super(UUID.randomUUID(), Instant.now());
+        this.name = name;
+        this.status = status;
+        this.messages = new ArrayList<Message>();
+        this.channels = new ArrayList<Channel>();
+        this.profileId = profileId;
     }
 
     public void addMessages(Message message) {
@@ -47,11 +58,14 @@ public class User extends BaseEntity implements Serializable {
         }
     }
 
+    public void updateProfileId(UUID id) {
+        this.profileId = id;
+    }
     public void updateName(String name) {
         this.name = name;
     }
 
-    public void updateStatus(UserStatus status) {
+    public void updateStatus(UserStatusEnum status) {
         this.status = status;
     }
 

@@ -3,15 +3,13 @@ package com.sprint.mission.discodeit.service.jcf;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.entity.UserStatus;
+import com.sprint.mission.discodeit.entity.UserStatusEnum;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
-import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.service.UserService;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class JCFUserService implements UserService {
     UserRepository userRepository;
@@ -25,7 +23,7 @@ public class JCFUserService implements UserService {
     }
 
     @Override
-    public User create(String name, UserStatus status) {
+    public User create(String name, UserStatusEnum status) {
         userRepository.findByName(name).ifPresent(u -> {
             throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
         });
@@ -46,7 +44,7 @@ public class JCFUserService implements UserService {
     }
 
     @Override
-    public User update(UUID id, String newName, UserStatus newStatus) {
+    public User update(UUID id, String newName, UserStatusEnum newStatus) {
         User user = findById(id);   // 예외 검사
 
         user.updateName(newName);

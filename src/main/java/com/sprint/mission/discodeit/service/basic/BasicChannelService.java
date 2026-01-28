@@ -29,6 +29,7 @@ public class BasicChannelService implements ChannelService, ClearMemory {
         User user = userService.findById(ownerId);
         Channel channel = new Channel(name, isPrivate, user);
         channelRepository.save(channel);
+        userService.updateLastActiveTime(ownerId);
         return channel;
     }
 
@@ -61,6 +62,7 @@ public class BasicChannelService implements ChannelService, ClearMemory {
         channel.addUser(user);
         channelRepository.save(channel);
         userRepository.save(user);
+        userService.updateLastActiveTime(userId);
     }
 
     @Override
@@ -100,4 +102,5 @@ public class BasicChannelService implements ChannelService, ClearMemory {
     public void clear() {
         channelRepository.clear();
     }
+
 }
