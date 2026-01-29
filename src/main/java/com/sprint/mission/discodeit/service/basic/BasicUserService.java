@@ -1,17 +1,17 @@
 package com.sprint.mission.discodeit.service.basic;
 
+import com.sprint.mission.discodeit.dto.UserInfo;
+import com.sprint.mission.discodeit.dto.UserCreateRequest;
+import com.sprint.mission.discodeit.dto.UserUpdateRequest;
 import com.sprint.mission.discodeit.entity.*;
-import com.sprint.mission.discodeit.repository.ChannelRepository;
-import com.sprint.mission.discodeit.repository.MessageRepository;
-import com.sprint.mission.discodeit.repository.UserRepository;
-import com.sprint.mission.discodeit.repository.UserStatusRepository;
+import com.sprint.mission.discodeit.repository.*;
 import com.sprint.mission.discodeit.service.ClearMemory;
 import com.sprint.mission.discodeit.service.UserService;
-import jdk.jfr.Percentage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -20,47 +20,76 @@ public class BasicUserService implements UserService, ClearMemory {
     private final ChannelRepository channelRepository;
     private final MessageRepository messageRepository;
     private final UserStatusRepository userStatusRepository;
+    private final BinaryContentRepository binaryContentRepository;
 
     @Override
-    public User create(String name, UserStatusEnum status) {
-        userRepository.findByName(name)
+    public User create(UserCreateRequest request) {
+        userRepository.findByName(request.userName())
                 .ifPresent(u -> {
                     throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
                 });
-        User user = new User(name, status);
-        return userRepository.save(user);
-    }
-
-    // 프로필 이미지 등록 create
-    @Override
-    public User create(String name, UserStatusEnum status, BinaryContent profileImg) {
-        userRepository.findByName(name)
+        userRepository.findByEmail(request.email())
                 .ifPresent(u -> {
-                    throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
+                    throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
                 });
-        User user = new User(name, status, profileImg.getId());
+        User user;
+        if (request.imageBytes() != null) {  // 프로필 있을 때
+            BinaryContent profileImg = new BinaryContent(request.imageBytes()); // 프로필 이미지 생성
+            binaryContentRepository.save(profileImg);
+            user = new User(request.userName(), request.email(), profileImg.getId());
+        } else {
+            user = new User(request.userName(), request.email(), null);
+        }
+        UserStatus userStatus = new UserStatus(user);
+        userStatusRepository.save(userStatus);
         return userRepository.save(user);
-
     }
+
     @Override
-    public User findById(UUID id) {
+    public UserInfo findById(UUID id) {
         User user = userRepository.findById(id).orElseThrow(()
                 -> new NoSuchElementException("실패 : 존재하지 않는 사용자 ID입니다."));
-        return user;
+        return userToUserInfo(user);
+    }
+
+    public UserInfo userToUserInfo(User user) {
+        UserStatus userStatus = userStatusRepository.findByUserId(user.getId()).orElseThrow();
+
+        UserInfo userInfo = new UserInfo(user.getName(), user.getId(), userStatus.getStatusType(), user.getEmail(), user.getProfileId());
+        return userInfo;
     }
 
     @Override
-    public List<User> readAll() {
-        return userRepository.readAll();
+    public List<UserInfo> findAll() {
+        List<User> users = userRepository.readAll();
+        List<UserStatus> userStatuses = userStatusRepository.readAll();
+        Map<UUID, UserStatus> statusMap
+                = userStatuses.stream().collect(Collectors.toMap(UserStatus::getUserId, us -> us));
+        List<UserInfo> infoList
+                = users.stream()
+                .map(u -> {
+                    UserStatus userStatus = statusMap.get(u.getId());
+                    StatusType status = (userStatus == null) ? StatusType.OFFLINE : userStatus.getStatusType();
+                    return new UserInfo(u.getName(), u.getId(), status, u.getEmail(), u.getProfileId());
+                })
+                .toList();
+        return infoList;
     }
 
     @Override
-    public User update(UUID id, String newName, UserStatusEnum newStatus) {
-        User user = findById(id);   // 예외 검사
-        updateLastActiveTime(id);   // 마지막 접속 시간 갱신
-        user.updateName(newName);
-        user.updateStatus(newStatus);
+    public User update(UserUpdateRequest request) {
+        User user = userRepository.findById(request.userId()).orElseThrow();
+        user.updateName(request.newName()); // 이름 변경
 
+        if (request.imageBytes() != null) {  // 프로필 변경
+            if(user.getProfileId() != null) {
+                binaryContentRepository.delete(user.getProfileId());    // 기존 프로필 삭제
+            }
+            BinaryContent newProfileImg = new BinaryContent(request.imageBytes());
+            binaryContentRepository.save(newProfileImg);
+            user.updateProfileId(newProfileImg.getId());
+        }
+        updateLastActiveTime(request.userId());   // 마지막 접속 시간 갱신
         return userRepository.save(user);
     }
 
@@ -83,7 +112,15 @@ public class BasicUserService implements UserService, ClearMemory {
 
     @Override
     public void delete(UUID id) {
-        findById(id);
+        UserInfo userInfo = findById(id);
+
+        // 프로필 삭제
+        if(userInfo.profileId() != null) {
+            binaryContentRepository.delete(userInfo.profileId());
+        }
+
+        // UserStatus 삭제
+        userStatusRepository.deleteByUserId(userInfo.userId());
 
         // 사용자가 등록되어 있는 채널들
         List<Channel> joinedChannels = channelRepository.readAll().stream()
@@ -121,12 +158,13 @@ public class BasicUserService implements UserService, ClearMemory {
     }
 
     @Override
-    public void updateLastActiveTime(UUID id){
+    public void updateLastActiveTime(UUID id) {
         Optional<UserStatus> userStatus = userStatusRepository.findByUserId(id);
         userStatus.ifPresent(us -> {
             us.updateLastActiveTime();
             userStatusRepository.save(us);
         });
     }
+
 
 }

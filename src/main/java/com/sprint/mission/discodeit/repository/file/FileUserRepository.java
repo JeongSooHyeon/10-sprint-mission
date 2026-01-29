@@ -40,6 +40,16 @@ public class FileUserRepository extends AbstractFileRepository<User> implements 
                 .findFirst();
         return user;
     }
+
+    @Override
+    public Optional<User> findByEmail(String email){
+        Map<UUID, User> data = load();
+        Optional<User> user = data.values().stream()
+                .filter(u -> u.getEmail().equals(email))
+                .findFirst();
+        return user;
+    }
+
     @Override
     public List<User> readAll() {
         Map<UUID, User> data = load();
