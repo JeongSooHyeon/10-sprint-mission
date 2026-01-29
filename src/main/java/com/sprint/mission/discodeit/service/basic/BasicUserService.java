@@ -36,9 +36,9 @@ public class BasicUserService implements UserService, ClearMemory {
         if (request.imageBytes() != null) {  // 프로필 있을 때
             BinaryContent profileImg = new BinaryContent(request.imageBytes()); // 프로필 이미지 생성
             binaryContentRepository.save(profileImg);
-            user = new User(request.userName(), request.email(), profileImg.getId());
+            user = new User(request.userName(), request.email(), request.password(), profileImg.getId());
         } else {
-            user = new User(request.userName(), request.email(), null);
+            user = new User(request.userName(), request.email(), request.password(), null);
         }
         UserStatus userStatus = new UserStatus(user);
         userStatusRepository.save(userStatus);

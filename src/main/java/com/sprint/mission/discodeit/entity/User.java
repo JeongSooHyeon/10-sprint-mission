@@ -14,14 +14,16 @@ public class User extends BaseEntity implements Serializable {
 
     private String name;
     private String email;
+    private String password;
     private List<Message> messages;
     private List<Channel> channels;
     private UUID profileId;
 
-    public User(String name, String email, UUID profileId) {
+    public User(String name, String email, String password, UUID profileId) {
         super(UUID.randomUUID(), Instant.now());
         this.name = name;
         this.email = email;
+        this.password = password;
         this.messages = new ArrayList<Message>();
         this.channels = new ArrayList<Channel>();
         this.profileId = profileId;
