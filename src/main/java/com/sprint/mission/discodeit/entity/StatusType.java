@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.entity;
 
-public enum UserStatusEnum {
+public enum StatusType {
     ONLINE,
     OFFLINE,
     AWAY,

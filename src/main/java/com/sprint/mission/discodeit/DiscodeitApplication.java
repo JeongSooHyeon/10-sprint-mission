@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit;
 
+import com.sprint.mission.discodeit.dto.UserCreateRequest;
 import com.sprint.mission.discodeit.entity.*;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.MessageService;
@@ -13,7 +14,8 @@ import java.util.UUID;
 @SpringBootApplication
 public class DiscodeitApplication {
 	static User setupUser(UserService userService) {
-		User user = userService.create("woody", UserStatusEnum.AWAY);
+		UserCreateRequest request = new UserCreateRequest("woody", "woody123@naver.com", null);
+		User user = userService.create(request);
 		return user;
 	}
 

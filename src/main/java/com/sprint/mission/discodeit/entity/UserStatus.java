@@ -9,29 +9,27 @@ import java.util.UUID;
 @Getter
 public class UserStatus extends BaseEntity {
     private final UUID userId;
-    private UserStatusEnum userStatusEnum;
+    private StatusType statusType;
 
-    protected UserStatus(User user) {
+    public UserStatus(User user) {
         super(UUID.randomUUID(), Instant.now());
         this.userId = user.getId();
-        this.userStatusEnum = UserStatusEnum.ONLINE;
+        this.statusType = StatusType.ONLINE;
     }
 
     public boolean isOnline() {
         Instant now = Instant.now();
         Instant beforeFiveMinute = now.minus(Duration.ofMinutes(5));
-        if (updatedAt.isBefore(beforeFiveMinute)) {    // 마지막 접속 시간이 5분 전이면
-            return false;   // 오프라인
-        }
-        return true;    // 온라인
+        return updatedAt.isAfter(beforeFiveMinute);    // 마지막 접속 시간이 5분 전이면
     }
 
-    public void updateUserStatus(){
+    public StatusType getStatusType(){
         if (isOnline()) {
-            this.userStatusEnum = UserStatusEnum.ONLINE;
+            this.statusType = StatusType.ONLINE;
         }else{
-            this.userStatusEnum = UserStatusEnum.OFFLINE;
+            this.statusType = StatusType.OFFLINE;
         }
+        return statusType;
     }
 
     // 마지막 접속 시간 갱신

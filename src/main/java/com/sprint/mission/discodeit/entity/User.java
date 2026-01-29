@@ -13,23 +13,15 @@ public class User extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String name;
-    private UserStatusEnum status;
+    private String email;
     private List<Message> messages;
     private List<Channel> channels;
     private UUID profileId;
 
-    public User(String name, UserStatusEnum status) {
+    public User(String name, String email, UUID profileId) {
         super(UUID.randomUUID(), Instant.now());
         this.name = name;
-        this.status = status;
-        this.messages = new ArrayList<Message>();
-        this.channels = new ArrayList<Channel>();
-    }
-
-    public User(String name, UserStatusEnum status, UUID profileId) {
-        super(UUID.randomUUID(), Instant.now());
-        this.name = name;
-        this.status = status;
+        this.email = email;
         this.messages = new ArrayList<Message>();
         this.channels = new ArrayList<Channel>();
         this.profileId = profileId;
@@ -65,16 +57,9 @@ public class User extends BaseEntity implements Serializable {
         this.name = name;
     }
 
-    public void updateStatus(UserStatusEnum status) {
-        this.status = status;
-    }
-
     @Override
     public String toString() {
-        String channleNames = channels.stream()
-                .map(Channel::getName)
-                .collect(Collectors.joining(","));
-        return "유저명 : " + name + ", 상태 : " + status;
+        return "유저명 : " + name;
     }
 
 
