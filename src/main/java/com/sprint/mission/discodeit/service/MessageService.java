@@ -2,6 +2,7 @@ package com.sprint.mission.discodeit.service;
 
 import com.sprint.mission.discodeit.dto.MessageCreateDto;
 import com.sprint.mission.discodeit.dto.MessageInfoDto;
+import com.sprint.mission.discodeit.dto.MessageUpdateDto;
 import com.sprint.mission.discodeit.entity.*;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public interface MessageService {
     List<MessageInfoDto> findAllByChannelId(UUID channelId);
 
     // Update
-    Message update(UUID messageId, String newContent);
+    MessageInfoDto update(MessageUpdateDto messageUpdateDto);
 
     List<MessageInfoDto> searchMessage(UUID channelId, String keyword);
 
