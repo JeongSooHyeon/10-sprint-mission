@@ -22,6 +22,7 @@ public class BasicUserService implements UserService, ClearMemory {
     private final MessageRepository messageRepository;
     private final UserStatusRepository userStatusRepository;
     private final BinaryContentRepository binaryContentRepository;
+    private final ReadStatusRepository readStatusRepository;
     private final UserMapper userMapper;
 
     @Override
@@ -136,11 +137,10 @@ public class BasicUserService implements UserService, ClearMemory {
         }
 
         // 사용자가 작성한 메시지 삭제
-        List<Message> sendedMessages = messageRepository.findAllByUserId(id);
+        messageRepository.deleteByUserId(id);
 
-        for (Message msg : sendedMessages) {
-            messageRepository.delete(msg.getId());
-        }
+        // 사용자의 ReadStatus 삭제
+        readStatusRepository.deleteByUserId(id);
 
         userRepository.delete(id);
     }

@@ -26,8 +26,17 @@ public class FileReadStatusRepository extends AbstractFileRepository<ReadStatus>
     @Override
     public void deleteByChannelId(UUID channelId) {
         Map<UUID, ReadStatus> data = load();
-        data.values().removeIf(rs -> rs.getChannelId().equals(channelId));
-        writeToFile(data);
+        if(data.values().removeIf(rs -> rs.getChannelId().equals(channelId))){
+            writeToFile(data);
+        }
+    }
+
+    @Override
+    public void deleteByUserId(UUID userId) {
+        Map<UUID, ReadStatus> data = load();
+        if(data.values().removeIf(rs -> rs.getUserId().equals(userId))) {
+            writeToFile(data);
+        }
     }
 
     @Override

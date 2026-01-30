@@ -11,6 +11,7 @@ import java.util.UUID;
 public interface ReadStatusRepository {
     void save(ReadStatus readStatus);
     void deleteByChannelId(UUID channelId);
+    void deleteByUserId(UUID userId);
     boolean existsByUserIdAndChannelId(UUID userId, UUID channelId);
     Optional<ReadStatus> findById(UUID id);
     List<ReadStatus> findAllByUserId(UUID userId);
