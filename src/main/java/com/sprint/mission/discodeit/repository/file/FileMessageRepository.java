@@ -64,6 +64,14 @@ public class FileMessageRepository extends AbstractFileRepository<Message> imple
     }
 
     @Override
+    public void deleteByUserId(UUID userId) {
+        Map<UUID, Message> data = load();
+        if(data.values().removeIf(m -> m.getSenderId().equals(userId))) {
+            writeToFile(data);
+        }
+    }
+
+    @Override
     public void delete(UUID id) {
         Map<UUID, Message> data = load();
         data.remove(id);
