@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.mapper;
 import com.sprint.mission.discodeit.dto.ChannelInfoDto;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.IsPrivate;
+import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +30,7 @@ public class ChannelMapper {
         }
 
         return new ChannelInfoDto(
+                channel.getId(),
                 name,
                 channel.getIsPrivate(),
                 description,
@@ -37,4 +39,6 @@ public class ChannelMapper {
                 memberIds
         );
     }
+
+
 }

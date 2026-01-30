@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.dto.ChannelInfoDto;
+import com.sprint.mission.discodeit.dto.ChannelUpdateDto;
 import com.sprint.mission.discodeit.dto.PrivateChannelCreateDto;
 import com.sprint.mission.discodeit.dto.PublicChannelCreateDto;
 import com.sprint.mission.discodeit.entity.*;
@@ -78,18 +79,27 @@ public class BasicChannelService implements ChannelService, ClearMemory {
         return channel.getIsPrivate().equals(IsPrivate.PUBLIC)
                 || channel.getUserIds().contains(userId);
     }
+
     @Override
-    public Channel update(UUID id, String name, IsPrivate isPrivate, UUID ownerId) {
-        Channel channel = findById(id);
-        channel.updateName(name);
-        channel.updatePrivate(isPrivate);
-        channel.updateOwnerId(ownerId);
+    public Channel update(ChannelUpdateDto channelUpdateDto) {
+        Channel channel = findEntityById(channelUpdateDto.id());
+        if (channel.getIsPrivate().equals(IsPrivate.PRIVATE)) {
+            throw new IllegalArgumentException("PRIVATE 채널은 수정할 수 없습니다.");
+        }
+        channel.updateName(channelUpdateDto.name());
+        channel.updatePrivate(channelUpdateDto.isPrivate());
+        channel.updateOwnerId(channelUpdateDto.ownerId());
         return channelRepository.save(channel);
+    }
+
+    private Channel findEntityById(UUID id) {
+        return channelRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 채널이 없습니다."));
     }
 
     @Override
     public void joinChannel(UUID userId, UUID channelId) {
-        Channel channel = findById(channelId);
+        Channel channel = findEntityById(channelId);
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("일치하는 사용자가 없습니다."));
         channel.addUserId(userId);
         channelRepository.save(channel);
@@ -110,18 +120,19 @@ public class BasicChannelService implements ChannelService, ClearMemory {
 
     @Override
     public List<UUID> getChannelUserIds(UUID channelId) {
-        Channel channel = findById(channelId);
+        Channel channel = findEntityById(channelId);
         return channel.getUserIds();
     }
 
     @Override
     public void delete(UUID id) {
-        Channel channel = findById(id);
+        Channel channel = findEntityById(id);
 
         // 채널의 메시지 삭제하기
-        List<UUID> messages = channel.getMessageIds();
-        messages.forEach(messageRepository::delete);
+        messageRepository.deleteByChannelId(id);
 
+        // ReadStatus 삭제
+        readStatusRepository.deleteByChannelId(id);
         channelRepository.delete(id);
     }
 
