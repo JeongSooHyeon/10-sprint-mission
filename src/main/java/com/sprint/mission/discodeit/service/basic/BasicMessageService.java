@@ -6,13 +6,13 @@ import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
+import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.ClearMemory;
 import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,16 +22,17 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Service
 public class BasicMessageService implements MessageService, ClearMemory {
-    private final UserService userService;
-    private final ChannelService channelService;
     private final MessageRepository messageRepository;
     private final ChannelRepository channelRepository;
+    private final UserRepository userRepository;
     private final UserStatusRepository userStatusRepository;
 
     @Override
     public Message create(UUID userId, UUID channelId, String content) {
-        User user = userService.findById(userId);
-        Channel channel = channelService.findById(channelId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자가 없습니다."));
+        Channel channel = channelRepository.findById(channelId)
+                .orElseThrow(() -> new IllegalArgumentException("일치하는 채널이 없습니다."));
         Message message = new Message(user, channel, content);
         channel.addMessage(message);    // 채널에 메시지 추가
         channelRepository.save(channel);
@@ -91,7 +92,7 @@ public class BasicMessageService implements MessageService, ClearMemory {
                 .findFirst()
                 .orElseGet(() -> {
                     Channel newDmChannel = channelService.create("DM - " + user1.getName() + "-" + user2.getName(), IsPrivate.PRIVATE, user1.getId());
-                    newDmChannel.addUser(user2);
+                    newDmChannel.addUserId(user2);
                     channelRepository.save(newDmChannel);
                     return newDmChannel;
                 });
