@@ -23,7 +23,6 @@ public class BasicChannelService implements ChannelService, ClearMemory {
     private final MessageRepository messageRepository;
     private final UserStatusRepository userStatusRepository;
     private final ReadStatusRepository readStatusRepository;
-    private final UserMapper userMapper;
     private final ChannelMapper channelMapper;
 
     @Override

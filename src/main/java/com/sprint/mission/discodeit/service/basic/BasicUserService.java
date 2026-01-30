@@ -93,7 +93,7 @@ public class BasicUserService implements UserService, ClearMemory {
     public List<Message> getUserMessages(UUID id) {
         findById(id);
         return messageRepository.readAll().stream()
-                .filter(msg -> msg.getSender().getId().equals(id))
+                .filter(msg -> msg.getSenderId().equals(id))
                 .sorted(Comparator.comparing(Message::getCreatedAt))
                 .toList();
     }
@@ -102,7 +102,7 @@ public class BasicUserService implements UserService, ClearMemory {
     public List<Channel> getUserChannels(UUID id) {
         findById(id);
         return channelRepository.findAll().stream()
-                .filter(ch -> ch.getUsers().stream().anyMatch(u -> u.getId().equals(id)))
+                .filter(ch -> ch.getUserIds().stream().anyMatch(uId -> uId.equals(id)))
                 .toList();
     }
 
@@ -120,25 +120,25 @@ public class BasicUserService implements UserService, ClearMemory {
 
         // 사용자가 등록되어 있는 채널들
         List<Channel> joinedChannels = channelRepository.findAll().stream()
-                .filter(ch -> ch.getUsers().stream()
-                        .anyMatch(u -> u.getId().equals(id)))
+                .filter(ch -> ch.getUserIds().stream()
+                        .anyMatch(uId -> uId.equals(id)))
                 .toList();
 
         for (Channel ch : joinedChannels) {
             // 내가 방장인 채널 - 채널 자체 삭제
-            if (ch.getOwner().getId().equals(id)) {
+            if (ch.getOwnerId().equals(id)) {
                 channelRepository.delete(ch.getId());
             }
             // 참여한 채널 - 멤버 명단에서 나만 삭제
             else {
-                ch.getUsers().removeIf(u -> u.getId().equals(id));
+                ch.getUserIds().removeIf(uId -> uId.equals(id));
                 channelRepository.save(ch);
             }
         }
 
         // 사용자가 작성한 메시지 삭제
         List<Message> sendedMessages = messageRepository.readAll().stream()
-                .filter(msg -> msg.getSender().getId().equals(id))
+                .filter(msg -> msg.getSenderId().equals(id))
                 .toList();
 
         for (Message msg : sendedMessages) {
