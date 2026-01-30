@@ -4,6 +4,7 @@ import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -19,5 +20,13 @@ public class FileReadStatusRepository extends AbstractFileRepository<ReadStatus>
         Map<UUID, ReadStatus> data = load();
         data.put(readStatus.getId(), readStatus);
         writeToFile(data);
+    }
+
+    @Override
+    public void deleteByChannelId(UUID channelId) {
+        Map<UUID, ReadStatus> data = load();
+        data.values().removeIf(rs -> rs.getChannelId().equals(channelId));
+        writeToFile(data);
+
     }
 }
