@@ -6,7 +6,6 @@ import com.sprint.mission.discodeit.dto.PrivateChannelCreateDto;
 import com.sprint.mission.discodeit.dto.PublicChannelCreateDto;
 import com.sprint.mission.discodeit.entity.*;
 import com.sprint.mission.discodeit.mapper.ChannelMapper;
-import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.*;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.ClearMemory;
@@ -110,8 +109,7 @@ public class BasicChannelService implements ChannelService, ClearMemory {
     @Override
     public List<UUID> getChannelMessageIds(UUID channelId) {
         findById(channelId);
-        return messageRepository.readAll().stream()
-                .filter(msg -> msg.getChannelId().equals(channelId))
+        return messageRepository.findAllByChannelId(channelId).stream()
                 .sorted(Comparator.comparing(Message::getCreatedAt))
                 .map(msg -> msg.getId())
                 .toList();

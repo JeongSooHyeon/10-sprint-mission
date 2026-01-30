@@ -40,9 +40,20 @@ public class FileMessageRepository extends AbstractFileRepository<Message> imple
     }
 
     @Override
-    public List<Message> readAll() {
+    public List<Message> findAllByUserId(UUID userId) {
         Map<UUID, Message> data = load();
-        return List.copyOf(data.values());
+        return data.values().stream()
+                .filter(m -> m.getSenderId().equals(userId))
+                .toList();
+    }
+
+    @Override
+    public List<Message> findAllByChannelId(UUID channelId) {
+        Map<UUID, Message> data = load();
+        return data.values().stream()
+                .filter(m -> m.getChannelId().equals(channelId))
+                .sorted(Comparator.comparing(Message::getCreatedAt))
+                .toList();
     }
 
     @Override
