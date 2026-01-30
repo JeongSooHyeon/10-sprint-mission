@@ -14,4 +14,10 @@ public class FileReadStatusRepository extends AbstractFileRepository<ReadStatus>
         super("ReadStatus.ser");
     }
 
+    @Override
+    public void save(ReadStatus readStatus) {
+        Map<UUID, ReadStatus> data = load();
+        data.put(readStatus.getId(), readStatus);
+        writeToFile(data);
+    }
 }
