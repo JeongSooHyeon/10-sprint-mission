@@ -55,4 +55,13 @@ public class FileReadStatusRepository extends AbstractFileRepository<ReadStatus>
                 .toList();
     }
 
+    @Override
+    public void delete(UUID id) {
+        Map<UUID, ReadStatus> data = load();
+        if(data.values().removeIf(rs -> rs.getId().equals(id))){
+            writeToFile(data);
+        }
+
+    }
+
 }

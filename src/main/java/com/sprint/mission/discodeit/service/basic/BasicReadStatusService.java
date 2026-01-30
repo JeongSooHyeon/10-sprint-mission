@@ -70,5 +70,11 @@ public class BasicReadStatusService implements ReadStatusService {
         return readStatusMapper.toReadStatusInfoDto(readStatus);
     }
 
+    @Override
+    public void delete(UUID id) {
+        readStatusRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 ReadStatus가 없습니다."));
+        readStatusRepository.delete(id);
+    }
+
 
 }
