@@ -2,6 +2,7 @@ package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.dto.MessageCreateDto;
 import com.sprint.mission.discodeit.dto.MessageInfoDto;
+import com.sprint.mission.discodeit.dto.MessageUpdateDto;
 import com.sprint.mission.discodeit.entity.*;
 import com.sprint.mission.discodeit.mapper.MessageMapper;
 import com.sprint.mission.discodeit.repository.*;
@@ -30,17 +31,8 @@ public class BasicMessageService implements MessageService, ClearMemory {
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자가 없습니다."));
         Channel channel = channelRepository.findById(messageCreateDto.channelId())
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 채널이 없습니다."));
+        validateAttachments(messageCreateDto.attachmentIds());
 
-        // 메시지 생성(첨부파일 없이)
-
-        if (!messageCreateDto.attachmentIds().isEmpty()) {   // 첨부파일 있을 때
-            if (messageCreateDto.attachmentIds().stream()   // 첨부파일이 유효할 때
-                    .allMatch(id -> binaryContentRepository.findById(id).isPresent())) {
-            }
-            else{   // 첨부파일 유효 X
-                throw new IllegalArgumentException("해당 파일이 없습니다.");
-            }
-        }
         Message message = new Message(messageCreateDto.senderId(), messageCreateDto.channelId(), messageCreateDto.content(), messageCreateDto.attachmentIds());
 
         // 채널에 메시지 추가
@@ -53,6 +45,17 @@ public class BasicMessageService implements MessageService, ClearMemory {
 
         messageRepository.save(message);
         return messageMapper.toMessageInfoDto(message);
+    }
+
+    private void validateAttachments(List<UUID> attachmentIds) {
+        if (attachmentIds.isEmpty()) return;   // 첨부파일 없을 때
+
+        boolean allMatch = attachmentIds.stream()   // 첨부파일이 유효할 때
+                .allMatch(id -> binaryContentRepository.findById(id).isPresent());
+
+        if (!allMatch) {   // 첨부파일 유효 X
+            throw new IllegalArgumentException("해당 파일이 없습니다.");
+        }
     }
 
     @Override
@@ -72,11 +75,13 @@ public class BasicMessageService implements MessageService, ClearMemory {
     }
 
     @Override
-    public Message update(UUID messageId, String newContent) {
-        Message message = findById(messageId);
-        message.updateContent(newContent);
+    public MessageInfoDto update(MessageUpdateDto messageUpdateDto) {
+        Message message = findById(messageUpdateDto.id());
+        validateAttachments(messageUpdateDto.attachmentIds());
+        message.updateContent(messageUpdateDto.newContent());
+        message.updateAttachmentIds(messageUpdateDto.attachmentIds());
         messageRepository.save(message);
-        return message;
+        return messageMapper.toMessageInfoDto(message);
     }
 
     @Override
