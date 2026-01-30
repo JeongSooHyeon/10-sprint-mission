@@ -92,8 +92,7 @@ public class BasicUserService implements UserService, ClearMemory {
     @Override
     public List<Message> getUserMessages(UUID id) {
         findById(id);
-        return messageRepository.readAll().stream()
-                .filter(msg -> msg.getSenderId().equals(id))
+        return messageRepository.findAllByUserId(id).stream()
                 .sorted(Comparator.comparing(Message::getCreatedAt))
                 .toList();
     }
@@ -137,9 +136,7 @@ public class BasicUserService implements UserService, ClearMemory {
         }
 
         // 사용자가 작성한 메시지 삭제
-        List<Message> sendedMessages = messageRepository.readAll().stream()
-                .filter(msg -> msg.getSenderId().equals(id))
-                .toList();
+        List<Message> sendedMessages = messageRepository.findAllByUserId(id);
 
         for (Message msg : sendedMessages) {
             messageRepository.delete(msg.getId());

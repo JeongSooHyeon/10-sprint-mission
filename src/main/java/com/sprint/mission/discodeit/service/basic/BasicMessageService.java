@@ -5,10 +5,8 @@ import com.sprint.mission.discodeit.dto.MessageInfoDto;
 import com.sprint.mission.discodeit.entity.*;
 import com.sprint.mission.discodeit.mapper.MessageMapper;
 import com.sprint.mission.discodeit.repository.*;
-import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.ClearMemory;
 import com.sprint.mission.discodeit.service.MessageService;
-import com.sprint.mission.discodeit.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -66,8 +64,11 @@ public class BasicMessageService implements MessageService, ClearMemory {
     }
 
     @Override
-    public List<Message> readAll() {
-        return messageRepository.readAll();
+    public List<MessageInfoDto> findAllByChannelId(UUID channelId) {
+        return messageRepository.findAllByChannelId(channelId)
+                .stream()
+                .map(messageMapper::toMessageInfoDto)
+                .toList();
     }
 
     @Override
@@ -79,13 +80,12 @@ public class BasicMessageService implements MessageService, ClearMemory {
     }
 
     @Override
-    public List<Message> searchMessage(UUID channelId, String keyword) {
+    public List<MessageInfoDto> searchMessage(UUID channelId, String keyword) {
         channelRepository.findById(channelId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 채널이 없습니다."));
 
-        return readAll().stream()
-                .filter(msg -> msg.getChannelId().equals(channelId))
-                .filter(msg -> msg.getContent().contains(keyword))
+        return findAllByChannelId(channelId).stream()
+                .filter(msg -> msg.content().contains(keyword))
                 .toList();
     }
 
