@@ -1,6 +1,5 @@
 package com.sprint.mission.discodeit.mapper;
 
-import com.sprint.mission.discodeit.dto.UserCreateDto;
 import com.sprint.mission.discodeit.dto.UserInfoDto;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
@@ -12,7 +11,7 @@ public class UserMapper {
 
 
     //  User -> UserInfoDto
-    public UserInfoDto userToUserInfoDto(User user, UserStatus userStatus){
+    public UserInfoDto toUserInfoDto(User user, UserStatus userStatus){
         return new UserInfoDto(user.getName(),
                 user.getId(),
                 userStatus.getStatusType(),
@@ -21,10 +20,10 @@ public class UserMapper {
     }
 
     // UserInfoDto -> User
-    public User userInfoDtoToUser(UserInfoDto userInfoDto, UserRepository userRepository)
+    public User toUser(UserInfoDto userInfoDto, UserRepository userRepository)
     {
         String password = userRepository.findById(userInfoDto.userId())
-                .map(u -> u.getPassword())
+                .map(User::getPassword)
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자 정보가 없습니다."));
         return new User(userInfoDto.userName(), userInfoDto.email(), password, userInfoDto.profileId());
     }

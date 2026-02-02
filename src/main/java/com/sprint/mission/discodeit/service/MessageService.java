@@ -23,6 +23,10 @@ public interface MessageService {
 
     List<MessageInfoDto> searchMessage(UUID channelId, String keyword);
 
+    List<MessageInfoDto> getUserMessages(UUID id);
+
+    List<MessageInfoDto> getChannelMessages(UUID channelId);
+
 //    UUID sendDirectMessage(UUID senderId, UUID receiverId, String content);
 
     // Delete
