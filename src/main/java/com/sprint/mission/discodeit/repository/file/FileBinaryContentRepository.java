@@ -16,10 +16,11 @@ public class FileBinaryContentRepository extends AbstractFileRepository<BinaryCo
     }
 
     @Override
-    public void save(BinaryContent binaryContent) {
+    public BinaryContent save(BinaryContent binaryContent) {
         Map<UUID, BinaryContent> data = load();
         data.put(binaryContent.getId(), binaryContent);
         writeToFile(data);
+        return binaryContent;
     }
 
     @Override
