@@ -11,8 +11,8 @@ import java.util.UUID;
 
 public class FileBinaryContentRepository extends AbstractFileRepository<BinaryContent> implements BinaryContentRepository {
 
-    protected FileBinaryContentRepository() {
-        super("BinaryContent.ser");
+    public FileBinaryContentRepository(String directoryPath) {
+        super(directoryPath + "/BinaryContent.ser");
     }
 
     @Override

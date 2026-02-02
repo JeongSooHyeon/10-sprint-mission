@@ -9,18 +9,19 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-@Repository
+//@Repository
 public class FileUserStatusRepository extends AbstractFileRepository<UserStatus> implements UserStatusRepository {
 
-    public FileUserStatusRepository() {
-        super("UserStatus.ser");
+    public FileUserStatusRepository(String directoryPath) {
+        super(directoryPath + "/UserStatus.ser");
     }
 
     @Override
-    public void save(UserStatus userStatus) {
+    public UserStatus save(UserStatus userStatus) {
         Map<UUID, UserStatus> data = load();
         data.put(userStatus.getId(), userStatus);
         writeToFile(data);
+        return userStatus;
     }
 
     @Override

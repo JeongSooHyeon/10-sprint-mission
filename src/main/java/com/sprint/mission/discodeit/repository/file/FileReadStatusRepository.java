@@ -9,11 +9,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-@Repository
+//@Repository
 public class FileReadStatusRepository extends AbstractFileRepository<ReadStatus> implements ReadStatusRepository {
 
-    public FileReadStatusRepository() {
-        super("ReadStatus.ser");
+    public FileReadStatusRepository(String directoryPath) {
+        super(directoryPath + "/ReadStatus.ser");
     }
 
     @Override

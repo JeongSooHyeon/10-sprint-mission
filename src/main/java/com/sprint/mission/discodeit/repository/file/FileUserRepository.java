@@ -7,11 +7,11 @@ import org.springframework.stereotype.Repository;
 import java.io.*;
 import java.util.*;
 
-@Repository
+//@Repository
 public class FileUserRepository extends AbstractFileRepository<User> implements UserRepository {
 
-    public FileUserRepository() {
-        super("User.ser");
+    public FileUserRepository(String directoryPath) {
+        super(directoryPath + "/User.ser");
     }
     @Override
     public User save(User user) {
