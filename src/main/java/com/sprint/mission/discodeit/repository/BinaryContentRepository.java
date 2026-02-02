@@ -11,7 +11,7 @@ import java.util.UUID;
 @Repository
 public interface BinaryContentRepository {
 
-    void save(BinaryContent binaryContent);
+    BinaryContent save(BinaryContent binaryContent);
     void delete(UUID id);
     Optional<BinaryContent> findById(UUID id);
     List<BinaryContent> findAllByIdIn(List<UUID> idList);
