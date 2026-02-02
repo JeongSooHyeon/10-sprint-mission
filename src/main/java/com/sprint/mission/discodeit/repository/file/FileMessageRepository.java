@@ -12,11 +12,11 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Repository
+//@Repository
 public class FileMessageRepository extends AbstractFileRepository<Message> implements MessageRepository {
 
-    public FileMessageRepository() {
-        super("Message.ser");
+    public FileMessageRepository(String directoryPath) {
+        super(directoryPath + "/Message.ser");
     }
 
     @Override

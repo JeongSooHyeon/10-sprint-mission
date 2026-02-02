@@ -7,11 +7,11 @@ import org.springframework.stereotype.Repository;
 import java.io.*;
 import java.util.*;
 
-@Repository
+//@Repository
 public class FileChannelRepository extends AbstractFileRepository<Channel> implements ChannelRepository {
 
-    public FileChannelRepository() {
-        super("Channel.ser");
+    public FileChannelRepository(String directoryPath) {
+        super(directoryPath + "/Channel.ser");
     }
 
     @Override
