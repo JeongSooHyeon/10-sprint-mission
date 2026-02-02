@@ -25,7 +25,7 @@ public class BasicChannelService implements ChannelService, ClearMemory {
     private final ChannelMapper channelMapper;
 
     @Override
-    public Channel createPublic(PublicChannelCreateDto publicChannelCreateDto) {
+    public ChannelInfoDto createPublic(PublicChannelCreateDto publicChannelCreateDto) {
         User user = userRepository.findById(publicChannelCreateDto.ownerId())
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자가 없습니다."));
         Channel channel =
@@ -33,11 +33,11 @@ public class BasicChannelService implements ChannelService, ClearMemory {
         channelRepository.save(channel);
         userStatusRepository.findByUserId(publicChannelCreateDto.ownerId())
                 .ifPresent(UserStatus::updateLastActiveTime);
-        return channel;
+        return channelMapper.toChannelInfoDto(channel, messageRepository);
     }
 
     @Override
-    public Channel createPrivate(PrivateChannelCreateDto privateChannelCreateDto) {
+    public ChannelInfoDto createPrivate(PrivateChannelCreateDto privateChannelCreateDto) {
         userRepository.findById(privateChannelCreateDto.ownerId())
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자가 없습니다."));
         Channel channel =
@@ -54,7 +54,7 @@ public class BasicChannelService implements ChannelService, ClearMemory {
         channelRepository.save(channel);
         userStatusRepository.findByUserId(privateChannelCreateDto.ownerId())
                 .ifPresent(UserStatus::updateLastActiveTime);
-        return channel;
+        return channelMapper.toChannelInfoDto(channel, messageRepository);
     }
 
     @Override
@@ -79,51 +79,35 @@ public class BasicChannelService implements ChannelService, ClearMemory {
     }
 
     @Override
-    public Channel update(ChannelUpdateDto channelUpdateDto) {
-        Channel channel = findEntityById(channelUpdateDto.id());
+    public ChannelInfoDto update(ChannelUpdateDto channelUpdateDto) {
+        Channel channel = channelRepository.findById(channelUpdateDto.id())
+                .orElseThrow(() -> new IllegalArgumentException("해당 채널이 없습니다."));
         if (channel.getIsPrivate().equals(IsPrivate.PRIVATE)) {
             throw new IllegalArgumentException("PRIVATE 채널은 수정할 수 없습니다.");
         }
         channel.updateName(channelUpdateDto.name());
         channel.updatePrivate(channelUpdateDto.isPrivate());
         channel.updateOwnerId(channelUpdateDto.ownerId());
-        return channelRepository.save(channel);
-    }
-
-    private Channel findEntityById(UUID id) {
-        return channelRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 채널이 없습니다."));
+        channelRepository.save(channel);
+        return channelMapper.toChannelInfoDto(channel, messageRepository);
     }
 
     @Override
     public void joinChannel(UUID userId, UUID channelId) {
-        Channel channel = findEntityById(channelId);
+        Channel channel = channelRepository.findById(channelId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 채널이 없습니다."));
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("일치하는 사용자가 없습니다."));
         channel.addUserId(userId);
         channelRepository.save(channel);
         userRepository.save(user);
-        userStatusRepository.findByUserId(userId).orElse(null).updateLastActiveTime();
+        Objects.requireNonNull(userStatusRepository.findByUserId(userId).orElse(null)).updateLastActiveTime();
 
-    }
-
-    @Override
-    public List<UUID> getChannelMessageIds(UUID channelId) {
-        findById(channelId);
-        return messageRepository.findAllByChannelId(channelId).stream()
-                .sorted(Comparator.comparing(Message::getCreatedAt))
-                .map(msg -> msg.getId())
-                .toList();
-    }
-
-    @Override
-    public List<UUID> getChannelUserIds(UUID channelId) {
-        Channel channel = findEntityById(channelId);
-        return channel.getUserIds();
     }
 
     @Override
     public void delete(UUID id) {
-        Channel channel = findEntityById(id);
+        Channel channel = channelRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 채널이 없습니다."));
 
         // 채널의 메시지 삭제하기
         messageRepository.deleteByChannelId(id);

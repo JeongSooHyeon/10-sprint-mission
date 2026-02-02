@@ -29,6 +29,15 @@ public class FileChannelRepository extends AbstractFileRepository<Channel> imple
     }
 
     @Override
+    public List<Channel> findAllByUserId(UUID userId) {
+        Map<UUID, Channel> data = load();
+        return data.values().stream()
+                .filter(ch -> ch.getUserIds().stream()
+                        .anyMatch(uId -> uId.equals(userId)))
+                .toList();
+    }
+
+    @Override
     public List<Channel> findAll() {
         Map<UUID, Channel> data = load();
         return List.copyOf(data.values());

@@ -11,6 +11,7 @@ import com.sprint.mission.discodeit.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -98,6 +99,24 @@ public class BasicMessageService implements MessageService, ClearMemory {
 
         return findAllByChannelId(channelId).stream()
                 .filter(msg -> msg.content().contains(keyword))
+                .toList();
+    }
+
+    @Override
+    public List<MessageInfoDto> getUserMessages(UUID id) {
+        findById(id);
+        return messageRepository.findAllByUserId(id).stream()
+                .sorted(Comparator.comparing(Message::getCreatedAt))
+                .map(messageMapper::toMessageInfoDto)
+                .toList();
+    }
+
+    @Override
+    public List<MessageInfoDto> getChannelMessages(UUID channelId) {
+        findById(channelId);
+        return messageRepository.findAllByChannelId(channelId).stream()
+                .sorted(Comparator.comparing(Message::getCreatedAt))
+                .map(messageMapper::toMessageInfoDto)
                 .toList();
     }
 

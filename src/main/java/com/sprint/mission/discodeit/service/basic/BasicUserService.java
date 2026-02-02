@@ -26,7 +26,7 @@ public class BasicUserService implements UserService, ClearMemory {
     private final UserMapper userMapper;
 
     @Override
-    public User create(UserCreateDto request) {
+    public UserInfoDto create(UserCreateDto request) {
         userRepository.findByName(request.userName())
                 .ifPresent(u -> {
                     throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
@@ -45,7 +45,8 @@ public class BasicUserService implements UserService, ClearMemory {
         }
         UserStatus userStatus = new UserStatus(user);
         userStatusRepository.save(userStatus);
-        return userRepository.save(user);
+        userRepository.save(user);
+        return userMapper.toUserInfoDto(user, userStatus);
     }
 
     @Override
@@ -53,7 +54,7 @@ public class BasicUserService implements UserService, ClearMemory {
         User user = userRepository.findById(id).orElseThrow(()
                 -> new NoSuchElementException("실패 : 존재하지 않는 사용자 ID입니다."));
         UserStatus userStatus = userStatusRepository.findByUserId(user.getId()).orElse(null);
-        return userMapper.userToUserInfoDto(user, userStatus);
+        return userMapper.toUserInfoDto(user, userStatus);
     }
 
     @Override
@@ -74,8 +75,11 @@ public class BasicUserService implements UserService, ClearMemory {
     }
 
     @Override
-    public User update(UserUpdateDto request) {
-        User user = userRepository.findById(request.userId()).orElseThrow();
+    public UserInfoDto update(UserUpdateDto request) {
+        User user = userRepository.findById(request.userId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
+        UserStatus userStatus = userStatusRepository.findByUserId(user.getId())
+                .orElseGet(() -> new UserStatus(user));
         user.updateName(request.newName()); // 이름 변경
 
         if (request.imageBytes() != null) {  // 프로필 변경
@@ -87,24 +91,13 @@ public class BasicUserService implements UserService, ClearMemory {
             user.updateProfileId(newProfileImg.getId());
         }
         updateLastActiveTime(request.userId());   // 마지막 접속 시간 갱신
-        return userRepository.save(user);
+        userRepository.save(user);
+        return userMapper.toUserInfoDto(user, userStatus);
     }
 
-    @Override
-    public List<Message> getUserMessages(UUID id) {
-        findById(id);
-        return messageRepository.findAllByUserId(id).stream()
-                .sorted(Comparator.comparing(Message::getCreatedAt))
-                .toList();
-    }
 
-    @Override
-    public List<Channel> getUserChannels(UUID id) {
-        findById(id);
-        return channelRepository.findAll().stream()
-                .filter(ch -> ch.getUserIds().stream().anyMatch(uId -> uId.equals(id)))
-                .toList();
-    }
+
+
 
     @Override
     public void delete(UUID id) {
