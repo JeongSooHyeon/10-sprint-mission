@@ -10,6 +10,12 @@ public class AbstractFileRepository <T> {
 
     protected AbstractFileRepository(String path) {
         this.file = new File(path);
+
+        File parentDir = file.getParentFile();  // 부모 디렉토리
+        if (parentDir != null && !parentDir.exists()) { // 부모 디렉토리가 없다면
+            parentDir.mkdirs(); // 디렉토리 생성
+        }
+
     }
 
     protected String getPath(){

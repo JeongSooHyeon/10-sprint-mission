@@ -49,7 +49,7 @@ public class BasicMessageService implements MessageService, ClearMemory {
     }
 
     private void validateAttachments(List<UUID> attachmentIds) {
-        if (attachmentIds.isEmpty()) return;   // 첨부파일 없을 때
+        if (attachmentIds == null) return;   // 첨부파일 없을 때
 
         boolean allMatch = attachmentIds.stream()   // 첨부파일이 유효할 때
                 .allMatch(id -> binaryContentRepository.findById(id).isPresent());
@@ -81,10 +81,17 @@ public class BasicMessageService implements MessageService, ClearMemory {
                 .orElseThrow(() -> new IllegalArgumentException("해당 메시지가 없습니다."));
         validateAttachments(messageUpdateDto.attachmentIds());
 
-        // 기존 첨부파일 삭제
-        if(!message.getAttachmentIds().isEmpty()) {
-            binaryContentRepository.deleteByIds(message.getAttachmentIds());
+        // 새 리스트에 포함되지 않은 것들 삭제
+        List<UUID> newIds = messageUpdateDto.attachmentIds(); // 1 2 3
+        List<UUID> oldIds = message.getAttachmentIds();       // 1 2 3
+
+        List<UUID> idsToDelete = oldIds.stream()
+                .filter(id -> !newIds.contains(id))
+                .toList();
+        if (!idsToDelete.isEmpty()) {
+            binaryContentRepository.deleteByIds(idsToDelete);
         }
+
         message.updateAttachmentIds(messageUpdateDto.attachmentIds());
         message.updateContent(messageUpdateDto.newContent());
 

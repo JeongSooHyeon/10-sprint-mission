@@ -4,6 +4,7 @@ import com.sprint.mission.discodeit.dto.BinaryContentInfoDto;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -12,7 +13,7 @@ import java.util.UUID;
 public class FileBinaryContentRepository extends AbstractFileRepository<BinaryContent> implements BinaryContentRepository {
 
     public FileBinaryContentRepository(String directoryPath) {
-        super(directoryPath + "/BinaryContent.ser");
+        super(directoryPath + File.separator + "BinaryContent.ser");
     }
 
     @Override

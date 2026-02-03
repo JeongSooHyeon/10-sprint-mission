@@ -26,10 +26,12 @@ public class BasicChannelService implements ChannelService, ClearMemory {
 
     @Override
     public ChannelInfoDto createPublic(PublicChannelCreateDto publicChannelCreateDto) {
-        User user = userRepository.findById(publicChannelCreateDto.ownerId())
+       userRepository.findById(publicChannelCreateDto.ownerId())
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자가 없습니다."));
         Channel channel =
-                new Channel(publicChannelCreateDto.name(), publicChannelCreateDto.isPrivate(), publicChannelCreateDto.ownerId(), publicChannelCreateDto.description());
+                new Channel(publicChannelCreateDto.name(), IsPrivate.PUBLIC, publicChannelCreateDto.ownerId(), publicChannelCreateDto.description());
+        ReadStatus readStatus = new ReadStatus(publicChannelCreateDto.ownerId(), channel.getId());
+        readStatusRepository.save(readStatus);
         channelRepository.save(channel);
         userStatusRepository.findByUserId(publicChannelCreateDto.ownerId())
                 .ifPresent(UserStatus::updateLastActiveTime);
@@ -41,7 +43,7 @@ public class BasicChannelService implements ChannelService, ClearMemory {
         userRepository.findById(privateChannelCreateDto.ownerId())
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자가 없습니다."));
         Channel channel =
-                new Channel(null, privateChannelCreateDto.isPrivate(), privateChannelCreateDto.ownerId(), null);
+                new Channel(null, IsPrivate.PRIVATE, privateChannelCreateDto.ownerId(), null);
 
         // ReadStatus 생성
         privateChannelCreateDto.users()
@@ -98,6 +100,8 @@ public class BasicChannelService implements ChannelService, ClearMemory {
                 .orElseThrow(() -> new IllegalArgumentException("해당 채널이 없습니다."));
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("일치하는 사용자가 없습니다."));
         channel.addUserId(userId);
+        ReadStatus readStatus = new ReadStatus(user.getId(), channel.getId());
+        readStatusRepository.save(readStatus);
         channelRepository.save(channel);
         userRepository.save(user);
         Objects.requireNonNull(userStatusRepository.findByUserId(userId).orElse(null)).updateLastActiveTime();

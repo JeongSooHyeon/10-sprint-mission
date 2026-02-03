@@ -6,6 +6,5 @@ public record UserCreateDto(
         String userName,
         String email,
         String password,
-        UUID profileId,
-        byte[] imageBytes
+        UUID profileId
         ) {}

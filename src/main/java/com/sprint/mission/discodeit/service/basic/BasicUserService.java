@@ -36,10 +36,8 @@ public class BasicUserService implements UserService, ClearMemory {
                     throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
                 });
         User user;
-        if (request.imageBytes() != null) {  // 프로필 있을 때
-            BinaryContent profileImg = new BinaryContent(request.imageBytes()); // 프로필 이미지 생성
-            binaryContentRepository.save(profileImg);
-            user = new User(request.userName(), request.email(), request.password(), profileImg.getId());
+        if (request.profileId() != null) {  // 프로필 있을 때
+            user = new User(request.userName(), request.email(), request.password(), request.profileId());
         } else {
             user = new User(request.userName(), request.email(), request.password(), null);
         }
@@ -52,7 +50,7 @@ public class BasicUserService implements UserService, ClearMemory {
     @Override
     public UserInfoDto findById(UUID id) {
         User user = userRepository.findById(id).orElseThrow(()
-                -> new NoSuchElementException("실패 : 존재하지 않는 사용자 ID입니다."));
+                -> new IllegalArgumentException("실패 : 존재하지 않는 사용자 ID입니다."));
         UserStatus userStatus = userStatusRepository.findByUserId(user.getId()).orElse(null);
         return userMapper.toUserInfoDto(user, userStatus);
     }
@@ -82,13 +80,11 @@ public class BasicUserService implements UserService, ClearMemory {
                 .orElseGet(() -> new UserStatus(user.getId()));
         user.updateName(request.newName()); // 이름 변경
 
-        if (request.imageBytes() != null) {  // 프로필 변경
+        if (request.profileId() != null) {  // 프로필 변경
             if(user.getProfileId() != null) {
                 binaryContentRepository.delete(user.getProfileId());    // 기존 프로필 삭제
             }
-            BinaryContent newProfileImg = new BinaryContent(request.imageBytes());
-            binaryContentRepository.save(newProfileImg);
-            user.updateProfileId(newProfileImg.getId());
+            user.updateProfileId(request.profileId());
         }
         updateLastActiveTime(request.userId());   // 마지막 접속 시간 갱신
         userRepository.save(user);

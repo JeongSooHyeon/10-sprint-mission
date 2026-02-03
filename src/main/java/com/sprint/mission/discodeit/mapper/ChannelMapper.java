@@ -20,11 +20,10 @@ public class ChannelMapper {
                 .map(m -> m.getCreatedAt())
                 .orElse(channel.getCreatedAt());
 
-        List<UUID> memberIds = null;
+        List<UUID> memberIds = channel.getUserIds();
         String name = channel.getName();
         String description = channel.getDescription();
         if (channel.getIsPrivate() == IsPrivate.PRIVATE) {
-            memberIds = channel.getUserIds();
             description = null;
             name = null;
         }
