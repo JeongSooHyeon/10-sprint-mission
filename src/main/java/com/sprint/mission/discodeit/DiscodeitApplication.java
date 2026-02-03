@@ -195,48 +195,4 @@ public class DiscodeitApplication {
         System.out.println(userStatusService.findAll());
 
     }
-
-
-
-
-
-
-
-
-//    private static void printUserMessage(String userName, List<Message> messages) {
-//        if (!messages.isEmpty()) {
-//            System.out.println("[" + userName + "님이 보낸 메시지 내역]");
-//            messages.forEach(msg
-//                    -> System.out.printf("- [%s] %s%n", msg.getChannel().getName(), msg.getContent()));
-//        } else {
-//            System.out.println(userName + "님이 보낸 메시지가 없습니다.");
-//        }
-//    }
-//
-//    private static void printUserChannel(String userName, List<Channel> channels) {
-//        if (!channels.isEmpty()) {
-//            System.out.println("[" + userName + "님의 채널들]");
-//            channels.forEach(ch -> System.out.printf("- %s%n", ch.getName()));
-//        } else {
-//            System.out.println(userName + "님이 보유하신 채널이 없습니다.");
-//        }
-//    }
-//
-//    private static void printChannelMessage(String channelName, List<Message> messages) {
-//        if (!messages.isEmpty()) {
-//            System.out.println("[" + channelName + " 채널의 대화 내용]");
-//            messages.forEach(msg -> System.out.printf("- [%s] %s%n", msg.getSender().getName(), msg.getContent()));
-//        } else {
-//            System.out.println(channelName + "채널에 대화 내용이 없습니다.");
-//        }
-//    }
-//
-//    private static void printSearchedMessage(String channelName, String searchContent, List<Message> messages) {
-//        if (!messages.isEmpty()) {
-//            System.out.println("[" + channelName + "] 채널에 '" + searchContent + "' 내용이 포함된 메시지]");
-//            messages.forEach(msg -> System.out.printf("- [%s] : %s%n", msg.getSender().getName(), msg.getContent()));
-//        } else {
-//            System.out.println("[" + channelName + "] 채널에 '" + searchContent + "' 내용이 없습니다.");
-//        }
-//    }
 }
