@@ -4,6 +4,7 @@ import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import org.springframework.stereotype.Repository;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -13,7 +14,7 @@ import java.util.UUID;
 public class FileReadStatusRepository extends AbstractFileRepository<ReadStatus> implements ReadStatusRepository {
 
     public FileReadStatusRepository(String directoryPath) {
-        super(directoryPath + "/ReadStatus.ser");
+        super(directoryPath + File.separator + "ReadStatus.ser");
     }
 
     @Override

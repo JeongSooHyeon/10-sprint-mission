@@ -11,7 +11,7 @@ import java.util.*;
 public class FileUserRepository extends AbstractFileRepository<User> implements UserRepository {
 
     public FileUserRepository(String directoryPath) {
-        super(directoryPath + "/User.ser");
+        super(directoryPath + File.separator + "User.ser");
     }
     @Override
     public User save(User user) {

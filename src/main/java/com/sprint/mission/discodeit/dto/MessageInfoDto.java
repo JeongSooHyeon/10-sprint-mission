@@ -9,7 +9,7 @@ public record MessageInfoDto(
         UUID senderId,
         UUID channelId,
         String content,
-        Instant createdAt,
+        Instant updatedAt,
         List<UUID> attachmentIds
 ) {
 }

@@ -6,7 +6,6 @@ import java.util.UUID;
 
 public record PublicChannelCreateDto(
         String name,
-        IsPrivate isPrivate,
         UUID ownerId,
         String description
 ) {

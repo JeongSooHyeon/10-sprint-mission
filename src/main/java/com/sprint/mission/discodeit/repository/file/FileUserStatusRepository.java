@@ -4,6 +4,7 @@ import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import org.springframework.stereotype.Repository;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -13,7 +14,7 @@ import java.util.UUID;
 public class FileUserStatusRepository extends AbstractFileRepository<UserStatus> implements UserStatusRepository {
 
     public FileUserStatusRepository(String directoryPath) {
-        super(directoryPath + "/UserStatus.ser");
+        super(directoryPath + File.separator + "UserStatus.ser");
     }
 
     @Override

@@ -11,7 +11,7 @@ import java.util.*;
 public class FileChannelRepository extends AbstractFileRepository<Channel> implements ChannelRepository {
 
     public FileChannelRepository(String directoryPath) {
-        super(directoryPath + "/Channel.ser");
+        super(directoryPath + File.separator + "Channel.ser");
     }
 
     @Override
