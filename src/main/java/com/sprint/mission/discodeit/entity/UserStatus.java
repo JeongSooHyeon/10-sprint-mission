@@ -39,5 +39,6 @@ public class UserStatus extends BaseEntity {
     // 마지막 접속 시간 갱신
     public void updateLastActiveTime(){
         updateUpdatedAt();
+        getStatusType();
     }
 }

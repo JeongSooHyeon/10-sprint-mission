@@ -6,6 +6,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
 @Repository
 @ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "jcf", matchIfMissing = true)
 public class JCFUserStatusRepository implements UserStatusRepository {
@@ -36,6 +38,12 @@ public class JCFUserStatusRepository implements UserStatusRepository {
     @Override
     public List<UserStatus> findAll() {
         return List.copyOf(data.values());
+    }
+
+    @Override
+    public Map<UUID, UserStatus> getUserStatusMap() {
+        return data.values().stream()
+                .collect(Collectors.toMap(UserStatus::getUserId, us -> us));
     }
 
     @Override

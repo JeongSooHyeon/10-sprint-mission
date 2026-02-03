@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Repository
 @ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "file")
@@ -46,6 +47,13 @@ public class FileUserStatusRepository extends AbstractFileRepository<UserStatus>
     public List<UserStatus> findAll(){
         Map<UUID, UserStatus> data = load();
         return data.values().stream().toList();
+    }
+
+    @Override
+    public Map<UUID, UserStatus> getUserStatusMap() {
+        Map<UUID, UserStatus> data = load();
+        return data.values().stream()
+                .collect(Collectors.toMap(UserStatus::getUserId, us -> us));
     }
 
     @Override
