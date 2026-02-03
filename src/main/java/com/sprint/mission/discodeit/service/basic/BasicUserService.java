@@ -35,38 +35,33 @@ public class BasicUserService implements UserService, ClearMemory {
                 .ifPresent(u -> {
                     throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
                 });
-        User user;
-        if (request.profileId() != null) {  // 프로필 있을 때
-            user = new User(request.userName(), request.email(), request.password(), request.profileId());
-        } else {
-            user = new User(request.userName(), request.email(), request.password(), null);
-        }
+        User user = new User(request.userName(), request.email(), request.password(), request.profileId());
+
         UserStatus userStatus = new UserStatus(user.getId());
         userStatusRepository.save(userStatus);
         userRepository.save(user);
-        return userMapper.toUserInfoDto(user, userStatus);
+        return userMapper.toUserInfoDto(user, userStatus.getStatusType());
     }
 
     @Override
     public UserInfoDto findById(UUID id) {
         User user = userRepository.findById(id).orElseThrow(()
                 -> new IllegalArgumentException("실패 : 존재하지 않는 사용자 ID입니다."));
-        UserStatus userStatus = userStatusRepository.findByUserId(user.getId()).orElse(null);
-        return userMapper.toUserInfoDto(user, userStatus);
+        UserStatus userStatus = userStatusRepository.findByUserId(user.getId()).orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
+        return userMapper.toUserInfoDto(user, userStatus.getStatusType());
     }
 
     @Override
     public List<UserInfoDto> findAll() {
         List<User> users = userRepository.readAll();
-        List<UserStatus> userStatuses = userStatusRepository.findAll();
-        Map<UUID, UserStatus> statusMap
-                = userStatuses.stream().collect(Collectors.toMap(UserStatus::getUserId, us -> us));
+        Map<UUID, UserStatus> userStatusMap = userStatusRepository.getUserStatusMap();
+
         List<UserInfoDto> infoList
                 = users.stream()
                 .map(u -> {
-                    UserStatus userStatus = statusMap.get(u.getId());
+                    UserStatus userStatus = userStatusMap.get(u.getId());
                     StatusType status = (userStatus == null) ? StatusType.OFFLINE : userStatus.getStatusType();
-                    return new UserInfoDto(u.getName(), u.getId(), status, u.getEmail(), u.getProfileId());
+                    return userMapper.toUserInfoDto(u, status);
                 })
                 .toList();
         return infoList;
@@ -88,7 +83,7 @@ public class BasicUserService implements UserService, ClearMemory {
         }
         updateLastActiveTime(request.userId());   // 마지막 접속 시간 갱신
         userRepository.save(user);
-        return userMapper.toUserInfoDto(user, userStatus);
+        return userMapper.toUserInfoDto(user, userStatus.getStatusType());
     }
 
     @Override
@@ -103,23 +98,8 @@ public class BasicUserService implements UserService, ClearMemory {
         // UserStatus 삭제
         userStatusRepository.deleteByUserId(userInfoDto.userId());
 
-        // 사용자가 등록되어 있는 채널들
-        List<Channel> joinedChannels = channelRepository.findAll().stream()
-                .filter(ch -> ch.getUserIds().stream()
-                        .anyMatch(uId -> uId.equals(id)))
-                .toList();
-
-        for (Channel ch : joinedChannels) {
-            // 내가 방장인 채널 - 채널 자체 삭제
-            if (ch.getOwnerId().equals(id)) {
-                channelRepository.delete(ch.getId());
-            }
-            // 참여한 채널 - 멤버 명단에서 나만 삭제
-            else {
-                ch.getUserIds().removeIf(uId -> uId.equals(id));
-                channelRepository.save(ch);
-            }
-        }
+        // 사용자가 포함된 채널 정리
+        channelRepository.deleteByUserId(userInfoDto.userId());
 
         // 사용자가 작성한 메시지 삭제
         messageRepository.deleteByUserId(id);

@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.mapper;
 
 import com.sprint.mission.discodeit.dto.UserInfoDto;
+import com.sprint.mission.discodeit.entity.StatusType;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.UserRepository;
@@ -11,10 +12,10 @@ public class UserMapper {
 
 
     //  User -> UserInfoDto
-    public UserInfoDto toUserInfoDto(User user, UserStatus userStatus){
+    public UserInfoDto toUserInfoDto(User user, StatusType status){
         return new UserInfoDto(user.getName(),
                 user.getId(),
-                userStatus.getStatusType(),
+                status,
                 user.getEmail(),
                 user.getProfileId());
     }
