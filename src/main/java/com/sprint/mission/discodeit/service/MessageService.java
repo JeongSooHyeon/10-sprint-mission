@@ -8,27 +8,28 @@ import java.util.List;
 import java.util.UUID;
 
 public interface MessageService {
-    // Create
-    MessageResponseDto create(MessageCreateDto messageCreateDto);
 
-    // Read
-    MessageResponseDto findById(UUID id);
+  // Create
+  MessageResponseDto create(MessageCreateDto messageCreateDto);
 
-    // ReadAll
-    List<MessageResponseDto> findAllByChannelId(UUID channelId);
+  // Read
+  MessageResponseDto findById(UUID id);
 
-    // Update
-    MessageResponseDto update(UUID id, MessageUpdateDto messageUpdateDto);
+  // ReadAll
+  List<MessageResponseDto> findAllByChannelId(UUID channelId);
 
-    List<MessageResponseDto> searchMessage(UUID channelId, String keyword);
+  // Update
+  MessageResponseDto update(UUID id, MessageUpdateDto messageUpdateDto);
 
-    List<MessageResponseDto> getUserMessages(UUID id);
+  List<MessageResponseDto> searchMessage(UUID channelId, String keyword);
+
+  List<MessageResponseDto> getUserMessages(UUID id);
 
 //    List<MessageResponseDto> getChannelMessages(UUID channelId);
 
-//    UUID sendDirectMessage(UUID senderId, UUID receiverId, String content);
+//    UUID sendDirectMessage(UUID senderId, UUID receiverId, String bytes);
 
-    // Delete
-    void delete(UUID id);
+  // Delete
+  void delete(UUID id);
 
 }

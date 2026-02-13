@@ -11,13 +11,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping
-public class AuthController {
-    private final AuthService authService;
+@RequestMapping("/api/auth")
 
-    // 로그인
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public UserResponseDto login(@RequestBody UserLoginDto dto){
-        return authService.login(dto);
-    }
+public class AuthController {
+
+  private final AuthService authService;
+
+  // 로그인
+  @RequestMapping(value = "/login", method = RequestMethod.POST)
+  public UserResponseDto login(@RequestBody UserLoginDto dto) {
+    return authService.login(dto);
+  }
 }

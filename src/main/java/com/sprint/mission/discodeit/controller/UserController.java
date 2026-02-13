@@ -17,41 +17,41 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 public class UserController {
 
-    private final UserService userService;
-    private final UserStatusService userStatusService;
+  private final UserService userService;
+  private final UserStatusService userStatusService;
 
-    // 사용자 등록
-    @RequestMapping(method = RequestMethod.POST)
-    public UserResponseDto join(@RequestBody UserCreateDto dto) {
-        return userService.create(dto);
-    }
+  // 사용자 등록
+  @RequestMapping(method = RequestMethod.POST)
+  public UserResponseDto join(@RequestBody UserCreateDto dto) {
+    return userService.create(dto);
+  }
 
-    // 사용자 정보 수정
-    @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
-    public UserResponseDto update(@PathVariable UUID id,
-                                  @RequestBody UserUpdateDto dto) {
-        return userService.update(id, dto);
-    }
+  // 사용자 정보 수정
+  @RequestMapping(value = "/{userId}", method = RequestMethod.PATCH)
+  public UserResponseDto update(@PathVariable UUID userId,
+      @RequestBody UserUpdateDto dto) {
+    return userService.update(userId, dto);
+  }
 
-    // 사용자 삭제
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public void delete(@PathVariable UUID id){
-        userService.delete(id);
-    }
+  // 사용자 삭제
+  @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE)
+  public void delete(@PathVariable UUID userId) {
+    userService.delete(userId);
+  }
 
-    // 모든 사용자 조회
-    @RequestMapping(value = "/findAll", method = RequestMethod.GET)
-    public ResponseEntity<List<UserResponseDto>> findAll(){
-        return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
-    }
+  // 모든 사용자 조회
+  @RequestMapping(method = RequestMethod.GET)
+  public ResponseEntity<List<UserResponseDto>> findAll() {
+    return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
+  }
 
-    // 사용자 온라인 상태 업데이트
-    @RequestMapping(value = "/{id}/status", method = RequestMethod.PATCH)
-    public UserResponseDto updateStatus(@PathVariable UUID id,
-                                        @RequestBody UserStatusUpdateByUserIdDto dto) {
-        return userStatusService.updateByUserId(id, dto);
-    }
+  // 사용자 온라인 상태 업데이트
+  @RequestMapping(value = "/{userId}/userStatus", method = RequestMethod.PATCH)
+  public UserResponseDto updateStatus(@PathVariable UUID userId,
+      @RequestBody UserStatusUpdateByUserIdDto dto) {
+    return userStatusService.updateByUserId(userId, dto);
+  }
 }

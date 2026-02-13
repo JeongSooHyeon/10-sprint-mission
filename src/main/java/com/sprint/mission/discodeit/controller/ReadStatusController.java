@@ -12,25 +12,26 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/read-status")
+@RequestMapping("/api/readStatuses")
 public class ReadStatusController {
-    private final ReadStatusService readStatusService;
 
-    // 특정 채널 메시지 수신 정보 생성
-    @RequestMapping(method = RequestMethod.POST)
-    public ReadStatusInfoDto create(@RequestBody ReadStatusCreateDto dto) {
-        return readStatusService.create(dto);
-    }
+  private final ReadStatusService readStatusService;
 
-    // 특정 채널 메시지 수신 정보 수정
-    @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
-    public ReadStatusInfoDto update(@PathVariable UUID id, @RequestBody ReadStatusUpdateDto dto) {
-        return readStatusService.update(id, dto);
-    }
+  // 특정 채널 메시지 수신 정보 생성
+  @RequestMapping(method = RequestMethod.POST)
+  public ReadStatusInfoDto create(@RequestBody ReadStatusCreateDto dto) {
+    return readStatusService.create(dto);
+  }
 
-    // 특정 사용자의 메시지 수신 정보 조회
-    @RequestMapping(value = "/user/{user-id}", method = RequestMethod.GET)
-    public List<ReadStatusInfoDto> findAllByUserId(@PathVariable("user-id") UUID userId){
-        return readStatusService.findAllByUserId(userId);
-    }
+  // 특정 채널 메시지 수신 정보 수정
+  @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
+  public ReadStatusInfoDto update(@PathVariable UUID id, @RequestBody ReadStatusUpdateDto dto) {
+    return readStatusService.update(id, dto);
+  }
+
+  // 특정 사용자의 메시지 수신 정보 조회
+  @RequestMapping(method = RequestMethod.GET)
+  public List<ReadStatusInfoDto> findAllByUserId(@RequestParam UUID userId) {
+    return readStatusService.findAllByUserId(userId);
+  }
 }
