@@ -54,9 +54,9 @@ public class BasicMessageService implements MessageService, ClearMemory {
   }
 
   private void validateAttachments(List<UUID> attachmentIds) {
-      if (attachmentIds == null) {
-          return;   // 첨부파일 없을 때
-      }
+    if (attachmentIds == null) {
+      return;   // 첨부파일 없을 때
+    }
 
     boolean allMatch = attachmentIds.stream()   // 첨부파일이 유효할 때
         .allMatch(id -> binaryContentRepository.findById(id).isPresent());
@@ -118,7 +118,6 @@ public class BasicMessageService implements MessageService, ClearMemory {
 
   @Override
   public List<MessageResponseDto> getUserMessages(UUID id) {
-    findById(id);
     return messageRepository.findAllByUserId(id).stream()
         .sorted(Comparator.comparing(Message::getCreatedAt))
         .map(messageMapper::toMessageInfoDto)

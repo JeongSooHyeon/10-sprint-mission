@@ -40,20 +40,20 @@ public class MessageController {
   // 조회
   @RequestMapping(method = RequestMethod.GET)
   public List<MessageResponseDto> getMessages(
-      @RequestParam UUID channelId,
-      @RequestParam String keyword,
-      @RequestParam UUID userId) {
-
-    // 특정 채널의 메시지 목록 조회
-    if (channelId != null) {
-      return messageService.findAllByChannelId(channelId);
-    }
+      @RequestParam(required = false) UUID channelId,
+      @RequestParam(required = false) String keyword,
+      @RequestParam(required = false) UUID userId) {
 
     // 키워드 검색
     if (keyword != null) {
       return messageService.searchMessage(channelId, keyword);
     }
 
+    // 특정 채널의 메시지 목록 조회
+    if (channelId != null) {
+      return messageService.findAllByChannelId(channelId);
+    }
+    
     // 특정 사용자가 보낸 메시지 조회
     if (userId != null) {
       return messageService.getUserMessages(userId);
