@@ -23,9 +23,9 @@
 //    }
 //
 //    @Override
-//    public Channel create(String name, IsPrivate isPrivate, UUID ownerId) {
+//    public Channel create(String name, IsPrivate type, UUID ownerId) {
 //        User owner = userService.findById(ownerId);
-//        Channel channel = new Channel(name, isPrivate, owner);
+//        Channel channel = new Channel(name, type, owner);
 //        channel.addUser(owner); // 나도 멤버에 넣어주기
 //        return channelRepository.save(channel);
 //    }
@@ -44,17 +44,17 @@
 //    }
 //
 //    @Override
-//    public Channel update(UUID id, String name, IsPrivate isPrivate, User owner) {
+//    public Channel update(UUID id, String name, IsPrivate type, User owner) {
 //        Channel channel = findById(id);
 //        channel.updateName(name);
-//        channel.updatePrivate(isPrivate);
+//        channel.updatePrivate(type);
 //        channel.updateOwner(owner);
 //        return channelRepository.save(channel);
 //    }
 //
-//    public void joinChannel(UUID userId, UUID channelId) {
+//    public void joinChannel(UUID id, UUID channelId) {
 //        Channel channel = findById(channelId);
-//        User user = userService.findById(userId);
+//        User user = userService.findById(id);
 //        channel.addUser(user);
 //        user.getChannels().add(channel); // 양방향 연결
 //    }
@@ -77,7 +77,7 @@
 //        return messageRepository.readAll().stream()
 //                .filter(msg -> msg.getChannelId().equals(channelId))
 //                .toList();
-////        return channel.getMessages();
+/// /        return channel.getMessages();
 //    }
 //
 //    @Override

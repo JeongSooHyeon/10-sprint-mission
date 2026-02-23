@@ -35,7 +35,7 @@ public class UserStatus extends BaseEntity {
     } else {
       this.statusType = StatusType.OFFLINE;
     }
-    return statusType;
+    return this.statusType;
   }
 
   // 마지막 접속 시간 갱신

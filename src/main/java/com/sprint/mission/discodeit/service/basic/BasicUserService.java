@@ -1,6 +1,5 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.BinaryContentResponseDto;
 import com.sprint.mission.discodeit.dto.UserResponseDto;
 import com.sprint.mission.discodeit.dto.UserCreateDto;
 import com.sprint.mission.discodeit.dto.UserUpdateDto;
@@ -28,7 +27,7 @@ public class BasicUserService implements UserService, ClearMemory {
 
   @Override
   public UserResponseDto create(UserCreateDto request) {
-    userRepository.findByName(request.userName())
+    userRepository.findByName(request.username())
         .ifPresent(u -> {
           throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
         });
@@ -36,13 +35,13 @@ public class BasicUserService implements UserService, ClearMemory {
         .ifPresent(u -> {
           throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         });
-    User user = new User(request.userName(), request.email(), request.password(),
+    User user = new User(request.username(), request.email(), request.password(),
         request.profileId());
+    userRepository.save(user);
 
     UserStatus userStatus = new UserStatus(user.getId());
     userStatusRepository.save(userStatus);
-    userRepository.save(user);
-    return userMapper.toUserInfoDto(user, userStatus.updateStatusType());
+    return userMapper.toUserInfoDto(user, StatusType.ONLINE);
   }
 
   @Override
@@ -62,9 +61,17 @@ public class BasicUserService implements UserService, ClearMemory {
     List<UserResponseDto> infoList
         = users.stream()
         .map(u -> {
-          UserStatus userStatus = userStatusMap.get(u.getId());
-          StatusType status =
-              (userStatus == null) ? StatusType.OFFLINE : userStatus.getStatusType();
+          UserStatus userStatus = userStatusRepository.findByUserId(u.getId())
+              .orElse(null);
+
+          StatusType status;
+          if (userStatus == null) {
+            status = StatusType.OFFLINE;
+          } else {
+            // 실시간 온라인 여부를 다시 계산해서 반영
+            status = userStatus.updateStatusType();
+          }
+
           return userMapper.toUserInfoDto(u, status);
         })
         .toList();
@@ -77,8 +84,10 @@ public class BasicUserService implements UserService, ClearMemory {
         .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
     UserStatus userStatus = userStatusRepository.findByUserId(user.getId())
         .orElseGet(() -> new UserStatus(user.getId()));
-    user.updateName(request.newName()); // 이름 변경
-
+    System.out.println(request.newUsername());
+    if (request.newUsername() != null) {
+      user.updateName(request.newUsername());
+    }
     if (request.profileId() != null && !request.profileId()
         .equals(user.getProfileId())) {  // 프로필 변경
       if (user.getProfileId() != null) {
@@ -101,10 +110,10 @@ public class BasicUserService implements UserService, ClearMemory {
     }
 
     // UserStatus 삭제
-    userStatusRepository.deleteByUserId(userResponseDto.userId());
+    userStatusRepository.deleteByUserId(userResponseDto.id());
 
     // 사용자가 포함된 채널 정리
-    channelRepository.deleteByUserId(userResponseDto.userId());
+    channelRepository.deleteByUserId(userResponseDto.id());
 
     // 사용자가 작성한 메시지 삭제
     messageRepository.deleteByUserId(id);

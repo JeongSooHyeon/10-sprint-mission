@@ -44,10 +44,10 @@
 //    }
 //
 //    @Override
-//    public User update(UUID id, String newName, StatusType newStatus) {
+//    public User update(UUID id, String newUsername, StatusType newStatus) {
 //        User user = findById(id);   // 예외 검사
 //
-//        user.updateName(newName);
+//        user.updateName(newUsername);
 //        user.updateStatus(newStatus);
 //
 //        return userRepository.save(user);

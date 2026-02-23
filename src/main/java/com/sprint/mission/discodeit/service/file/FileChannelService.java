@@ -29,9 +29,9 @@
 //    }
 //
 //    @Override
-//    public Channel create(String name, IsPrivate isPrivate, UUID ownerId) {
+//    public Channel create(String name, IsPrivate type, UUID ownerId) {
 //        User user = userService.findById(ownerId);
-//        Channel channel = new Channel(name, isPrivate, user);
+//        Channel channel = new Channel(name, type, user);
 //        channelRepository.save(channel);
 //        return channel;
 //    }
@@ -49,17 +49,17 @@
 //    }
 //
 //    @Override
-//    public Channel update(UUID id, String name, IsPrivate isPrivate, User owner) {
+//    public Channel update(UUID id, String name, IsPrivate type, User owner) {
 //        Channel channel = findById(id);
 //        channel.updateName(name);
-//        channel.updatePrivate(isPrivate);
+//        channel.updatePrivate(type);
 //        channel.updateOwner(owner);
 //        return channelRepository.save(channel);
 //    }
 //
-//    public void joinChannel(UUID userId, UUID channelId) {
+//    public void joinChannel(UUID id, UUID channelId) {
 //        Channel channel = findById(channelId);
-//        User user = userService.findById(userId);
+//        User user = userService.findById(id);
 //        channel.addUser(user);
 //        channelRepository.save(channel);
 //        userRepository.save(user);

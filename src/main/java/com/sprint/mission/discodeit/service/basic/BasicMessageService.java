@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
@@ -27,22 +28,22 @@ public class BasicMessageService implements MessageService, ClearMemory {
   private final BinaryContentRepository binaryContentRepository;
 
   @Override
-  public MessageResponseDto create(MessageCreateDto messageCreateDto) {
-    userRepository.findById(messageCreateDto.senderId())
+  public MessageResponseDto create(MessageCreateDto messageCreateDto, List<UUID> attachmentIds) {
+    userRepository.findById(messageCreateDto.authorId())
         .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자가 없습니다."));
     Channel channel = channelRepository.findById(messageCreateDto.channelId())
         .orElseThrow(() -> new IllegalArgumentException("일치하는 채널이 없습니다."));
-    validateAttachments(messageCreateDto.attachmentIds());
+    validateAttachments(attachmentIds);
 
-    Message message = new Message(messageCreateDto.senderId(), messageCreateDto.channelId(),
-        messageCreateDto.content(), messageCreateDto.attachmentIds());
+    Message message = new Message(messageCreateDto.authorId(), messageCreateDto.channelId(),
+        messageCreateDto.content(), attachmentIds);
 
     // 채널에 메시지 추가
     channel.addMessage(message.getId());
     channelRepository.save(channel);
 
     // 사용자 활동 시간 갱신
-    userStatusRepository.findByUserId(messageCreateDto.senderId())
+    userStatusRepository.findByUserId(messageCreateDto.authorId())
         .ifPresent(us -> {
           us.updateLastActiveTime();
           us.updateStatusType();
@@ -134,10 +135,10 @@ public class BasicMessageService implements MessageService, ClearMemory {
 //    }
 
   //    @Override
-//    public UUID sendDirectMessage(UUID senderId, UUID receiverId, String bytes) {
-//        Channel dmChannel = getOrCreateDMChannel(senderId, receiverId);
+//    public UUID sendDirectMessage(UUID authorId, UUID receiverId, String bytes) {
+//        Channel dmChannel = getOrCreateDMChannel(authorId, receiverId);
 //
-//        User sender = userRepository.findById(senderId)
+//        User sender = userRepository.findById(authorId)
 //                .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
 //
 //        Message message = new Message(sender.getId(), dmChannel.getId(), bytes);

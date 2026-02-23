@@ -10,25 +10,25 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
 
 
-    //  User -> UserInfoDto
-    public UserResponseDto toUserInfoDto(User user, StatusType status){
-        Boolean isOnline = status == StatusType.ONLINE;
-        return new UserResponseDto(user.getId(),
-                user.getCreatedAt(),
-                user.getUpdatedAt(),
-                user.getName(),
-                status,
-                user.getEmail(),
-                user.getProfileId(),
-                isOnline);
-    }
+  //  User -> UserInfoDto
+  public UserResponseDto toUserInfoDto(User user, StatusType status) {
+    Boolean isOnline = status == StatusType.ONLINE;
+    return new UserResponseDto(user.getId(),
+        user.getCreatedAt(),
+        user.getUpdatedAt(),
+        user.getName(),
+        status,
+        user.getEmail(),
+        user.getProfileId(),
+        isOnline);
+  }
 
-    // UserInfoDto -> User
-    public User toUser(UserResponseDto userResponseDto, UserRepository userRepository)
-    {
-        String password = userRepository.findById(userResponseDto.userId())
-                .map(User::getPassword)
-                .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자 정보가 없습니다."));
-        return new User(userResponseDto.userName(), userResponseDto.email(), password, userResponseDto.profileId());
-    }
+  // UserInfoDto -> User
+  public User toUser(UserResponseDto userResponseDto, UserRepository userRepository) {
+    String password = userRepository.findById(userResponseDto.id())
+        .map(User::getPassword)
+        .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자 정보가 없습니다."));
+    return new User(userResponseDto.username(), userResponseDto.email(), password,
+        userResponseDto.profileId());
+  }
 }
