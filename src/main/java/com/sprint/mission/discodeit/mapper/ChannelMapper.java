@@ -13,30 +13,29 @@ import java.util.UUID;
 @Component
 public class ChannelMapper {
 
-    // Channel -> ChannelInfoDto
-    public ChannelResponseDto toChannelInfoDto(Channel channel, MessageRepository messageRepository) {
-        Instant lastMessageAt = messageRepository.findById(channel.getLastMessageId())
-                .map(m -> m.getCreatedAt())
-                .orElse(channel.getCreatedAt());
+  // Channel -> ChannelInfoDto
+  public ChannelResponseDto toChannelInfoDto(Channel channel, MessageRepository messageRepository) {
+    Instant lastMessageAt = messageRepository.findById(channel.getLastMessageId())
+        .map(m -> m.getCreatedAt())
+        .orElse(channel.getCreatedAt());
 
-        List<UUID> memberIds = channel.getUserIds();
-        String name = channel.getName();
-        String description = channel.getDescription();
-        if (channel.getIsPrivate() == IsPrivate.PRIVATE) {
-            description = null;
-            name = null;
-        }
-
-        return new ChannelResponseDto(
-                channel.getId(),
-                name,
-                channel.getIsPrivate(),
-                description,
-                channel.getOwnerId(),
-                lastMessageAt,
-                memberIds
-        );
+    List<UUID> memberIds = channel.getUserIds();
+    String name = channel.getName();
+    String description = channel.getDescription();
+    if (channel.getIsPrivate() == IsPrivate.PRIVATE) {
+      description = null;
+      name = null;
     }
+
+    return new ChannelResponseDto(
+        channel.getId(),
+        name,
+        channel.getIsPrivate(),
+        description,
+        lastMessageAt,
+        memberIds
+    );
+  }
 
 
 }

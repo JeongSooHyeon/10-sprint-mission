@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.dto.ReadStatusCreateDto;
-import com.sprint.mission.discodeit.dto.ReadStatusInfoDto;
+import com.sprint.mission.discodeit.dto.ReadStatusResponseDto;
 import com.sprint.mission.discodeit.dto.ReadStatusUpdateDto;
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.mapper.ReadStatusMapper;
@@ -12,69 +12,72 @@ import com.sprint.mission.discodeit.service.ReadStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
 public class BasicReadStatusService implements ReadStatusService {
 
-    private final UserRepository userRepository;
-    private final ChannelRepository channelRepository;
-    private final ReadStatusRepository readStatusRepository;
-    private final ReadStatusMapper readStatusMapper;
+  private final UserRepository userRepository;
+  private final ChannelRepository channelRepository;
+  private final ReadStatusRepository readStatusRepository;
+  private final ReadStatusMapper readStatusMapper;
 
-    @Override
-    public ReadStatusInfoDto create(ReadStatusCreateDto readStatusCreateDto) {
-        // Channel, User 존재 여부 검증
-        userRepository.findById(readStatusCreateDto.userId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
+  @Override
+  public ReadStatusResponseDto create(ReadStatusCreateDto readStatusCreateDto) {
+    // Channel, User 존재 여부 검증
+    userRepository.findById(readStatusCreateDto.userId())
+        .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
 
-        channelRepository.findById(readStatusCreateDto.channelId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 채널이 없습니다."));
+    channelRepository.findById(readStatusCreateDto.channelId())
+        .orElseThrow(() -> new IllegalArgumentException("해당 채널이 없습니다."));
 
-        // 중복된 데이터 검증
-        if(readStatusRepository.existsByUserIdAndChannelId(readStatusCreateDto.userId(), readStatusCreateDto.channelId())){
-            throw new IllegalArgumentException("이미 해당 객체가 존재합니다.");
-        }
+    // 중복된 데이터 검증
+    return readStatusRepository.findByUserIdAndChannelId(readStatusCreateDto.userId(),
+            readStatusCreateDto.channelId())
+        .map(readStatusMapper::toReadStatusInfoDto) // 이미 있으면 그걸 그냥 리턴 (200 OK)
+        .orElseGet(() -> {
+          // 2. 진짜 없으면 그때 생성한다.
+          ReadStatus newStatus = new ReadStatus(readStatusCreateDto.userId(),
+              readStatusCreateDto.channelId());
+          return readStatusMapper.toReadStatusInfoDto(readStatusRepository.save(newStatus));
+        });
+  }
+  
+  @Override
+  public ReadStatusResponseDto findById(UUID id) {
+    return readStatusMapper
+        .toReadStatusInfoDto(
+            readStatusRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ReadStatus가 없습니다.")));
+  }
 
-        ReadStatus readStatus = new ReadStatus(readStatusCreateDto.userId(), readStatusCreateDto.channelId());
-        readStatusRepository.save(readStatus);
-        return readStatusMapper.toReadStatusInfoDto(readStatus);
-    }
+  @Override
+  public List<ReadStatusResponseDto> findAllByUserId(UUID userId) {
+    userRepository.findById(userId)
+        .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
 
-    @Override
-    public ReadStatusInfoDto findById(UUID id) {
-        return readStatusMapper
-                .toReadStatusInfoDto(
-                        readStatusRepository.findById(id)
-                        .orElseThrow(() -> new IllegalArgumentException("해당 ReadStatus가 없습니다.")));
-    }
+    return readStatusRepository.findAllByUserId(userId).stream()
+        .map(readStatusMapper::toReadStatusInfoDto)
+        .toList();
+  }
 
-    @Override
-    public List<ReadStatusInfoDto> findAllByUserId(UUID userId) {
-        userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
+  @Override
+  public ReadStatusResponseDto update(UUID id, ReadStatusUpdateDto readStatusUpdateDto) {
+    ReadStatus readStatus = readStatusRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("해당 ReadStatus가 없습니다."));
+    readStatus.updateLastReadAt(readStatusUpdateDto.newLastReadAt());
+    readStatusRepository.save(readStatus);
+    return readStatusMapper.toReadStatusInfoDto(readStatus);
+  }
 
-        return readStatusRepository.findAllByUserId(userId).stream()
-                .map(readStatusMapper::toReadStatusInfoDto)
-                .toList();
-    }
-
-    @Override
-    public ReadStatusInfoDto update(UUID id, ReadStatusUpdateDto readStatusUpdateDto) {
-        ReadStatus readStatus = readStatusRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 ReadStatus가 없습니다."));
-        readStatus.updateLastReadAt(readStatusUpdateDto.lastReadAt());
-        readStatusRepository.save(readStatus);
-        return readStatusMapper.toReadStatusInfoDto(readStatus);
-    }
-
-    @Override
-    public void delete(UUID id) {
-        readStatusRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 ReadStatus가 없습니다."));
-        readStatusRepository.delete(id);
-    }
+  @Override
+  public void delete(UUID id) {
+    readStatusRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("해당 ReadStatus가 없습니다."));
+    readStatusRepository.delete(id);
+  }
 
 
 }

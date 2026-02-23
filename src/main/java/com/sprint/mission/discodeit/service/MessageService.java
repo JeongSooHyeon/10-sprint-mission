@@ -6,11 +6,12 @@ import com.sprint.mission.discodeit.dto.MessageUpdateDto;
 
 import java.util.List;
 import java.util.UUID;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface MessageService {
 
   // Create
-  MessageResponseDto create(MessageCreateDto messageCreateDto);
+  MessageResponseDto create(MessageCreateDto messageCreateDto, List<UUID> attachmentIds);
 
   // Read
   MessageResponseDto findById(UUID id);
@@ -27,7 +28,7 @@ public interface MessageService {
 
 //    List<MessageResponseDto> getChannelMessages(UUID channelId);
 
-//    UUID sendDirectMessage(UUID senderId, UUID receiverId, String bytes);
+//    UUID sendDirectMessage(UUID authorId, UUID receiverId, String bytes);
 
   // Delete
   void delete(UUID id);
