@@ -31,6 +31,7 @@ public class BasicChannelService implements ChannelService, ClearMemory {
     Channel channel =
         new Channel(publicChannelCreateDto.name(), IsPrivate.PUBLIC,
             publicChannelCreateDto.description());
+    
     channelRepository.save(channel);
     return channelMapper.toChannelInfoDto(channel, messageRepository);
   }
