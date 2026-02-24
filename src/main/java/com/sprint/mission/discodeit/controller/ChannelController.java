@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.controller;
 
-import com.sprint.mission.discodeit.dto.ChannelResponseDto;
+import com.sprint.mission.discodeit.dto.ChannelDto;
 import com.sprint.mission.discodeit.dto.ChannelUpdateDto;
 import com.sprint.mission.discodeit.dto.PrivateChannelCreateDto;
 import com.sprint.mission.discodeit.dto.PublicChannelCreateDto;
@@ -27,23 +27,23 @@ public class ChannelController {
   // 공개 채널 생성
   @Operation(summary = "공개 채널 생성", description = "누구나 참여할 수 있는 공개 채널을 신규 생성합니다.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "생성 성공",
-          content = @Content(mediaType = "application/json", schema = @Schema(implementation = ChannelResponseDto.class))),
+      @ApiResponse(responseCode = "201", description = "생성 성공",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = ChannelDto.class))),
       @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
   })
   @RequestMapping(value = "/public", method = RequestMethod.POST)
-  public ChannelResponseDto createPublicChannel(@RequestBody PublicChannelCreateDto dto) {
+  public ChannelDto createPublicChannel(@RequestBody PublicChannelCreateDto dto) {
     return channelService.createPublic(dto);
   }
 
   // 비공개 채널 생성
   @Operation(summary = "비공개 채널 생성", description = "초대된 멤버만 참여할 수 있는 비공개 채널을 신규 생성합니다.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "생성 성공",
-          content = @Content(mediaType = "application/json", schema = @Schema(implementation = ChannelResponseDto.class)))
+      @ApiResponse(responseCode = "201", description = "생성 성공",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = ChannelDto.class)))
   })
   @RequestMapping(value = "/private", method = RequestMethod.POST)
-  public ChannelResponseDto createPrivateChannel(@RequestBody PrivateChannelCreateDto dto) {
+  public ChannelDto createPrivateChannel(@RequestBody PrivateChannelCreateDto dto) {
     return channelService.createPrivate(dto);
   }
 
@@ -51,11 +51,11 @@ public class ChannelController {
   @Operation(summary = "채널 정보 수정", description = "기존 채널의 이름이나 설정을 변경합니다.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "수정 성공",
-          content = @Content(mediaType = "application/json", schema = @Schema(implementation = ChannelResponseDto.class))),
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = ChannelDto.class))),
       @ApiResponse(responseCode = "404", description = "채널을 찾을 수 없음")
   })
   @RequestMapping(value = "/{channelId}", method = RequestMethod.PATCH)
-  public ChannelResponseDto updatePublicChannel(@PathVariable UUID channelId,
+  public ChannelDto updatePublicChannel(@PathVariable UUID channelId,
       @RequestBody ChannelUpdateDto dto) {
     return channelService.update(channelId, dto);
   }
@@ -64,10 +64,10 @@ public class ChannelController {
   @Operation(summary = "채널 참여 (멤버 추가)", description = "특정 사용자를 해당 채널의 멤버로 추가합니다.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "참여 성공",
-          content = @Content(mediaType = "application/json", schema = @Schema(implementation = ChannelResponseDto.class)))
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = ChannelDto.class)))
   })
   @RequestMapping(value = "/{channel-id}/join", method = RequestMethod.POST)
-  public ChannelResponseDto joinChannel(@PathVariable("channel-id") UUID channelId,
+  public ChannelDto joinChannel(@PathVariable("channel-id") UUID channelId,
       @RequestParam UUID userId) {
     return channelService.joinChannel(userId, channelId);
 
@@ -76,8 +76,8 @@ public class ChannelController {
   // 채널 삭제
   @Operation(summary = "채널 삭제", description = "ID에 해당하는 채널을 영구 삭제합니다.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "삭제 성공 (반환 값 없음)"),
-      @ApiResponse(responseCode = "400", description = "채널 찾을 수 없음")
+      @ApiResponse(responseCode = "204", description = "삭제 성공 (반환 값 없음)"),
+      @ApiResponse(responseCode = "404", description = "채널 찾을 수 없음")
   })
   @RequestMapping(value = "/{channelId}", method = RequestMethod.DELETE)
   public void delete(@PathVariable UUID channelId) {
@@ -90,11 +90,11 @@ public class ChannelController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "조회 성공",
           content = @Content(mediaType = "application/json",
-              array = @ArraySchema(schema = @Schema(implementation = ChannelResponseDto.class))
+              array = @ArraySchema(schema = @Schema(implementation = ChannelDto.class))
           ))
   })
   @RequestMapping(method = RequestMethod.GET)
-  public List<ChannelResponseDto> findAll(@RequestParam UUID userId) {
+  public List<ChannelDto> findAll(@RequestParam UUID userId) {
     return channelService.findAllByUserId(userId);
   }
 }

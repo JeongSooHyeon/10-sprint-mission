@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Schema(description = "메시지 상세 정보 응답 DTO")
-public record MessageResponseDto(
+public record MessageDto(
     @Schema(description = "메시지 ID", example = "3f3fb215-32aa-4281-904c-45b9dd8b96fb")
     UUID id,
 

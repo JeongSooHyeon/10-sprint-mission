@@ -35,7 +35,7 @@ public class BinaryContentController {
   // 바이너리 파일 생성
   @Operation(summary = "파일 업로드", description = "MultipartFile을 업로드하여 시스템에 저장")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "업로드 성공",
+      @ApiResponse(responseCode = "201", description = "업로드 성공",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = BinaryContentResponseDto.class))),
       @ApiResponse(responseCode = "400", description = "잘못된 요청 파라미터"),
@@ -84,7 +84,8 @@ public class BinaryContentController {
           ))
   })
   @RequestMapping(method = RequestMethod.GET)
-  public List<BinaryContentResponseDto> findAllByIdIn(@RequestParam("ids") List<UUID> idList) {
+  public List<BinaryContentResponseDto> findAllByIdIn(
+      @RequestParam("binaryContentIds") List<UUID> idList) {
     return binaryContentService.findAllByIdIn(idList);
   }
 }

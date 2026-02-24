@@ -1,20 +1,20 @@
 package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.dto.MessageCreateDto;
-import com.sprint.mission.discodeit.dto.MessageResponseDto;
+import com.sprint.mission.discodeit.dto.MessageDto;
 import com.sprint.mission.discodeit.dto.MessageUpdateDto;
 import com.sprint.mission.discodeit.entity.*;
 import com.sprint.mission.discodeit.mapper.MessageMapper;
 import com.sprint.mission.discodeit.repository.*;
 import com.sprint.mission.discodeit.service.ClearMemory;
 import com.sprint.mission.discodeit.service.MessageService;
+import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
@@ -28,7 +28,7 @@ public class BasicMessageService implements MessageService, ClearMemory {
   private final BinaryContentRepository binaryContentRepository;
 
   @Override
-  public MessageResponseDto create(MessageCreateDto messageCreateDto, List<UUID> attachmentIds) {
+  public MessageDto create(MessageCreateDto messageCreateDto, List<UUID> attachmentIds) {
     userRepository.findById(messageCreateDto.authorId())
         .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자가 없습니다."));
     Channel channel = channelRepository.findById(messageCreateDto.channelId())
@@ -45,8 +45,7 @@ public class BasicMessageService implements MessageService, ClearMemory {
     // 사용자 활동 시간 갱신
     userStatusRepository.findByUserId(messageCreateDto.authorId())
         .ifPresent(us -> {
-          us.updateLastActiveTime();
-          us.updateStatusType();
+          us.update(Instant.now());
           userStatusRepository.save(us);
         });
 
@@ -68,7 +67,7 @@ public class BasicMessageService implements MessageService, ClearMemory {
   }
 
   @Override
-  public MessageResponseDto findById(UUID id) {
+  public MessageDto findById(UUID id) {
     Message message = messageRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 메시지 ID입니다."));
 
@@ -76,7 +75,7 @@ public class BasicMessageService implements MessageService, ClearMemory {
   }
 
   @Override
-  public List<MessageResponseDto> findAllByChannelId(UUID channelId) {
+  public List<MessageDto> findAllByChannelId(UUID channelId) {
     return messageRepository.findAllByChannelId(channelId)
         .stream()
         .map(messageMapper::toMessageInfoDto)
@@ -84,7 +83,7 @@ public class BasicMessageService implements MessageService, ClearMemory {
   }
 
   @Override
-  public MessageResponseDto update(UUID id, MessageUpdateDto messageUpdateDto) {
+  public MessageDto update(UUID id, MessageUpdateDto messageUpdateDto) {
     Message message = messageRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("해당 메시지가 없습니다."));
     validateAttachments(messageUpdateDto.attachmentIds());
@@ -108,7 +107,7 @@ public class BasicMessageService implements MessageService, ClearMemory {
   }
 
   @Override
-  public List<MessageResponseDto> searchMessage(UUID channelId, String keyword) {
+  public List<MessageDto> searchMessage(UUID channelId, String keyword) {
     channelRepository.findById(channelId)
         .orElseThrow(() -> new IllegalArgumentException("해당 채널이 없습니다."));
 
@@ -118,7 +117,7 @@ public class BasicMessageService implements MessageService, ClearMemory {
   }
 
   @Override
-  public List<MessageResponseDto> getUserMessages(UUID id) {
+  public List<MessageDto> getUserMessages(UUID id) {
     return messageRepository.findAllByUserId(id).stream()
         .sorted(Comparator.comparing(Message::getCreatedAt))
         .map(messageMapper::toMessageInfoDto)

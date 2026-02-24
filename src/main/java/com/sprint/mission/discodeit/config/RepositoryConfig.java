@@ -16,78 +16,78 @@
 //
 //    // User Repository
 //    @Bean
-//    @ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "jcf", matchIfMissing = true)
+//    @ConditionalOnProperty(newName = "discodeit.repository.type", havingValue = "jcf", matchIfMissing = true)
 //    public UserRepository userRepositoryJCF(){
 //        return new JCFUserRepository();
 //    }
 //
 //    @Bean
-//    @ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "file")
+//    @ConditionalOnProperty(newName = "discodeit.repository.type", havingValue = "file")
 //    public UserRepository userRepositoryFile(){
 //        return new FileUserRepository(fileDirectory);
 //    }
 //
 //    // Channel Repository
 //    @Bean
-//    @ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "jcf", matchIfMissing = true)
+//    @ConditionalOnProperty(newName = "discodeit.repository.type", havingValue = "jcf", matchIfMissing = true)
 //    public ChannelRepository channelRepositoryJCF(){
 //        return new JCFChannelRepository();
 //    }
 //
 //    @Bean
-//    @ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "file")
+//    @ConditionalOnProperty(newName = "discodeit.repository.type", havingValue = "file")
 //    public ChannelRepository channelRepositoryFile(){
 //        return new FileChannelRepository(fileDirectory);
 //    }
 //
 //    // Message Repository
 //    @Bean
-//    @ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "jcf", matchIfMissing = true)
+//    @ConditionalOnProperty(newName = "discodeit.repository.type", havingValue = "jcf", matchIfMissing = true)
 //    public MessageRepository messageRepositoryJCF(){
 //        return new JCFMessageRepository();
 //    }
 //
 //    @Bean
-//    @ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "file")
+//    @ConditionalOnProperty(newName = "discodeit.repository.type", havingValue = "file")
 //    public MessageRepository messageRepositoryFile(){
 //        return new FileMessageRepository(fileDirectory);
 //    }
 //
 //    // BinaryContent Repository
 //    @Bean
-//    @ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "jcf", matchIfMissing = true)
+//    @ConditionalOnProperty(newName = "discodeit.repository.type", havingValue = "jcf", matchIfMissing = true)
 //    public BinaryContentRepository binaryContentRepositoryJCF(){
 //        return new JCFBinaryContentRepository();
 //    }
 //
 //    @Bean
-//    @ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "file")
+//    @ConditionalOnProperty(newName = "discodeit.repository.type", havingValue = "file")
 //    public BinaryContentRepository binaryContentRepositoryFile(){
 //        return new FileBinaryContentRepository(fileDirectory);
 //    }
 //
 //    // ReadStatus Repository
 //    @Bean
-//    @ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "jcf", matchIfMissing = true)
+//    @ConditionalOnProperty(newName = "discodeit.repository.type", havingValue = "jcf", matchIfMissing = true)
 //    public ReadStatusRepository readStatusRepositoryJCF(){
 //        return new JCFReadStatusRepository();
 //    }
 //
 //    @Bean
-//    @ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "file")
+//    @ConditionalOnProperty(newName = "discodeit.repository.type", havingValue = "file")
 //    public ReadStatusRepository readStatusRepositoryFile(){
 //        return new FileReadStatusRepository(fileDirectory);
 //    }
 //
 //    // UserStatus Repository
 //    @Bean
-//    @ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "jcf", matchIfMissing = true)
+//    @ConditionalOnProperty(newName = "discodeit.repository.type", havingValue = "jcf", matchIfMissing = true)
 //    public UserStatusRepository userStatusRepositoryJCF(){
 //        return new JCFUserStatusRepository();
 //    }
 //
 //    @Bean
-//    @ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "file")
+//    @ConditionalOnProperty(newName = "discodeit.repository.type", havingValue = "file")
 //    public UserStatusRepository userStatusRepositoryFile(){
 //        return new FileUserStatusRepository(fileDirectory);
 //    }

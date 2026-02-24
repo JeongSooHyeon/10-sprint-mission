@@ -6,16 +6,18 @@ import java.util.List;
 import java.util.UUID;
 
 public interface UserStatusService {
-    UserStatusInfoDto create(UserStatusCreateDto userStatusCreateDto);
 
-    UserStatusInfoDto findById(UUID id);
+  UserStatusInfoDto create(UserStatusCreateDto userStatusCreateDto);
 
-    List<UserStatusInfoDto> findAll();
+  UserStatusInfoDto findById(UUID id);
 
-    UserStatusInfoDto update(UserStatusUpdateByIdDto userStatusUpdateByIdDto);
+  List<UserStatusInfoDto> findAll();
 
-    UserResponseDto updateByUserId(UUID userId, UserStatusUpdateByUserIdDto userStatusUpdateByUserIdDto);
+  UserStatusInfoDto update(UUID userStatusId, UserStatusUpdateByIdDto userStatusUpdateByIdDto);
 
-    void delete(UUID id);
+  UserDto updateByUserId(UUID userId,
+      UserStatusUpdateByUserIdDto userStatusUpdateByUserIdDto);
+
+  void delete(UUID id);
 
 }

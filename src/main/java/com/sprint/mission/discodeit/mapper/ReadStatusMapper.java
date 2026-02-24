@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.mapper;
 
-import com.sprint.mission.discodeit.dto.ReadStatusResponseDto;
+import com.sprint.mission.discodeit.dto.ReadStatusDto;
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import org.springframework.stereotype.Component;
 
@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 public class ReadStatusMapper {
 
   // ReadStatus -> ReadStatusInfoDto
-  public ReadStatusResponseDto toReadStatusInfoDto(ReadStatus readStatus) {
-    return new ReadStatusResponseDto(readStatus.getId(),
+  public ReadStatusDto toReadStatusInfoDto(ReadStatus readStatus) {
+    return new ReadStatusDto(readStatus.getId(),
         readStatus.getUserId(),
         readStatus.getChannelId(),
         readStatus.getLastReadAt());

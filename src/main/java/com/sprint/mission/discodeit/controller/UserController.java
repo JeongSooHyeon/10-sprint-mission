@@ -2,10 +2,10 @@ package com.sprint.mission.discodeit.controller;
 
 import com.sprint.mission.discodeit.dto.BinaryContentCreateDto;
 import com.sprint.mission.discodeit.dto.BinaryContentResponseDto;
-import com.sprint.mission.discodeit.dto.UserCreateDto;
-import com.sprint.mission.discodeit.dto.UserResponseDto;
+import com.sprint.mission.discodeit.dto.UserCreateRequest;
+import com.sprint.mission.discodeit.dto.UserDto;
 import com.sprint.mission.discodeit.dto.UserStatusUpdateByUserIdDto;
-import com.sprint.mission.discodeit.dto.UserUpdateDto;
+import com.sprint.mission.discodeit.dto.UserUpdateRequest;
 import com.sprint.mission.discodeit.service.BinaryContentService;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.service.UserStatusService;
@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,11 +38,11 @@ public class UserController {
   // 사용자 등록
   @Operation(summary = "사용자 등록", description = "새로운 사용자를 시스템에 등록합니다.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "등록 성공",
-          content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponseDto.class)))
+      @ApiResponse(responseCode = "201", description = "등록 성공",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class)))
   })
   @RequestMapping(method = RequestMethod.POST)
-  public UserResponseDto join(@RequestPart("userCreateRequest") UserCreateDto dto,
+  public UserDto join(@RequestPart("userCreateRequest") UserCreateRequest dto,
       @RequestPart(value = "profile", required = false) MultipartFile profile) throws IOException {
     // profile 파일 처리
     UUID profileId = null;
@@ -55,8 +56,8 @@ public class UserController {
       profileId = savedFile.id();
     }
 
-    // DTO에 profileId 세팅해서 새로 생성
-    UserCreateDto newDto = new UserCreateDto(
+    // DTO에 newProfileId 세팅해서 새로 생성
+    UserCreateRequest newDto = new UserCreateRequest(
         dto.username(),
         dto.email(),
         dto.password(),
@@ -70,13 +71,13 @@ public class UserController {
   @Operation(summary = "사용자 정보 수정", description = "이름, 프로필 이미지 등 사용자의 기본 정보를 수정합니다.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "수정 성공",
-          content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponseDto.class))),
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class))),
       @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음")
   })
-  @RequestMapping(value = "/{userId}", method = RequestMethod.PATCH)
-  public UserResponseDto update(
+  @RequestMapping(value = "/{userId}", method = RequestMethod.PATCH, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public UserDto update(
       @PathVariable UUID userId,
-      @RequestPart("userUpdateRequest") UserUpdateDto dto,
+      @RequestPart("userUpdateRequest") UserUpdateRequest dto,
       @RequestPart(value = "profile", required = false) MultipartFile profile) throws IOException {
 
     UUID profileId = null;
@@ -86,14 +87,13 @@ public class UserController {
           new BinaryContentCreateDto(profile.getContentType(), profile.getBytes(),
               profile.getSize(), profile.getOriginalFilename());
 
-      BinaryContentResponseDto saved =
-          binaryContentService.create(binaryDto);
+      BinaryContentResponseDto saved = binaryContentService.create(binaryDto);
 
       profileId = saved.id();
     }
 
-    UserUpdateDto newDto =
-        new UserUpdateDto(dto.newUsername(), profileId);
+    UserUpdateRequest newDto =
+        new UserUpdateRequest(dto.newUsername(), profileId, dto.newEmail(), dto.newPassword());
 
     return userService.update(userId, newDto);
   }
@@ -101,7 +101,7 @@ public class UserController {
   // 사용자 삭제
   @Operation(summary = "사용자 삭제", description = "ID에 해당하는 사용자를 영구 삭제합니다.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "삭제 성공")
+      @ApiResponse(responseCode = "204", description = "삭제 성공")
   })
   @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE)
   public void delete(@PathVariable UUID userId) {
@@ -114,11 +114,11 @@ public class UserController {
       @ApiResponse(responseCode = "200", description = "조회 성공",
           content = @Content(
               mediaType = "application/json",
-              array = @ArraySchema(schema = @Schema(implementation = UserResponseDto.class))
+              array = @ArraySchema(schema = @Schema(implementation = UserDto.class))
           ))
   })
   @RequestMapping(method = RequestMethod.GET)
-  public ResponseEntity<List<UserResponseDto>> findAll() {
+  public ResponseEntity<List<UserDto>> findAll() {
     return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
   }
 
@@ -129,11 +129,11 @@ public class UserController {
   )
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "상태 업데이트 성공",
-          content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponseDto.class))),
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class))),
       @ApiResponse(responseCode = "404", description = "사용자 상태 정보를 찾을 수 없음")
   })
   @RequestMapping(value = "/{userId}/userStatus", method = RequestMethod.PATCH)
-  public UserResponseDto updateStatus(@PathVariable UUID userId,
+  public UserDto updateStatus(@PathVariable UUID userId,
       @RequestBody UserStatusUpdateByUserIdDto dto) {
     return userStatusService.updateByUserId(userId, dto);
   }

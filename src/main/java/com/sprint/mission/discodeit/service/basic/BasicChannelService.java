@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.ChannelResponseDto;
+import com.sprint.mission.discodeit.dto.ChannelDto;
 import com.sprint.mission.discodeit.dto.ChannelUpdateDto;
 import com.sprint.mission.discodeit.dto.PrivateChannelCreateDto;
 import com.sprint.mission.discodeit.dto.PublicChannelCreateDto;
@@ -9,6 +9,7 @@ import com.sprint.mission.discodeit.mapper.ChannelMapper;
 import com.sprint.mission.discodeit.repository.*;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.ClearMemory;
+import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +27,7 @@ public class BasicChannelService implements ChannelService, ClearMemory {
   private final ChannelMapper channelMapper;
 
   @Override
-  public ChannelResponseDto createPublic(PublicChannelCreateDto publicChannelCreateDto) {
+  public ChannelDto createPublic(PublicChannelCreateDto publicChannelCreateDto) {
     Channel channel =
         new Channel(publicChannelCreateDto.name(), IsPrivate.PUBLIC,
             publicChannelCreateDto.description());
@@ -35,7 +36,7 @@ public class BasicChannelService implements ChannelService, ClearMemory {
   }
 
   @Override
-  public ChannelResponseDto createPrivate(PrivateChannelCreateDto privateChannelCreateDto) {
+  public ChannelDto createPrivate(PrivateChannelCreateDto privateChannelCreateDto) {
     Channel channel =
         new Channel(null, IsPrivate.PRIVATE, null);
 
@@ -53,7 +54,7 @@ public class BasicChannelService implements ChannelService, ClearMemory {
   }
 
   @Override
-  public ChannelResponseDto findById(UUID id) {
+  public ChannelDto findById(UUID id) {
     Channel channel = channelRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("실패 : 존재하지 않는 채널 ID입니다."));
 
@@ -61,7 +62,7 @@ public class BasicChannelService implements ChannelService, ClearMemory {
   }
 
   @Override
-  public List<ChannelResponseDto> findAllByUserId(UUID userId) {
+  public List<ChannelDto> findAllByUserId(UUID userId) {
     return channelRepository.findAll().stream()
         .filter(ch -> isVisibleToUser(ch, userId))
         .map(ch -> channelMapper.toChannelInfoDto(ch, messageRepository))
@@ -74,24 +75,20 @@ public class BasicChannelService implements ChannelService, ClearMemory {
   }
 
   @Override
-  public ChannelResponseDto update(UUID id, ChannelUpdateDto channelUpdateDto) {
+  public ChannelDto update(UUID id, ChannelUpdateDto channelUpdateDto) {
     Channel channel = channelRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("해당 채널이 없습니다."));
     if (channel.getIsPrivate().equals(IsPrivate.PRIVATE)) {
       throw new IllegalArgumentException("PRIVATE 채널은 수정할 수 없습니다.");
     }
-    if (!channel.getUserIds().contains(channelUpdateDto.ownerId())) {
-      throw new IllegalArgumentException("채널 멤버가 아닙니다.");
-    }
-    channel.updateName(channelUpdateDto.name());
-    channel.updatePrivate(channelUpdateDto.isPrivate());
-    channel.updateDescription(channelUpdateDto.description());
+    channel.updateName(channelUpdateDto.newName());
+    channel.updateDescription(channelUpdateDto.newDescription());
     channelRepository.save(channel);
     return channelMapper.toChannelInfoDto(channel, messageRepository);
   }
 
   @Override
-  public ChannelResponseDto joinChannel(UUID userId, UUID channelId) {
+  public ChannelDto joinChannel(UUID userId, UUID channelId) {
     Channel channel = channelRepository.findById(channelId)
         .orElseThrow(() -> new IllegalArgumentException("해당 채널이 없습니다."));
     User user = userRepository.findById(userId)
@@ -102,8 +99,7 @@ public class BasicChannelService implements ChannelService, ClearMemory {
     channelRepository.save(channel);
     UserStatus userStatus = userStatusRepository.findByUserId(user.getId())
         .orElseThrow(() -> new IllegalArgumentException("해당 사용자 상태가 없습니다."));
-    userStatus.updateLastActiveTime();
-    userStatus.updateStatusType();
+    userStatus.update(Instant.now());
     userStatusRepository.save(userStatus);
     return channelMapper.toChannelInfoDto(channel, messageRepository);
   }

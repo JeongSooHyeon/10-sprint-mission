@@ -10,37 +10,31 @@ import java.util.UUID;
 public class UserStatus extends BaseEntity {
 
   private final UUID userId;
-  private StatusType statusType;
+  private Instant lastActiveAt;
 
-  public UserStatus(UUID userId) {
+
+  public UserStatus(UUID userId, Instant lastActiveAt) {
     super(UUID.randomUUID(), Instant.now());
     this.userId = userId;
-    this.statusType = StatusType.ONLINE;
+    this.lastActiveAt = lastActiveAt;
   }
 
-  public void updateStatusType(StatusType statusType) {
-    this.statusType = statusType;
-    this.onUpdate();
+  public void update(Instant lastActiveAt) {
+    boolean anyValueUpdated = false;
+    if (lastActiveAt != null && !lastActiveAt.equals(this.lastActiveAt)) {
+      this.lastActiveAt = lastActiveAt;
+      anyValueUpdated = true;
+    }
+
+    if (anyValueUpdated) {
+      this.updatedAt = Instant.now();
+    }
   }
 
   public boolean isOnline() {
     Instant now = Instant.now();
     Instant beforeFiveMinute = now.minus(Duration.ofMinutes(5));
     return updatedAt.isAfter(beforeFiveMinute);    // 마지막 접속 시간이 5분 전이면
-  }
-
-  public StatusType updateStatusType() {
-    if (isOnline()) {
-      this.statusType = StatusType.ONLINE;
-    } else {
-      this.statusType = StatusType.OFFLINE;
-    }
-    return this.statusType;
-  }
-
-  // 마지막 접속 시간 갱신
-  public void updateLastActiveTime() {
-    this.onUpdate();
   }
 
 }

@@ -21,12 +21,12 @@
 //    }
 //
 //    @Override
-//    public User create(String name, StatusType status) {
-//        userRepository.findByName(name)
+//    public User create(String newName, StatusType status) {
+//        userRepository.findByName(newName)
 //                .ifPresent(u -> {
 //                    throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
 //                });
-//        User user = new User(name, status);
+//        User user = new User(newName, status);
 //        return userRepository.save(user);
 //    }
 //
