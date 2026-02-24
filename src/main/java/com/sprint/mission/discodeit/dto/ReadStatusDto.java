@@ -5,7 +5,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Schema(description = "채널별 메시지 읽음 상태 정보 DTO")
-public record ReadStatusResponseDto(
+public record ReadStatusDto(
     @Schema(description = "읽음 상태 기록 ID", example = "7b98f215-32aa-4281-904c-45b9dd8b96fc")
     UUID id,
 

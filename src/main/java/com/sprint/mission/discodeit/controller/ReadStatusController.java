@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.controller;
 
 import com.sprint.mission.discodeit.dto.ReadStatusCreateDto;
-import com.sprint.mission.discodeit.dto.ReadStatusResponseDto;
+import com.sprint.mission.discodeit.dto.ReadStatusDto;
 import com.sprint.mission.discodeit.dto.ReadStatusUpdateDto;
 import com.sprint.mission.discodeit.service.ReadStatusService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,11 +26,11 @@ public class ReadStatusController {
   // 특정 채널 메시지 수신 정보 생성
   @Operation(summary = "읽음 상태 생성", description = "특정 채널에 대한 사용자의 메시지 수신/읽음 정보를 초기 생성합니다.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "생성 성공",
-          content = @Content(mediaType = "application/json", schema = @Schema(implementation = ReadStatusResponseDto.class)))
+      @ApiResponse(responseCode = "201", description = "생성 성공",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = ReadStatusDto.class)))
   })
   @RequestMapping(method = RequestMethod.POST)
-  public ReadStatusResponseDto create(@RequestBody ReadStatusCreateDto dto) {
+  public ReadStatusDto create(@RequestBody ReadStatusCreateDto dto) {
     return readStatusService.create(dto);
   }
 
@@ -38,12 +38,13 @@ public class ReadStatusController {
   @Operation(summary = "읽음 상태 수정", description = "마지막으로 읽은 메시지 ID 등 수신 정보를 업데이트합니다.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "수정 성공",
-          content = @Content(mediaType = "application/json", schema = @Schema(implementation = ReadStatusResponseDto.class))),
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = ReadStatusDto.class))),
       @ApiResponse(responseCode = "404", description = "해당 ID의 읽음 상태 정보를 찾을 수 없음")
   })
-  @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
-  public ReadStatusResponseDto update(@PathVariable UUID id, @RequestBody ReadStatusUpdateDto dto) {
-    return readStatusService.update(id, dto);
+  @RequestMapping(value = "/{readStatusId}", method = RequestMethod.PATCH)
+  public ReadStatusDto update(@PathVariable UUID readStatusId,
+      @RequestBody ReadStatusUpdateDto dto) {
+    return readStatusService.update(readStatusId, dto);
   }
 
   // 특정 사용자의 메시지 수신 정보 조회
@@ -52,11 +53,11 @@ public class ReadStatusController {
       @ApiResponse(responseCode = "200", description = "조회 성공",
           content = @Content(
               mediaType = "application/json",
-              array = @ArraySchema(schema = @Schema(implementation = ReadStatusResponseDto.class))
+              array = @ArraySchema(schema = @Schema(implementation = ReadStatusDto.class))
           ))
   })
   @RequestMapping(method = RequestMethod.GET)
-  public List<ReadStatusResponseDto> findAllByUserId(@RequestParam UUID userId) {
+  public List<ReadStatusDto> findAllByUserId(@RequestParam UUID userId) {
     return readStatusService.findAllByUserId(userId);
   }
 }

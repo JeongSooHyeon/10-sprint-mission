@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.dto.ReadStatusCreateDto;
-import com.sprint.mission.discodeit.dto.ReadStatusResponseDto;
+import com.sprint.mission.discodeit.dto.ReadStatusDto;
 import com.sprint.mission.discodeit.dto.ReadStatusUpdateDto;
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.mapper.ReadStatusMapper;
@@ -25,7 +25,7 @@ public class BasicReadStatusService implements ReadStatusService {
   private final ReadStatusMapper readStatusMapper;
 
   @Override
-  public ReadStatusResponseDto create(ReadStatusCreateDto readStatusCreateDto) {
+  public ReadStatusDto create(ReadStatusCreateDto readStatusCreateDto) {
     // Channel, User 존재 여부 검증
     userRepository.findById(readStatusCreateDto.userId())
         .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
@@ -44,9 +44,9 @@ public class BasicReadStatusService implements ReadStatusService {
           return readStatusMapper.toReadStatusInfoDto(readStatusRepository.save(newStatus));
         });
   }
-  
+
   @Override
-  public ReadStatusResponseDto findById(UUID id) {
+  public ReadStatusDto findById(UUID id) {
     return readStatusMapper
         .toReadStatusInfoDto(
             readStatusRepository.findById(id)
@@ -54,7 +54,7 @@ public class BasicReadStatusService implements ReadStatusService {
   }
 
   @Override
-  public List<ReadStatusResponseDto> findAllByUserId(UUID userId) {
+  public List<ReadStatusDto> findAllByUserId(UUID userId) {
     userRepository.findById(userId)
         .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
 
@@ -64,7 +64,7 @@ public class BasicReadStatusService implements ReadStatusService {
   }
 
   @Override
-  public ReadStatusResponseDto update(UUID id, ReadStatusUpdateDto readStatusUpdateDto) {
+  public ReadStatusDto update(UUID id, ReadStatusUpdateDto readStatusUpdateDto) {
     ReadStatus readStatus = readStatusRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("해당 ReadStatus가 없습니다."));
     readStatus.updateLastReadAt(readStatusUpdateDto.newLastReadAt());

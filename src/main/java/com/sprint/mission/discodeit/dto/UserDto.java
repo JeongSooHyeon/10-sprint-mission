@@ -1,13 +1,12 @@
 package com.sprint.mission.discodeit.dto;
 
-import com.sprint.mission.discodeit.entity.StatusType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @Schema(description = "사용자 정보 응답 DTO")
-public record UserResponseDto(
+public record UserDto(
     @Schema(description = "사용자 ID", example = "550e8400-e29b-41d4-a716-446655440000")
     UUID id,
 
@@ -20,8 +19,8 @@ public record UserResponseDto(
     @Schema(description = "사용자 이름", example = "달선")
     String username,
 
-    @Schema(description = "상태 메시지 타입 (ONLINE: 온라인, AWAY: 자리를 비움, DONOTDIDSTURB: 방해 금지, OFFLINE: 오프라인)", example = "ONLINE")
-    StatusType status,
+    @Schema(description = "마지막 활동 시간", example = "2026-02-20T14:00:00Z")
+    Instant lastActiveAt,
 
     @Schema(description = "이메일 주소", example = "dalsun@naver.com")
     String email,

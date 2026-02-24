@@ -23,9 +23,9 @@
 //    }
 //
 //    @Override
-//    public Channel create(String name, IsPrivate type, UUID ownerId) {
+//    public Channel create(String newName, IsPrivate type, UUID ownerId) {
 //        User owner = userService.findById(ownerId);
-//        Channel channel = new Channel(name, type, owner);
+//        Channel channel = new Channel(newName, type, owner);
 //        channel.addUser(owner); // 나도 멤버에 넣어주기
 //        return channelRepository.save(channel);
 //    }
@@ -44,9 +44,9 @@
 //    }
 //
 //    @Override
-//    public Channel update(UUID id, String name, IsPrivate type, User owner) {
+//    public Channel update(UUID id, String newName, IsPrivate type, User owner) {
 //        Channel channel = findById(id);
-//        channel.updateName(name);
+//        channel.updateName(newName);
 //        channel.updatePrivate(type);
 //        channel.updateOwner(owner);
 //        return channelRepository.save(channel);

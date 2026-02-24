@@ -1,8 +1,7 @@
 package com.sprint.mission.discodeit.controller;
 
-import com.sprint.mission.discodeit.dto.BinaryContentResponseDto;
 import com.sprint.mission.discodeit.dto.UserLoginDto;
-import com.sprint.mission.discodeit.dto.UserResponseDto;
+import com.sprint.mission.discodeit.dto.UserDto;
 import com.sprint.mission.discodeit.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -30,7 +29,7 @@ public class AuthController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "로그인 성공",
           content = @Content(mediaType = "application/json",
-              schema = @Schema(implementation = UserResponseDto.class),
+              schema = @Schema(implementation = UserDto.class),
               examples = @ExampleObject(value = """
                   {
                     "userId": "550e8400-e29b-41d4-a716-446655440000",
@@ -43,11 +42,13 @@ public class AuthController {
                                         "online": true
                      }
                   """))),
-      @ApiResponse(responseCode = "400", description = "잘못된 요청 파라미터")
+      @ApiResponse(responseCode = "400", description = "비밀번호가 일치하지 않음"),
+      @ApiResponse(responseCode = "404", description = "존재하지 않는 사용자입니다.")
+
   })
 
   @RequestMapping(value = "/login", method = RequestMethod.POST)
-  public UserResponseDto login(@RequestBody UserLoginDto dto) {
+  public UserDto login(@RequestBody UserLoginDto dto) {
     System.out.println("newUsername = " + dto.username());
     System.out.println("password = " + dto.password());
     return authService.login(dto);

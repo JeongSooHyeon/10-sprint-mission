@@ -1,7 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.dto.*;
-import com.sprint.mission.discodeit.entity.StatusType;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.mapper.UserMapper;
@@ -33,7 +32,7 @@ public class BasicUserStatusService implements UserStatusService {
           throw new IllegalArgumentException("해당 사용자의 UserStatus가 이미 있습니다.");
         });
 
-    UserStatus userStatus = new UserStatus(user.getId());
+    UserStatus userStatus = new UserStatus(user.getId(), userStatusCreateDto.lastActiveAt());
     userStatusRepository.save(userStatus);
     return userStatusMapper.toUserInfoDto(userStatus);
   }
@@ -52,29 +51,28 @@ public class BasicUserStatusService implements UserStatusService {
   }
 
   @Override
-  public UserStatusInfoDto update(UserStatusUpdateByIdDto userStatusUpdateByIdDto) {
-    UserStatus userStatus = userStatusRepository.findById(userStatusUpdateByIdDto.id())
+  public UserStatusInfoDto update(UUID userStatusId,
+      UserStatusUpdateByIdDto userStatusUpdateByIdDto) {
+    UserStatus userStatus = userStatusRepository.findById(userStatusId)
         .orElseThrow(() -> new IllegalArgumentException("해당 UserStatus가 없습니다."));
 
-    userStatus.updateStatusType(userStatusUpdateByIdDto.statusType());
-    userStatus.updateLastActiveTime();
+    userStatus.update(userStatusUpdateByIdDto.newLastActiveAt());
     userStatusRepository.save(userStatus);
     return userStatusMapper.toUserInfoDto(userStatus);
   }
 
   // User 정보를 포함하여 반환
   @Override
-  public UserResponseDto updateByUserId(UUID userId,
+  public UserDto updateByUserId(UUID userId,
       UserStatusUpdateByUserIdDto userStatusUpdateByUserIdDto) {
     UserStatus userStatus = userStatusRepository.findByUserId(userId)
         .orElseThrow(() -> new IllegalArgumentException("해당 사용자의 상태정보가 없습니다."));
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습ㄴ디ㅏ."));
 
-    userStatus.updateStatusType(userStatusUpdateByUserIdDto.statusType());
-    userStatus.updateLastActiveTime();
+    userStatus.update(userStatusUpdateByUserIdDto.newLastActiveAt());
     UserStatus updatedStatus = userStatusRepository.save(userStatus);
-    return userMapper.toUserInfoDto(user, updatedStatus.getStatusType());
+    return userMapper.toUserInfoDto(user, updatedStatus);
   }
 
   @Override

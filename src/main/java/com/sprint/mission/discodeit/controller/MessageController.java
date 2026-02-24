@@ -3,7 +3,7 @@ package com.sprint.mission.discodeit.controller;
 import com.sprint.mission.discodeit.dto.BinaryContentCreateDto;
 import com.sprint.mission.discodeit.dto.BinaryContentResponseDto;
 import com.sprint.mission.discodeit.dto.MessageCreateDto;
-import com.sprint.mission.discodeit.dto.MessageResponseDto;
+import com.sprint.mission.discodeit.dto.MessageDto;
 import com.sprint.mission.discodeit.dto.MessageUpdateDto;
 import com.sprint.mission.discodeit.service.BinaryContentService;
 import com.sprint.mission.discodeit.service.MessageService;
@@ -33,11 +33,11 @@ public class MessageController {
   // 메시지 보내기
   @Operation(summary = "메시지 전송", description = "채널 내에 새로운 메시지를 작성합니다.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "전송 성공",
-          content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponseDto.class)))
+      @ApiResponse(responseCode = "201", description = "전송 성공",
+          content = @Content(mediaType = "multipart/form-data", schema = @Schema(implementation = MessageDto.class)))
   })
   @RequestMapping(method = RequestMethod.POST)
-  public MessageResponseDto send(
+  public MessageDto send(
       @RequestPart("messageCreateRequest") MessageCreateDto dto,
       @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments)
       throws IOException {
@@ -66,11 +66,11 @@ public class MessageController {
   @Operation(summary = "메시지 수정", description = "기존에 작성한 메시지의 내용을 변경합니다.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "수정 성공",
-          content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponseDto.class))),
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageDto.class))),
       @ApiResponse(responseCode = "404", description = "메시지를 찾을 수 없음")
   })
   @RequestMapping(value = "/{messageId}", method = RequestMethod.PATCH)
-  public MessageResponseDto update(@PathVariable UUID messageId,
+  public MessageDto update(@PathVariable UUID messageId,
       @RequestBody MessageUpdateDto dto) {
     return messageService.update(messageId, dto);
   }
@@ -94,11 +94,11 @@ public class MessageController {
       @ApiResponse(responseCode = "200", description = "조회 성공",
           content = @Content(
               mediaType = "application/json",
-              array = @ArraySchema(schema = @Schema(implementation = MessageResponseDto.class))
+              array = @ArraySchema(schema = @Schema(implementation = MessageDto.class))
           ))
   })
   @RequestMapping(method = RequestMethod.GET)
-  public List<MessageResponseDto> getMessages(
+  public List<MessageDto> getMessages(
       @RequestParam(required = false) UUID channelId,
       @RequestParam(required = false) String keyword,
       @RequestParam(required = false) UUID userId) {

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Schema(description = "채널 정보 응답 DTO")
-public record ChannelResponseDto(
+public record ChannelDto(
     @Schema(description = "채널 ID", example = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11")
     UUID id,
 
@@ -25,7 +25,11 @@ public record ChannelResponseDto(
     Instant lastMessageAt,
 
     @Schema(description = "채널에 참여 중인 유저 ID 목록")
-    List<UUID> participantIds
+    List<UUID> participantIds,
+
+    Instant createdAt,
+
+    Instant updatedAt
 ) {
 
 }
