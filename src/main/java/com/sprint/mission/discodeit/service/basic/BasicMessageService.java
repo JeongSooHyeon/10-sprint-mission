@@ -56,7 +56,7 @@ public class BasicMessageService implements MessageService, ClearMemory {
     ReadStatus readStatus = readStatusRepository.findByUserIdAndChannelId(
             messageCreateDto.authorId(), messageCreateDto.channelId())
         .orElseThrow(() -> new IllegalArgumentException("일치하는 읽음상태가 없습니다."));
-    readStatus.updateLastReadAt(message.getCreatedAt().plusMillis(10));
+    readStatus.updateLastReadAt(message.getCreatedAt().plusMillis(100));
     readStatusRepository.save(readStatus);
     return messageMapper.toMessageInfoDto(message);
   }
