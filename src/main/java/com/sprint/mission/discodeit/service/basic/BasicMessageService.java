@@ -8,7 +8,9 @@ import com.sprint.mission.discodeit.mapper.MessageMapper;
 import com.sprint.mission.discodeit.repository.*;
 import com.sprint.mission.discodeit.service.ClearMemory;
 import com.sprint.mission.discodeit.service.MessageService;
+import com.sprint.mission.discodeit.service.ReadStatusService;
 import java.time.Instant;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,8 @@ public class BasicMessageService implements MessageService, ClearMemory {
   private final UserStatusRepository userStatusRepository;
   private final MessageMapper messageMapper;
   private final BinaryContentRepository binaryContentRepository;
+  private final ReadStatusService readStatusService;
+  private final ReadStatusRepository readStatusRepository;
 
   @Override
   public MessageDto create(MessageCreateDto messageCreateDto, List<UUID> attachmentIds) {
@@ -49,6 +53,10 @@ public class BasicMessageService implements MessageService, ClearMemory {
           userStatusRepository.save(us);
         });
 
+    ReadStatus readStatus = readStatusRepository.findByUserIdAndChannelId(
+            messageCreateDto.authorId(), messageCreateDto.channelId())
+        .orElseThrow(() -> new IllegalArgumentException("일치하는 읽음상태가 없습니다."));
+    readStatus.updateLastReadAt(Instant.now());
     messageRepository.save(message);
     return messageMapper.toMessageInfoDto(message);
   }
