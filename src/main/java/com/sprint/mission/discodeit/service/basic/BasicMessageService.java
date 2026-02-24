@@ -38,8 +38,9 @@ public class BasicMessageService implements MessageService, ClearMemory {
         .orElseThrow(() -> new IllegalArgumentException("일치하는 채널이 없습니다."));
     validateAttachments(attachmentIds);
 
+    Instant now = Instant.now();
     Message message = new Message(messageCreateDto.authorId(), messageCreateDto.channelId(),
-        messageCreateDto.content(), attachmentIds);
+        messageCreateDto.content(), attachmentIds, now);
 
     // 채널에 메시지 추가
     channel.addMessage(message.getId());
@@ -56,7 +57,7 @@ public class BasicMessageService implements MessageService, ClearMemory {
     ReadStatus readStatus = readStatusRepository.findByUserIdAndChannelId(
             messageCreateDto.authorId(), messageCreateDto.channelId())
         .orElseThrow(() -> new IllegalArgumentException("일치하는 읽음상태가 없습니다."));
-    readStatus.updateLastReadAt(message.getCreatedAt().plusMillis(100));
+    readStatus.updateLastReadAt(now.plusMillis(10));
     readStatusRepository.save(readStatus);
     return messageMapper.toMessageInfoDto(message);
   }
