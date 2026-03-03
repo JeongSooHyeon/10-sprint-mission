@@ -27,8 +27,8 @@
 //    }
 //
 //    @Override
-//    public Message create(UUID userId, UUID channelId, String bytes) {
-//        User user = userService.findById(userId);
+//    public Message create(UUID id, UUID channelId, String bytes) {
+//        User user = userService.findById(id);
 //        Channel channel = channelService.findById(channelId);
 //        Message message = new Message(user, channel, bytes);
 //        channel.addMessage(message);    // 채널에 메시지 추가
@@ -67,10 +67,10 @@
 //    }
 //
 //    @Override
-//    public UUID sendDirectMessage(UUID senderId, UUID receiverId, String bytes) {
-//        Channel dmChannel = getOrCreateDMChannel(senderId, receiverId);
+//    public UUID sendDirectMessage(UUID authorId, UUID receiverId, String bytes) {
+//        Channel dmChannel = getOrCreateDMChannel(authorId, receiverId);
 //
-//        User sender = userService.findById(senderId);
+//        User sender = userService.findById(authorId);
 //        Message message = new Message(sender, dmChannel, bytes);
 //
 //        dmChannel.addMessage(message);

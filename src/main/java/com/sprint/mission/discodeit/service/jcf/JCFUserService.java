@@ -23,11 +23,11 @@
 //    }
 //
 //    @Override
-//    public User create(String name, StatusType status) {
-//        userRepository.findByName(name).ifPresent(u -> {
+//    public User create(String newName, StatusType status) {
+//        userRepository.findByName(newName).ifPresent(u -> {
 //            throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
 //        });
-//        User newUser = new User(name, status);
+//        User newUser = new User(newName, status);
 //        return userRepository.save(newUser);
 //    }
 //
@@ -44,10 +44,10 @@
 //    }
 //
 //    @Override
-//    public User update(UUID id, String newName, StatusType newStatus) {
+//    public User update(UUID id, String newUsername, StatusType newStatus) {
 //        User user = findById(id);   // 예외 검사
 //
-//        user.updateName(newName);
+//        user.updateName(newUsername);
 //        user.updateStatus(newStatus);
 //
 //        return userRepository.save(user);

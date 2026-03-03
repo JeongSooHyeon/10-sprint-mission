@@ -9,11 +9,18 @@ import java.util.UUID;
 
 @Repository
 public interface ReadStatusRepository {
-    ReadStatus save(ReadStatus readStatus);
-    void deleteByChannelId(UUID channelId);
-    void deleteByUserId(UUID userId);
-    boolean existsByUserIdAndChannelId(UUID userId, UUID channelId);
-    Optional<ReadStatus> findById(UUID id);
-    List<ReadStatus> findAllByUserId(UUID userId);
-    void delete(UUID id);
+
+  ReadStatus save(ReadStatus readStatus);
+
+  void deleteByChannelId(UUID channelId);
+
+  void deleteByUserId(UUID userId);
+
+  Optional<ReadStatus> findByUserIdAndChannelId(UUID userId, UUID channelId);
+
+  Optional<ReadStatus> findById(UUID id);
+
+  List<ReadStatus> findAllByUserId(UUID userId);
+
+  void delete(UUID id);
 }

@@ -1,10 +1,10 @@
 {
   "info": {
-    "_postman_id": "bb1a8307-c8f7-482d-887d-45be4e19f4ff",
+    "_postman_id": "34077e80-d9d9-4be5-b86e-254364418cdc",
     "name": "sprint4",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "52122053",
-    "_collection_link": "https://go.postman.co/collection/52122053-bb1a8307-c8f7-482d-887d-45be4e19f4ff?source=collection_link"
+    "_collection_link": "https://go.postman.co/collection/52122053-34077e80-d9d9-4be5-b86e-254364418cdc?source=collection_link"
   },
   "item": [
     {
@@ -14,7 +14,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"userName\" : \"달선\",\r\n    \"email\" : \"dalsun@naver.com\",\r\n    \"password\" : \"dal123\",\r\n    \"profileId\" : null\r\n}",
+          "raw": "{\r\n    \"userName\" : \"달선\",\r\n    \"email\" : \"dalsun@naver.com\",\r\n    \"password\" : \"dal123\",\r\n    \"profileId\" : \"f0f42486-41f9-4130-b096-43456f16fe0a\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -22,11 +22,12 @@
           }
         },
         "url": {
-          "raw": "{{base_url}}/users",
+          "raw": "{{base_url}}/api/users",
           "host": [
             "{{base_url}}"
           ],
           "path": [
+            "api",
             "users"
           ]
         }
@@ -40,7 +41,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"userName\" : \"달룡\",\r\n    \"email\" : \"dalyong@naver.com\",\r\n    \"password\" : \"dal456\",\r\n    \"profileId\" : null\r\n}",
+          "raw": "{\r\n    \"userName\" : \"달룡\",\r\n    \"email\" : \"dalyong@naver.com\",\r\n    \"password\" : \"dal456\",\r\n    \"profileId\" : \"fe3a77a3-f8c0-43a6-8223-7ca663404dd3\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -48,11 +49,12 @@
           }
         },
         "url": {
-          "raw": "{{base_url}}/users",
+          "raw": "{{base_url}}/api/users",
           "host": [
             "{{base_url}}"
           ],
           "path": [
+            "api",
             "users"
           ]
         }
@@ -66,7 +68,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"userName\" : \"달례\",\r\n    \"email\" : \"dalye@naver.com\",\r\n    \"password\" : \"dal789\",\r\n    \"profileId\" : \"f274d7e8-57e3-4c55-955c-0be057caca97\"\r\n}",
+          "raw": "{\r\n    \"userName\" : \"달례\",\r\n    \"email\" : \"dalye@naver.com\",\r\n    \"password\" : \"dal789\",\r\n    \"profileId\" : \"5d10f5bb-32e6-43f0-9c51-5d9e49b2a0c2\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -74,13 +76,13 @@
           }
         },
         "url": {
-          "raw": "{{base_url}}/api/user",
+          "raw": "{{base_url}}/api/users",
           "host": [
             "{{base_url}}"
           ],
           "path": [
             "api",
-            "user"
+            "users"
           ]
         }
       },
@@ -89,8 +91,28 @@
     {
       "name": "사용자 정보 수정",
       "request": {
-        "method": "GET",
-        "header": []
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"newName\" : \"달랭이\",\r\n    \"profileId\" : \"c5c1e93a-c1d3-4692-bc77-d6581e18b5ec\"\r\n} \r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/users/3f3fb215-32aa-4281-904c-45b9dd8b96fb",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "users",
+            "3f3fb215-32aa-4281-904c-45b9dd8b96fb"
+          ]
+        }
       },
       "response": []
     },
@@ -121,13 +143,14 @@
           "raw": "{\r\n    \"userName\" : \"달선\",\r\n    \"email\" : \"dalsun@naver.com\",\r\n    \"password\" : \"dal123\",\r\n    \"profileId\" : null\r\n}"
         },
         "url": {
-          "raw": "{{base_url}}/users/e2dfe898-0b2d-4f54-b7d3-4bd3972bfc0f",
+          "raw": "{{base_url}}/api/users/aceca210-a426-4b07-a5aa-325522636d04",
           "host": [
             "{{base_url}}"
           ],
           "path": [
+            "api",
             "users",
-            "e2dfe898-0b2d-4f54-b7d3-4bd3972bfc0f"
+            "aceca210-a426-4b07-a5aa-325522636d04"
           ]
         }
       },
@@ -148,14 +171,15 @@
           }
         },
         "url": {
-          "raw": "{{base_url}}/users/24c8a2d6-c5e6-4df5-a2a1-1996f61fc03d/status",
+          "raw": "{{base_url}}/api/users/aceca210-a426-4b07-a5aa-325522636d04/userStatus",
           "host": [
             "{{base_url}}"
           ],
           "path": [
+            "api",
             "users",
-            "24c8a2d6-c5e6-4df5-a2a1-1996f61fc03d",
-            "status"
+            "aceca210-a426-4b07-a5aa-325522636d04",
+            "userStatus"
           ]
         }
       },
@@ -168,14 +192,21 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"userName\" : \"달선\",\r\n    \"password\" : \"dal123\",\r\n}"
+          "raw": "{\r\n    \"userName\" : \"달똥\",\r\n    \"password\" : \"dal123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
         },
         "url": {
-          "raw": "{{base_url}}/login",
+          "raw": "{{base_url}}/api/auth/login",
           "host": [
             "{{base_url}}"
           ],
           "path": [
+            "api",
+            "auth",
             "login"
           ]
         }
@@ -189,7 +220,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"name\" : \"공지방\",\r\n    \"ownerId\" : \"\",\r\n    \"description\" : \"공지를 잘 확인해 주시오!\"\r\n}",
+          "raw": "{\r\n    \"name\" : \"공지방\",\r\n    \"ownerId\" : \"170225d5-f7a9-4fdd-8f37-754266e2ff22\",\r\n    \"description\" : \"공지를 잘 확인해 주시오!\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -197,11 +228,12 @@
           }
         },
         "url": {
-          "raw": "{{base_url}}/channels/public",
+          "raw": "{{base_url}}/api/channels/public",
           "host": [
             "{{base_url}}"
           ],
           "path": [
+            "api",
             "channels",
             "public"
           ]
@@ -216,7 +248,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"ownerId\" : \"\",\r\n    \"users\" : [\r\n        \"\",\r\n        \"\",\r\n        \"\"\r\n    ]\r\n}",
+          "raw": "{\r\n    \"ownerId\" : \"d0c04136-8830-41fd-ba45-ebfd57a55602\",\r\n    \"users\" : [\r\n        \"d5be935a-14de-40fb-91ec-e977203eef1c\",\r\n        \"c0d01c66-1644-4586-8420-6daf592c606d\"\r\n    ]\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -224,11 +256,12 @@
           }
         },
         "url": {
-          "raw": "{{base_url}}/channels/private",
+          "raw": "{{base_url}}/api/channels/private",
           "host": [
             "{{base_url}}"
           ],
           "path": [
+            "api",
             "channels",
             "private"
           ]
@@ -243,7 +276,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"name\" : \"멍멍이들의 놀이방\",\r\n    \"isPrivate\" : \"PUBLIC\",\r\n    \"ownerId\" : \"\",\r\n    \"description\" : \"인간은 못 들어옵니다!\"\r\n}",
+          "raw": "{\r\n    \"name\" : \"멍멍이들의 놀이방\",\r\n    \"isPrivate\" : \"PUBLIC\",\r\n    \"ownerId\" : \"d5be935a-14de-40fb-91ec-e977203eef1c\",\r\n    \"description\" : \"인간은 못 들어옵니다!\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -251,13 +284,49 @@
           }
         },
         "url": {
-          "raw": "{{base_url}}/channels/",
+          "raw": "{{base_url}}/api/channels/01c750d3-c1d1-4bd8-8703-0088b453015d",
           "host": [
             "{{base_url}}"
           ],
           "path": [
+            "api",
             "channels",
-            ""
+            "01c750d3-c1d1-4bd8-8703-0088b453015d"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "채널 가입",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/channels/c994d581-0f82-4ea7-8edb-47b2ff11912b/join?userId=78f6be0e-cf12-442a-86e1-2df9eb3107bc",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "channels",
+            "c994d581-0f82-4ea7-8edb-47b2ff11912b",
+            "join"
+          ],
+          "query": [
+            {
+              "key": "userId",
+              "value": "78f6be0e-cf12-442a-86e1-2df9eb3107bc"
+            }
           ]
         }
       },
@@ -278,13 +347,14 @@
           }
         },
         "url": {
-          "raw": "{{base_url}}/channels/",
+          "raw": "{{base_url}}/api/channels/11aa613b-6455-46d5-ad45-0a39ccb42084",
           "host": [
             "{{base_url}}"
           ],
           "path": [
+            "api",
             "channels",
-            ""
+            "11aa613b-6455-46d5-ad45-0a39ccb42084"
           ]
         }
       },
@@ -296,13 +366,14 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{base_url}}/channels/",
+          "raw": "{{base_url}}/api/channels/12804da1-250c-456f-b62c-7fed23f8bcc7\n",
           "host": [
             "{{base_url}}"
           ],
           "path": [
+            "api",
             "channels",
-            ""
+            "12804da1-250c-456f-b62c-7fed23f8bcc7\n"
           ]
         }
       },
@@ -315,7 +386,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"senderId\" : \"62cee727-87a5-42b7-9430-660a9e49adc1\",\r\n    \"channelId\" : \"328cc475-c3b6-480b-8469-fae5ebe63db4\",\r\n    \"content\" : \"달선이라개\",\r\n    \"attachmentIds\" : null\r\n}",
+          "raw": "{\r\n    \"senderId\" : \"170225d5-f7a9-4fdd-8f37-754266e2ff22\",\r\n    \"channelId\" : \"c994d581-0f82-4ea7-8edb-47b2ff11912b\",\r\n    \"content\" : \"달선이라개\",\r\n    \"attachmentIds\" : []\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -323,11 +394,12 @@
           }
         },
         "url": {
-          "raw": "{{base_url}}/messages",
+          "raw": "{{base_url}}/api/messages",
           "host": [
             "{{base_url}}"
           ],
           "path": [
+            "api",
             "messages"
           ]
         }
@@ -341,7 +413,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"senderId\" : \"a4e28eea-bd76-4b3a-96a4-bd63d9608ce5\",\r\n    \"channelId\" : \"328cc475-c3b6-480b-8469-fae5ebe63db4\",\r\n    \"content\" : \"달룡이라느뇨\",\r\n    \"attachmentIds\" : null\r\n}",
+          "raw": "{\r\n    \"senderId\" : \"78f6be0e-cf12-442a-86e1-2df9eb3107bc\",\r\n    \"channelId\" : \"c994d581-0f82-4ea7-8edb-47b2ff11912b\",\r\n    \"content\" : \"달룡이라느뇨\",\r\n    \"attachmentIds\" : null\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -349,11 +421,12 @@
           }
         },
         "url": {
-          "raw": "{{base_url}}/messages",
+          "raw": "{{base_url}}/api/messages",
           "host": [
             "{{base_url}}"
           ],
           "path": [
+            "api",
             "messages"
           ]
         }
@@ -367,7 +440,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"senderId\" : \"52cfe866-c37b-4a2e-8768-871193fdfb6b\",\r\n    \"channelId\" : \"328cc475-c3b6-480b-8469-fae5ebe63db4\",\r\n    \"content\" : \"달례에옹\",\r\n    \"attachmentIds\" : null\r\n}",
+          "raw": "{\r\n    \"senderId\" : \"3f3fb215-32aa-4281-904c-45b9dd8b96fb\",\r\n    \"channelId\" : \"e23f2fe9-eb48-4e9a-af11-f6694e7f56e1\",\r\n    \"content\" : \"달선언니!\",\r\n    \"attachmentIds\" : null\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -375,11 +448,12 @@
           }
         },
         "url": {
-          "raw": "{{base_url}}/messages",
+          "raw": "{{base_url}}/api/messages",
           "host": [
             "{{base_url}}"
           ],
           "path": [
+            "api",
             "messages"
           ]
         }
@@ -393,7 +467,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"newContent\" : \"치와와 만세\",\r\n    \"attachmentIds\" : \"\"\r\n}",
+          "raw": "{\r\n    \"newContent\" : \"포메 만세\",\r\n    \"attachmentIds\" : null\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -401,13 +475,14 @@
           }
         },
         "url": {
-          "raw": "{{base_url}}/messages/",
+          "raw": "{{base_url}}/api/messages/815f6207-915c-42b2-a520-f4fe56a96c98",
           "host": [
             "{{base_url}}"
           ],
           "path": [
+            "api",
             "messages",
-            ""
+            "815f6207-915c-42b2-a520-f4fe56a96c98"
           ]
         }
       },
@@ -419,13 +494,14 @@
         "method": "DELETE",
         "header": [],
         "url": {
-          "raw": "{{base_url}}/messages/",
+          "raw": "{{base_url}}/api/messages/476f997f-d6d1-4fcf-be7d-5f5b3c1da8ac",
           "host": [
             "{{base_url}}"
           ],
           "path": [
+            "api",
             "messages",
-            ""
+            "476f997f-d6d1-4fcf-be7d-5f5b3c1da8ac"
           ]
         }
       },
@@ -437,14 +513,29 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{base_url}}/messages/channel/328cc475-c3b6-480b-8469-fae5ebe63db4",
+          "raw": "{{base_url}}/api/messages?userId=78f6be0e-cf12-442a-86e1-2df9eb3107bc",
           "host": [
             "{{base_url}}"
           ],
           "path": [
-            "messages",
-            "channel",
-            "328cc475-c3b6-480b-8469-fae5ebe63db4"
+            "api",
+            "messages"
+          ],
+          "query": [
+            {
+              "key": "channelId",
+              "value": "c994d581-0f82-4ea7-8edb-47b2ff11912b",
+              "disabled": true
+            },
+            {
+              "key": "keyword",
+              "value": "",
+              "disabled": true
+            },
+            {
+              "key": "userId",
+              "value": "78f6be0e-cf12-442a-86e1-2df9eb3107bc"
+            }
           ]
         }
       },
@@ -457,7 +548,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"userId\" : \"\",\r\n    \"channelId\" : \"\"\r\n}",
+          "raw": "{\r\n    \"userId\" : \"d0c04136-8830-41fd-ba45-ebfd57a55602\",\r\n    \"channelId\" : \"01c750d3-c1d1-4bd8-8703-0088b453015d\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -465,12 +556,13 @@
           }
         },
         "url": {
-          "raw": "{{base_url}}/read-status",
+          "raw": "{{base_url}}/api/readStatuses",
           "host": [
             "{{base_url}}"
           ],
           "path": [
-            "read-status"
+            "api",
+            "readStatuses"
           ]
         }
       },
@@ -511,14 +603,19 @@
           "raw": "{\r\n    \"senderId\" : \"62cee727-87a5-42b7-9430-660a9e49adc1\",\r\n    \"channelId\" : \"328cc475-c3b6-480b-8469-fae5ebe63db4\",\r\n    \"content\" : \"달선이라개\",\r\n    \"attachmentIds\" : null\r\n}"
         },
         "url": {
-          "raw": "{{base_url}}/user/592d94cb-57d9-4361-a0a0-0dbc6d658313/read-status",
+          "raw": "{{base_url}}/api/readStatuses?userId=d0c04136-8830-41fd-ba45-ebfd57a55602",
           "host": [
             "{{base_url}}"
           ],
           "path": [
-            "user",
-            "592d94cb-57d9-4361-a0a0-0dbc6d658313",
-            "read-status"
+            "api",
+            "readStatuses"
+          ],
+          "query": [
+            {
+              "key": "userId",
+              "value": "d0c04136-8830-41fd-ba45-ebfd57a55602"
+            }
           ]
         }
       },
@@ -528,26 +625,32 @@
       "name": "바이너리 파일 생성 달선",
       "request": {
         "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "image/jpeg",
-            "type": "text"
-          }
-        ],
+        "header": [],
         "body": {
-          "mode": "file",
-          "file": {
-            "src": "/C:/Users/user/Downloads/dalsun.jpg"
-          }
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "uuid": "c4f696b7-8fce-4423-9a3f-1d1213f10428",
+              "src": "/C:/Users/user/Downloads/dalsun.jpg"
+            }
+          ]
         },
         "url": {
-          "raw": "{{base_url}}/binary-content",
+          "raw": "{{base_url}}/api/binaryContents?file",
           "host": [
             "{{base_url}}"
           ],
           "path": [
-            "binary-content"
+            "api",
+            "binaryContents"
+          ],
+          "query": [
+            {
+              "key": "file",
+              "value": null
+            }
           ]
         }
       },
@@ -565,18 +668,24 @@
           }
         ],
         "body": {
-          "mode": "file",
-          "file": {
-            "src": "/C:/Users/user/Downloads/dalyong.jpg"
-          }
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "uuid": "c27849ba-9b22-4a3f-9acc-a95274a26c6e",
+              "src": "/C:/Users/user/Downloads/dalyong.jpg"
+            }
+          ]
         },
         "url": {
-          "raw": "{{base_url}}/binary-content",
+          "raw": "{{base_url}}/api/binaryContents",
           "host": [
             "{{base_url}}"
           ],
           "path": [
-            "binary-content"
+            "api",
+            "binaryContents"
           ]
         }
       },
@@ -594,19 +703,24 @@
           }
         ],
         "body": {
-          "mode": "file",
-          "file": {
-            "src": "/C:/Users/user/Downloads/dalye.jpg"
-          }
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "uuid": "af249326-26b3-4e2a-976d-510fcda6e0f5",
+              "src": "/C:/Users/user/Downloads/dalye.jpg"
+            }
+          ]
         },
         "url": {
-          "raw": "{{base_url}}/api/binaryContent",
+          "raw": "{{base_url}}/api/binaryContents",
           "host": [
             "{{base_url}}"
           ],
           "path": [
             "api",
-            "binaryContent"
+            "binaryContents"
           ]
         }
       },
@@ -624,18 +738,24 @@
           }
         ],
         "body": {
-          "mode": "file",
-          "file": {
-            "src": "/C:/Users/user/Downloads/automnDalsun.jpg"
-          }
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "uuid": "11d7a47d-a6e0-44b0-8eb3-66b03ef4c509",
+              "src": "/C:/Users/user/Downloads/automnDalsun.jpg"
+            }
+          ]
         },
         "url": {
-          "raw": "{{base_url}}/binary-content",
+          "raw": "{{base_url}}/api/binaryContents",
           "host": [
             "{{base_url}}"
           ],
           "path": [
-            "binary-content"
+            "api",
+            "binaryContents"
           ]
         }
       },
@@ -653,18 +773,24 @@
           }
         ],
         "body": {
-          "mode": "file",
-          "file": {
-            "src": "/C:/Users/user/Downloads/kkDalsun.jpg"
-          }
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "uuid": "5d97b828-b314-4896-b1a6-13a59e24f464",
+              "src": "/C:/Users/user/Downloads/kkDalsun.jpg"
+            }
+          ]
         },
         "url": {
-          "raw": "{{base_url}}/binary-content",
+          "raw": "{{base_url}}/api/binaryContents",
           "host": [
             "{{base_url}}"
           ],
           "path": [
-            "binary-content"
+            "api",
+            "binaryContents"
           ]
         }
       },
@@ -721,57 +847,22 @@
           }
         },
         "url": {
-          "raw": "{{base_url}}/binary-content?ids=d8590f03-0f7b-4c9c-8e1e-7d25eaa21423&ids=ec08646f-0345-40c9-bdd2-a79abbc0e868&ids=10c65fb2-dce8-4b1b-9b64-e8d907ec0e02&ids=88612a3e-4a10-4597-b151-a79e421e5a14",
+          "raw": "{{base_url}}/api/binaryContents?ids=af2f198c-3d4e-4775-936b-a38a67a06c5a&ids=fdf758cd-3fe0-4d5c-a93f-d9e15d539871",
           "host": [
             "{{base_url}}"
           ],
           "path": [
-            "binary-content"
+            "api",
+            "binaryContents"
           ],
           "query": [
             {
               "key": "ids",
-              "value": "d8590f03-0f7b-4c9c-8e1e-7d25eaa21423"
+              "value": "af2f198c-3d4e-4775-936b-a38a67a06c5a"
             },
             {
               "key": "ids",
-              "value": "ec08646f-0345-40c9-bdd2-a79abbc0e868"
-            },
-            {
-              "key": "ids",
-              "value": "10c65fb2-dce8-4b1b-9b64-e8d907ec0e02",
-              "type": "text"
-            },
-            {
-              "key": "ids",
-              "value": "88612a3e-4a10-4597-b151-a79e421e5a14",
-              "type": "text"
-            }
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "채널 가입",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "url": {
-          "raw": "{{base_url}}/channels//join?userId",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "channels",
-            "",
-            "join"
-          ],
-          "query": [
-            {
-              "key": "userId",
-              "value": null,
-              "type": "text"
+              "value": "fdf758cd-3fe0-4d5c-a93f-d9e15d539871"
             }
           ]
         }
@@ -806,8 +897,7 @@
   "variable": [
     {
       "key": "base_url",
-      "value": "",
-      "type": "default"
+      "value": ""
     }
   ]
 }

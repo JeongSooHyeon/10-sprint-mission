@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.mapper;
 
-import com.sprint.mission.discodeit.dto.ChannelResponseDto;
+import com.sprint.mission.discodeit.dto.ChannelDto;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.IsPrivate;
 import com.sprint.mission.discodeit.repository.MessageRepository;
@@ -13,30 +13,31 @@ import java.util.UUID;
 @Component
 public class ChannelMapper {
 
-    // Channel -> ChannelInfoDto
-    public ChannelResponseDto toChannelInfoDto(Channel channel, MessageRepository messageRepository) {
-        Instant lastMessageAt = messageRepository.findById(channel.getLastMessageId())
-                .map(m -> m.getCreatedAt())
-                .orElse(channel.getCreatedAt());
+  // Channel -> ChannelInfoDto
+  public ChannelDto toChannelInfoDto(Channel channel, MessageRepository messageRepository) {
+    Instant lastMessageAt = messageRepository.findById(channel.getLastMessageId())
+        .map(m -> m.getCreatedAt())
+        .orElse(channel.getCreatedAt());
 
-        List<UUID> memberIds = channel.getUserIds();
-        String name = channel.getName();
-        String description = channel.getDescription();
-        if (channel.getIsPrivate() == IsPrivate.PRIVATE) {
-            description = null;
-            name = null;
-        }
-
-        return new ChannelResponseDto(
-                channel.getId(),
-                name,
-                channel.getIsPrivate(),
-                description,
-                channel.getOwnerId(),
-                lastMessageAt,
-                memberIds
-        );
+    List<UUID> memberIds = channel.getUserIds();
+    String name = channel.getName();
+    String description = channel.getDescription();
+    if (channel.getIsPrivate() == IsPrivate.PRIVATE) {
+      description = null;
+      name = null;
     }
+
+    return new ChannelDto(
+        channel.getId(),
+        name,
+        channel.getIsPrivate(),
+        description,
+        lastMessageAt,
+        memberIds,
+        channel.getCreatedAt(),
+        channel.getUpdatedAt()
+    );
+  }
 
 
 }
