@@ -31,7 +31,7 @@ public class BasicChannelService implements ChannelService, ClearMemory {
     Channel channel =
         new Channel(publicChannelCreateDto.name(), IsPrivate.PUBLIC,
             publicChannelCreateDto.description());
-    
+
     channelRepository.save(channel);
     return channelMapper.toChannelInfoDto(channel, messageRepository);
   }
@@ -45,7 +45,7 @@ public class BasicChannelService implements ChannelService, ClearMemory {
     privateChannelCreateDto.participantIds()
         .forEach(uId -> {
           channel.addUserId(uId);
-          ReadStatus readStatus = new ReadStatus(uId, channel.getId());
+          ReadStatus readStatus = new ReadStatus(uId, channel.getId(), Instant.now());
           readStatusRepository.save(readStatus);
         });
 
@@ -95,7 +95,7 @@ public class BasicChannelService implements ChannelService, ClearMemory {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자가 없습니다."));
     channel.addUserId(user.getId());
-    ReadStatus readStatus = new ReadStatus(user.getId(), channel.getId());
+    ReadStatus readStatus = new ReadStatus(user.getId(), channel.getId(), Instant.now());
     readStatusRepository.save(readStatus);
     channelRepository.save(channel);
     UserStatus userStatus = userStatusRepository.findByUserId(user.getId())

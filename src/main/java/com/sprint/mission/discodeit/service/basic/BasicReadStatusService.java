@@ -9,6 +9,7 @@ import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.ReadStatusService;
+import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +41,7 @@ public class BasicReadStatusService implements ReadStatusService {
         .orElseGet(() -> {
           // 2. 진짜 없으면 그때 생성한다.
           ReadStatus newStatus = new ReadStatus(readStatusCreateDto.userId(),
-              readStatusCreateDto.channelId());
+              readStatusCreateDto.channelId(), Instant.now());
           return readStatusMapper.toReadStatusInfoDto(readStatusRepository.save(newStatus));
         });
   }
