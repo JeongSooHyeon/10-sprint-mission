@@ -1,5 +1,7 @@
 package com.sprint.mission.discodeit.entity;
 
+import com.sprint.mission.discodeit.entity.base.BaseUpdatableEntity;
+
 import com.sprint.mission.discodeit.dto.UserUpdateRequest;
 import lombok.Getter;
 
@@ -10,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Getter
-public class User extends BaseEntity implements Serializable {
+public class User extends BaseUpdatableEntity implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
