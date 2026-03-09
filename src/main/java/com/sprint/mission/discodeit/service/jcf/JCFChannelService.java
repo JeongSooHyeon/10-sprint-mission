@@ -52,8 +52,8 @@
 //        return channelRepository.save(channel);
 //    }
 //
-//    public void joinChannel(UUID id, UUID channelId) {
-//        Channel channel = findById(channelId);
+//    public void joinChannel(UUID id, UUID channel) {
+//        Channel channel = findById(channel);
 //        User user = userService.findById(id);
 //        channel.addUser(user);
 //        user.getChannels().add(channel); // 양방향 연결
@@ -72,17 +72,17 @@
 //    }
 //
 //    // 채널에서 주고받은 메시지 출력
-//    public List<Message> getChannelMessages(UUID channelId) {
-//        Channel channel = findById(channelId);
+//    public List<Message> getChannelMessages(UUID channel) {
+//        Channel channel = findById(channel);
 //        return messageRepository.readAll().stream()
-//                .filter(msg -> msg.getChannelId().equals(channelId))
+//                .filter(msg -> msg.getChannelId().equals(channel))
 //                .toList();
 /// /        return channel.getMessages();
 //    }
 //
 //    @Override
-//    public List<User> getChannelUsers(UUID channelId) {
-//        Channel channel = findById(channelId);
+//    public List<User> getChannelUsers(UUID channel) {
+//        Channel channel = findById(channel);
 //        return channel.getUsers();
 //    }
 //

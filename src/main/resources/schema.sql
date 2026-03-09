@@ -1,4 +1,3 @@
-
 CREATE TABLE binary_contents
 (
     id           UUID PRIMARY KEY,
@@ -84,3 +83,18 @@ CREATE TABLE message_attachments
     FOREIGN KEY (attachment_id) REFERENCES binary_contents (id)
         ON DELETE CASCADE
 );
+
+DELETE
+FROM binary_contents;
+DELETE
+FROM channels;
+DELETE
+FROM message_attachments;
+DELETE
+FROM messages;
+DELETE
+FROM read_statuses;
+DELETE
+FROM user_statuses;
+DELETE
+FROM users;

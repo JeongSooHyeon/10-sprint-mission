@@ -1,10 +1,10 @@
 package com.sprint.mission.discodeit.controller;
 
 import com.sprint.mission.discodeit.dto.BinaryContentCreateDto;
-import com.sprint.mission.discodeit.dto.BinaryContentResponseDto;
+import com.sprint.mission.discodeit.dto.BinaryContentDto;
 import com.sprint.mission.discodeit.dto.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.UserDto;
-import com.sprint.mission.discodeit.dto.UserStatusUpdateByUserIdDto;
+import com.sprint.mission.discodeit.dto.UserStatusUpdateRequest;
 import com.sprint.mission.discodeit.dto.UserUpdateRequest;
 import com.sprint.mission.discodeit.service.BinaryContentService;
 import com.sprint.mission.discodeit.service.UserService;
@@ -41,30 +41,11 @@ public class UserController {
       @ApiResponse(responseCode = "201", description = "등록 성공",
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class)))
   })
-  @RequestMapping(method = RequestMethod.POST)
+  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public UserDto join(@RequestPart("userCreateRequest") UserCreateRequest dto,
       @RequestPart(value = "profile", required = false) MultipartFile profile) throws IOException {
-    // profile 파일 처리
-    UUID profileId = null;
 
-    if (profile != null && !profile.isEmpty()) {
-      BinaryContentCreateDto binaryDto =
-          new BinaryContentCreateDto(profile.getContentType(), profile.getBytes(),
-              profile.getSize(), profile.getOriginalFilename());
-
-      BinaryContentResponseDto savedFile = binaryContentService.create(binaryDto);
-      profileId = savedFile.id();
-    }
-
-    // DTO에 newProfileId 세팅해서 새로 생성
-    UserCreateRequest newDto = new UserCreateRequest(
-        dto.username(),
-        dto.email(),
-        dto.password(),
-        profileId
-    );
-
-    return userService.create(newDto);
+    return userService.create(dto, profile);
   }
 
   // 사용자 정보 수정
@@ -80,22 +61,7 @@ public class UserController {
       @RequestPart("userUpdateRequest") UserUpdateRequest dto,
       @RequestPart(value = "profile", required = false) MultipartFile profile) throws IOException {
 
-    UUID profileId = null;
-
-    if (profile != null && !profile.isEmpty()) {
-      BinaryContentCreateDto binaryDto =
-          new BinaryContentCreateDto(profile.getContentType(), profile.getBytes(),
-              profile.getSize(), profile.getOriginalFilename());
-
-      BinaryContentResponseDto saved = binaryContentService.create(binaryDto);
-
-      profileId = saved.id();
-    }
-
-    UserUpdateRequest newDto =
-        new UserUpdateRequest(dto.newUsername(), profileId, dto.newEmail(), dto.newPassword());
-
-    return userService.update(userId, newDto);
+    return userService.update(userId, dto, profile);
   }
 
   // 사용자 삭제
@@ -134,7 +100,7 @@ public class UserController {
   })
   @RequestMapping(value = "/{userId}/userStatus", method = RequestMethod.PATCH)
   public UserDto updateStatus(@PathVariable UUID userId,
-      @RequestBody UserStatusUpdateByUserIdDto dto) {
+      @RequestBody UserStatusUpdateRequest dto) {
     return userStatusService.updateByUserId(userId, dto);
   }
 }

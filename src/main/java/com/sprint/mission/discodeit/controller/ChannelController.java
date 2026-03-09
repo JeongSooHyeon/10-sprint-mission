@@ -1,9 +1,9 @@
 package com.sprint.mission.discodeit.controller;
 
 import com.sprint.mission.discodeit.dto.ChannelDto;
-import com.sprint.mission.discodeit.dto.ChannelUpdateDto;
-import com.sprint.mission.discodeit.dto.PrivateChannelCreateDto;
-import com.sprint.mission.discodeit.dto.PublicChannelCreateDto;
+import com.sprint.mission.discodeit.dto.PublicChannelUpdateRequest;
+import com.sprint.mission.discodeit.dto.PrivateChannelCreateRequest;
+import com.sprint.mission.discodeit.dto.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.service.ChannelService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -32,7 +32,7 @@ public class ChannelController {
       @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
   })
   @RequestMapping(value = "/public", method = RequestMethod.POST)
-  public ChannelDto createPublicChannel(@RequestBody PublicChannelCreateDto dto) {
+  public ChannelDto createPublicChannel(@RequestBody PublicChannelCreateRequest dto) {
     return channelService.createPublic(dto);
   }
 
@@ -43,7 +43,7 @@ public class ChannelController {
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = ChannelDto.class)))
   })
   @RequestMapping(value = "/private", method = RequestMethod.POST)
-  public ChannelDto createPrivateChannel(@RequestBody PrivateChannelCreateDto dto) {
+  public ChannelDto createPrivateChannel(@RequestBody PrivateChannelCreateRequest dto) {
     return channelService.createPrivate(dto);
   }
 
@@ -56,7 +56,7 @@ public class ChannelController {
   })
   @RequestMapping(value = "/{channelId}", method = RequestMethod.PATCH)
   public ChannelDto updatePublicChannel(@PathVariable UUID channelId,
-      @RequestBody ChannelUpdateDto dto) {
+      @RequestBody PublicChannelUpdateRequest dto) {
     return channelService.update(channelId, dto);
   }
 

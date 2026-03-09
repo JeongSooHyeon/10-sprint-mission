@@ -1,8 +1,8 @@
 package com.sprint.mission.discodeit.controller;
 
-import com.sprint.mission.discodeit.dto.ReadStatusCreateDto;
+import com.sprint.mission.discodeit.dto.ReadStatusCreateRequest;
 import com.sprint.mission.discodeit.dto.ReadStatusDto;
-import com.sprint.mission.discodeit.dto.ReadStatusUpdateDto;
+import com.sprint.mission.discodeit.dto.ReadStatusUpdateRequest;
 import com.sprint.mission.discodeit.service.ReadStatusService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -30,7 +30,7 @@ public class ReadStatusController {
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = ReadStatusDto.class)))
   })
   @RequestMapping(method = RequestMethod.POST)
-  public ReadStatusDto create(@RequestBody ReadStatusCreateDto dto) {
+  public ReadStatusDto create(@RequestBody ReadStatusCreateRequest dto) {
     return readStatusService.create(dto);
   }
 
@@ -43,7 +43,7 @@ public class ReadStatusController {
   })
   @RequestMapping(value = "/{readStatusId}", method = RequestMethod.PATCH)
   public ReadStatusDto update(@PathVariable UUID readStatusId,
-      @RequestBody ReadStatusUpdateDto dto) {
+      @RequestBody ReadStatusUpdateRequest dto) {
     return readStatusService.update(readStatusId, dto);
   }
 

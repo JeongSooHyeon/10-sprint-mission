@@ -57,28 +57,28 @@
 //        return channelRepository.save(channel);
 //    }
 //
-//    public void joinChannel(UUID id, UUID channelId) {
-//        Channel channel = findById(channelId);
+//    public void joinChannel(UUID id, UUID channel) {
+//        Channel channel = findById(channel);
 //        User user = userService.findById(id);
 //        channel.addUser(user);
 //        channelRepository.save(channel);
 //        userRepository.save(user);
 //    }
 //
-//    public List<Message> getChannelMessages(UUID channelId) {
-//        findById(channelId);
+//    public List<Message> getChannelMessages(UUID channel) {
+//        findById(channel);
 //        return messageRepository.readAll().stream()
-//                .filter(msg -> msg.getChannelId().equals(channelId))
+//                .filter(msg -> msg.getChannelId().equals(channel))
 //                .sorted(Comparator.comparing(Message::getCreatedAt))
 //                .toList();
 //
 //    }
 //
 //    @Override
-//    public List<User> getChannelUsers(UUID channelId) {
-//        findById(channelId);
+//    public List<User> getChannelUsers(UUID channel) {
+//        findById(channel);
 //        return channelRepository.readAll().stream()
-//                .filter(ch -> ch.getId().equals(channelId))
+//                .filter(ch -> ch.getId().equals(channel))
 //                .findFirst()
 //                .map(Channel::getUsers)
 //                .orElse(Collections.emptyList());

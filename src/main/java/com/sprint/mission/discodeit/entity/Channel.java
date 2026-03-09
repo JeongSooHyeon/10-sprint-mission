@@ -1,74 +1,54 @@
 package com.sprint.mission.discodeit.entity;
 
 import com.sprint.mission.discodeit.entity.base.BaseUpdatableEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Table;
 import lombok.Getter;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
+import lombok.NoArgsConstructor;
 
 @Getter
+@Entity
+@Table(name = "channels")
+@NoArgsConstructor
 public class Channel extends BaseUpdatableEntity implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
+  @Column
   private String name;
-  private IsPrivate isPrivate;
+
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private IsPrivate type;
+
+  @Column
   private String description; // 채널 소개
-  private List<UUID> userIds;   // 채널 멤버
-  private List<UUID> messageIds; // 채널에서 주고받은 메시지들
 
-  public Channel(String name, IsPrivate isPrivate, String description) {
-    super(UUID.randomUUID(), Instant.now());
+
+  public Channel(String name, IsPrivate type, String description) {
     this.name = name;
-    this.isPrivate = isPrivate;
+    this.type = type;
     this.description = description;
-    this.userIds = new ArrayList<>();
-    this.messageIds = new ArrayList<>();
-  }
-
-  public UUID getLastMessageId() {
-    if (messageIds.isEmpty()) {
-      return null;
-    }
-    return messageIds.get(messageIds.size() - 1);
-  }
-
-  public void addMessage(UUID messageId) {
-    if (messageId == null) {
-      return;
-    }
-    if (!messageIds.contains(messageId)) {
-      messageIds.add(messageId);
-    }
-  }
-
-  public void addUserId(UUID userId) {
-    if (!userIds.contains(userId)) {
-      userIds.add(userId);
-    }
   }
 
   public void updateName(String name) {
     this.name = name;
-    this.onUpdate();
-  }
-
-  public void updatePrivate(IsPrivate isPrivate) {
-    this.isPrivate = isPrivate;
-    this.onUpdate();
   }
 
   public void updateDescription(String description) {
     this.description = description;
-    this.onUpdate();
   }
 
   @Override
   public String toString() {
-    return "채널명 : " + name + ", 공개여부 : " + isPrivate;
+    return "채널명 : " + name + ", 공개여부 : " + type;
   }
 
 }
