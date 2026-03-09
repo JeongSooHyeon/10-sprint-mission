@@ -1,10 +1,8 @@
 package com.sprint.mission.discodeit.controller;
 
-import com.sprint.mission.discodeit.dto.BinaryContentCreateDto;
-import com.sprint.mission.discodeit.dto.BinaryContentResponseDto;
-import com.sprint.mission.discodeit.dto.MessageCreateDto;
+import com.sprint.mission.discodeit.dto.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.MessageDto;
-import com.sprint.mission.discodeit.dto.MessageUpdateDto;
+import com.sprint.mission.discodeit.dto.MessageUpdateRequest;
 import com.sprint.mission.discodeit.service.BinaryContentService;
 import com.sprint.mission.discodeit.service.MessageService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +14,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.io.IOException;
 import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,30 +38,13 @@ public class MessageController {
       @ApiResponse(responseCode = "201", description = "전송 성공",
           content = @Content(mediaType = "multipart/form-data", schema = @Schema(implementation = MessageDto.class)))
   })
-  @RequestMapping(method = RequestMethod.POST)
+  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public MessageDto send(
-      @RequestPart("messageCreateRequest") MessageCreateDto dto,
+      @RequestPart("messageCreateRequest") MessageCreateRequest dto,
       @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments)
       throws IOException {
 
-    List<UUID> attachmentIds = new ArrayList<>();
-    if (attachments != null && !attachments.isEmpty()) {
-      for (MultipartFile file : attachments) {
-        if (!file.isEmpty()) {
-          BinaryContentCreateDto binaryDto = new BinaryContentCreateDto(
-              file.getContentType(),
-              file.getBytes(),
-              file.getSize(),
-              file.getOriginalFilename()
-          );
-          // Controller가 직접 BinaryContentService를 호출
-          BinaryContentResponseDto savedFile = binaryContentService.create(binaryDto);
-          attachmentIds.add(savedFile.id());
-        }
-      }
-    }
-
-    return messageService.create(dto, attachmentIds);
+    return messageService.create(dto, attachments);
   }
 
   // 메시지 수정
@@ -71,14 +56,14 @@ public class MessageController {
   })
   @RequestMapping(value = "/{messageId}", method = RequestMethod.PATCH)
   public MessageDto update(@PathVariable UUID messageId,
-      @RequestBody MessageUpdateDto dto) {
+      @RequestBody MessageUpdateRequest dto) {
     return messageService.update(messageId, dto);
   }
 
   // 메시지 삭제
   @Operation(summary = "메시지 삭제", description = "ID에 해당하는 메시지를 삭제합니다.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "삭제 성공")
+      @ApiResponse(responseCode = "204", description = "삭제 성공")
   })
   @RequestMapping(value = "/{messageId}", method = RequestMethod.DELETE)
   public void delete(@PathVariable UUID messageId) {
@@ -98,28 +83,28 @@ public class MessageController {
           ))
   })
   @RequestMapping(method = RequestMethod.GET)
-  public List<MessageDto> getMessages(
-      @RequestParam(required = false) UUID channelId,
+  public Slice<MessageDto> getMessages(
+      @RequestParam(required = true) UUID channelId,
       @RequestParam(required = false) String keyword,
-      @RequestParam(required = false) UUID userId) {
+      @RequestParam(required = false) UUID userId,
+      Pageable pageable) {
 
     // 키워드 검색
-    if (keyword != null) {
-      return messageService.searchMessage(channelId, keyword);
+    if (userId != null && keyword != null) {
+      return messageService.searchMessage(userId, channelId, keyword, pageable);
     }
 
     // 특정 채널의 메시지 목록 조회
-    if (channelId != null) {
-      return messageService.findAllByChannelId(channelId);
+    if (userId != null && channelId != null) {
+      return messageService.findAllByChannelId(userId, channelId, pageable);
     }
 
     // 특정 사용자가 보낸 메시지 조회
     if (userId != null) {
-      return messageService.getUserMessages(userId);
+      return messageService.getUserMessages(userId, pageable);
     }
 
-    // 모든 조건 없으면 전체 조회
-    return new ArrayList<>();
+    return Page.empty();
   }
 
 

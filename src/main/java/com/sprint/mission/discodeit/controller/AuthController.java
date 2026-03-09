@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.controller;
 
-import com.sprint.mission.discodeit.dto.UserLoginDto;
+import com.sprint.mission.discodeit.dto.LoginRequest;
 import com.sprint.mission.discodeit.dto.UserDto;
 import com.sprint.mission.discodeit.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,7 +48,7 @@ public class AuthController {
   })
 
   @RequestMapping(value = "/login", method = RequestMethod.POST)
-  public UserDto login(@RequestBody UserLoginDto dto) {
+  public UserDto login(@RequestBody LoginRequest dto) {
     System.out.println("newUsername = " + dto.username());
     System.out.println("password = " + dto.password());
     return authService.login(dto);

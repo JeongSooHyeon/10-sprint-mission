@@ -13,9 +13,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
+
 public class BasicUserStatusService implements UserStatusService {
 
   private final UserRepository userRepository;
@@ -24,7 +26,8 @@ public class BasicUserStatusService implements UserStatusService {
   private final UserMapper userMapper;
 
   @Override
-  public UserStatusInfoDto create(UserStatusCreateDto userStatusCreateDto) {
+  @Transactional
+  public UserStatusDto create(UserStatusCreateDto userStatusCreateDto) {
     User user = userRepository.findById(userStatusCreateDto.userId())
         .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
     userStatusRepository.findByUserId(user.getId())
@@ -32,53 +35,54 @@ public class BasicUserStatusService implements UserStatusService {
           throw new IllegalArgumentException("해당 사용자의 UserStatus가 이미 있습니다.");
         });
 
-    UserStatus userStatus = new UserStatus(user.getId(), userStatusCreateDto.lastActiveAt());
+    UserStatus userStatus = new UserStatus(user, userStatusCreateDto.lastActiveAt());
     userStatusRepository.save(userStatus);
-    return userStatusMapper.toUserInfoDto(userStatus);
+    return userStatusMapper.toUserStatusDto(userStatus);
   }
 
   @Override
-  public UserStatusInfoDto findById(UUID id) {
-    return userStatusMapper.toUserInfoDto(userStatusRepository.findById(id)
+  @Transactional(readOnly = true)
+  public UserStatusDto findById(UUID id) {
+    return userStatusMapper.toUserStatusDto(userStatusRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("해당 UserStatus가 없습니다.")));
   }
 
   @Override
-  public List<UserStatusInfoDto> findAll() {
+  @Transactional(readOnly = true)
+  public List<UserStatusDto> findAll() {
     return userStatusRepository.findAll().stream()
-        .map(userStatusMapper::toUserInfoDto)
+        .map(userStatusMapper::toUserStatusDto)
         .toList();
   }
 
   @Override
-  public UserStatusInfoDto update(UUID userStatusId,
+  @Transactional
+  public UserStatusDto update(UUID userStatusId,
       UserStatusUpdateByIdDto userStatusUpdateByIdDto) {
     UserStatus userStatus = userStatusRepository.findById(userStatusId)
         .orElseThrow(() -> new IllegalArgumentException("해당 UserStatus가 없습니다."));
 
     userStatus.update(userStatusUpdateByIdDto.newLastActiveAt());
-    userStatusRepository.save(userStatus);
-    return userStatusMapper.toUserInfoDto(userStatus);
+    return userStatusMapper.toUserStatusDto(userStatus);
   }
 
   // User 정보를 포함하여 반환
   @Override
+  @Transactional
   public UserDto updateByUserId(UUID userId,
-      UserStatusUpdateByUserIdDto userStatusUpdateByUserIdDto) {
+      UserStatusUpdateRequest userStatusUpdateRequest) {
     UserStatus userStatus = userStatusRepository.findByUserId(userId)
         .orElseThrow(() -> new IllegalArgumentException("해당 사용자의 상태정보가 없습니다."));
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습ㄴ디ㅏ."));
 
-    userStatus.update(userStatusUpdateByUserIdDto.newLastActiveAt());
-    UserStatus updatedStatus = userStatusRepository.save(userStatus);
-    return userMapper.toUserInfoDto(user, updatedStatus);
+    userStatus.update(userStatusUpdateRequest.newLastActiveAt());
+    return userMapper.toUserDto(userStatus.getUser());
   }
 
   @Override
+  @Transactional
   public void delete(UUID id) {
     userStatusRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("해당 UserStatus가 없습니다."));
-    userStatusRepository.delete(id);
+    userStatusRepository.deleteById(id);
   }
 }
