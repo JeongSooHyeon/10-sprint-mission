@@ -57,7 +57,7 @@ public abstract class ChannelMapper {
   @Named("getLastMessageAt")
   protected Instant getLastMessageAt(Channel channel) {
     // 마지막 메시지 시간
-    Instant lastMessageAt = Instant.now();
+    Instant lastMessageAt = null;
     Message lastMessage = messageRepository.findFirstByChannelIdOrderByCreatedAtDesc(
         channel.getId()).orElse(null);
     if (lastMessage != null) {

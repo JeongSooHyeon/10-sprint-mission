@@ -13,7 +13,7 @@ public interface PageResponseMapper {
   default <T> PageResponse<T> fromSlice(Slice<T> slice) {
     return PageResponse.<T>builder()
         .content(slice.getContent())
-        .number(slice.getNumber())
+        .nextCursor(slice.getNumber())
         .size(slice.getSize())
         .hasNext(slice.hasNext())
         .build();
@@ -22,7 +22,7 @@ public interface PageResponseMapper {
   default <T> PageResponse<T> fromPage(Page<T> page) {
     return PageResponse.<T>builder()
         .content(page.getContent())
-        .number(page.getNumber())
+        .nextCursor(page.getNumber())
         .size(page.getSize())
         .hasNext(page.hasNext())
         .totalElements(page.getTotalElements())

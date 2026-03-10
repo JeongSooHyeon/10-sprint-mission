@@ -84,17 +84,24 @@ CREATE TABLE message_attachments
         ON DELETE CASCADE
 );
 
-DELETE
-FROM binary_contents;
-DELETE
-FROM channels;
-DELETE
-FROM message_attachments;
-DELETE
-FROM messages;
+
+
 DELETE
 FROM read_statuses;
 DELETE
 FROM user_statuses;
 DELETE
+FROM message_attachments;
+DELETE
+FROM messages;
+DELETE
+FROM channels;
+DELETE
 FROM users;
+DELETE
+FROM binary_contents;
+
+
+
+
+

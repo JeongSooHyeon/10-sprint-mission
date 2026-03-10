@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.graphql.GraphQlProperties.Http;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,28 +34,30 @@ public class BinaryContentController {
   private final BinaryContentStorage storage;
 
   // 바이너리 파일 생성
-  @Operation(summary = "파일 업로드", description = "MultipartFile을 업로드하여 시스템에 저장")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "201", description = "업로드 성공",
-          content = @Content(mediaType = "application/json",
-              schema = @Schema(implementation = BinaryContentDto.class))),
-      @ApiResponse(responseCode = "400", description = "잘못된 요청 파라미터"),
-      @ApiResponse(responseCode = "500", description = "서버 내부 오류")
-
-  })
-  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<BinaryContentDto> create(@RequestPart("file") MultipartFile file)
-      throws IOException {
-
-    BinaryContentCreateDto newDto = new BinaryContentCreateDto(
-        file.getContentType(),
-        file.getBytes(),
-        file.getSize(),
-        file.getOriginalFilename()
-    );
-
-    return new ResponseEntity<>(binaryContentService.create(newDto), HttpStatus.CREATED);
-  }
+//  @Operation(summary = "파일 업로드", description = "MultipartFile을 업로드하여 시스템에 저장")
+//  @ApiResponses(value = {
+//      @ApiResponse(responseCode = "201", description = "업로드 성공",
+//          content = @Content(mediaType = "application/json",
+//              schema = @Schema(implementation = BinaryContentDto.class))),
+//      @ApiResponse(responseCode = "400", description = "잘못된 요청 파라미터"),
+//      @ApiResponse(responseCode = "500", description = "서버 내부 오류")
+//
+//  })
+//  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//  public ResponseEntity<BinaryContentDto> create(@RequestPart("file") MultipartFile file)
+//      throws IOException {
+//
+//    BinaryContentCreateDto newDto = new BinaryContentCreateDto(
+//        file.getContentType(),
+//        file.getBytes(),
+//        file.getSize(),
+//        file.getOriginalFilename()
+//    );
+//
+//    return ResponseEntity
+//        .status(HttpStatus.CREATED)
+//        .body(binaryContentService.create(newDto));
+//  }
 
   // 바아너리 파일 1개 조회
   @Operation(
@@ -70,7 +73,9 @@ public class BinaryContentController {
   @RequestMapping(value = "/{binaryContentId}", method = RequestMethod.GET)
   public ResponseEntity<BinaryContentDto> findById(
       @PathVariable("binaryContentId") UUID id) {
-    return new ResponseEntity<>(binaryContentService.findById(id), HttpStatus.OK);
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(binaryContentService.findById(id));
   }
 
   // 바이너리 파일 여러개 조회
@@ -85,9 +90,11 @@ public class BinaryContentController {
           ))
   })
   @RequestMapping(method = RequestMethod.GET)
-  public List<BinaryContentDto> findAllByIdIn(
+  public ResponseEntity<List<BinaryContentDto>> findAllByIdIn(
       @RequestParam("binaryContentIds") List<UUID> idList) {
-    return binaryContentService.findAllById(idList);
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(binaryContentService.findAllById(idList));
   }
 
   @RequestMapping(value = "/{binaryContentId}/download", method = RequestMethod.GET)

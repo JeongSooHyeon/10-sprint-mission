@@ -19,9 +19,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
-public class User extends BaseUpdatableEntity implements Serializable {
-
-  private static final long serialVersionUID = 1L;
+public class User extends BaseUpdatableEntity {
 
   @Column(nullable = false, unique = true)
   private String username;

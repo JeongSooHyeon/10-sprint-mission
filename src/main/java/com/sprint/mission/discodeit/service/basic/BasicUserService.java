@@ -91,14 +91,20 @@ public class BasicUserService implements UserService {
   public UserDto update(UUID id, UserUpdateRequest request, MultipartFile file) throws IOException {
     User user = userRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
-    userRepository.findByUsername(request.newUsername())
-        .ifPresent(u -> {
-          throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
-        });
-    userRepository.findByEmail(request.newEmail())
-        .ifPresent(u -> {
-          throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
-        });
+
+    if (request.newUsername() != null && !request.newUsername().equals(user.getUsername())) {
+      userRepository.findByUsername(request.newUsername())
+          .ifPresent(u -> {
+            throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
+          });
+    }
+
+    if (request.newEmail() != null && !request.newEmail().equals(user.getEmail())) {
+      userRepository.findByEmail(request.newEmail())
+          .ifPresent(u -> {
+            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+          });
+    }
 
     if (user.getStatus() == null) {
       UserStatus newStatus = new UserStatus(user, Instant.now());

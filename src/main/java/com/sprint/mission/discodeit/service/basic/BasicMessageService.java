@@ -104,26 +104,27 @@ public class BasicMessageService implements MessageService {
     return messageMapper.toMessageDto(message);
   }
 
-  @Override
-  @Transactional
-  public Slice<MessageDto> findAllByChannelId(UUID userId, UUID channelId, Pageable pageable) {
-
-    readStatusRepository.findByUserIdAndChannelId(userId, channelId)
-        .ifPresentOrElse(
-            rs -> rs.updateLastReadAt(Instant.now()),
-            () -> {
-              // 없으면(Public 채널 첫 방문 등) 새로 생성
-              User user = userRepository.findById(userId)
-                  .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
-              Channel channel = channelRepository.findById(channelId)
-                  .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채널입니다."));
-              readStatusRepository.save(new ReadStatus(user, channel, Instant.now()));
-            }
-        );
-
-    return messageRepository.findAllByChannelId(channelId, pageable)
-        .map(messageMapper::toMessageDto);
-  }
+//  @Override
+//  @Transactional
+//  public PageResponse<MessageDto> findAllByChannelId(UUID userId, UUID channelId, UUID cursor,
+//      Pageable pageable) {
+//
+//    readStatusRepository.findByUserIdAndChannelId(userId, channelId)
+//        .ifPresentOrElse(
+//            rs -> rs.updateLastReadAt(Instant.now()),
+//            () -> {
+//              // 없으면(Public 채널 첫 방문 등) 새로 생성
+//              User user = userRepository.findById(userId)
+//                  .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
+//              Channel channel = channelRepository.findById(channelId)
+//                  .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채널입니다."));
+//              readStatusRepository.save(new ReadStatus(user, channel, Instant.now()));
+//            }
+//        );
+//
+//    Slice<Message> messageSlice = messageRepository.findAllByChannelId(channelId, pageable);
+//    return pageResponseMapper.fromSlice(messageSlice.map(messageMapper::toMessageDto));
+//  }
 
   @Override
   @Transactional
@@ -136,35 +137,47 @@ public class BasicMessageService implements MessageService {
     return messageMapper.toMessageDto(message);
   }
 
-  @Override
-  @Transactional
-  public Slice<MessageDto> searchMessage(UUID userId, UUID channelId, String keyword,
-      Pageable pageable) {
-    channelRepository.findById(channelId)
-        .orElseThrow(() -> new IllegalArgumentException("해당 채널이 없습니다."));
-
-    return messageRepository
-        .findByChannelIdAndContentContaining(channelId, keyword, pageable)
-        .map(messageMapper::toMessageDto);
-  }
+//  @Override
+//  @Transactional
+//  public PageResponse<MessageDto> searchMessage(UUID userId, UUID channelId, String keyword,
+//      Pageable pageable) {
+//    channelRepository.findById(channelId)
+//        .orElseThrow(() -> new IllegalArgumentException("해당 채널이 없습니다."));
+//
+//    Slice<Message> messageSlice = messageRepository.findByChannelIdAndContentContaining(channelId,
+//        keyword, pageable);
+//    return pageResponseMapper.fromSlice(messageSlice.map(messageMapper::toMessageDto));
+//  }
+//
+//  @Override
+//  @Transactional(readOnly = true)
+//  public PageResponse<MessageDto> getUserMessages(UUID id, Pageable pageable) {
+//    Slice<Message> messageSlice = messageRepository.findAllByUserId(id, pageable);
+//    return pageResponseMapper.fromSlice(messageSlice.map(messageMapper::toMessageDto));
+//  }
 
   @Override
   @Transactional(readOnly = true)
-  public Slice<MessageDto> getUserMessages(UUID id, Pageable pageable) {
-    return messageRepository
-        .findAllByUserId(id, pageable)
-        .map(messageMapper::toMessageDto);
-  }
+  public PageResponse<MessageDto> getMessages(UUID channelId, Instant cursor, Pageable pageable) {
+    Slice<Message> messageSlice = (cursor == null)
+        ? messageRepository.findAllByChannelId(channelId, pageable)
+        : messageRepository.findAllByChannelIdBeforeCursor(channelId, cursor, pageable);
 
-  @Override
-  @Transactional(readOnly = true)
-  public PageResponse<MessageDto> getMessages(UUID channelId, Pageable pageable) {
-    Slice<Message> messageSlice = messageRepository.findAllByChannelIdOrderByCreatedAtDesc(
-        channelId, pageable);
+    List<MessageDto> content = messageSlice.getContent().stream()
+        .map(messageMapper::toMessageDto)
+        .toList();
 
-    Slice<MessageDto> dtoSlice = messageSlice.map(messageMapper::toMessageDto);
+    Instant nextCursor = messageSlice.hasNext() && !content.isEmpty()
+        ? content.get(content.size() - 1).createdAt()
+        : null;
 
-    return pageResponseMapper.fromSlice(dtoSlice);
+    return new PageResponse<>(
+        content,
+        nextCursor,
+        messageSlice.getSize(),
+        messageSlice.hasNext(),
+        null
+    );
   }
 
   @Override
