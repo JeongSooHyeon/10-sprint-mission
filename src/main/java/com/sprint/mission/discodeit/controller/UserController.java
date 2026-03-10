@@ -4,6 +4,7 @@ import com.sprint.mission.discodeit.dto.BinaryContentCreateDto;
 import com.sprint.mission.discodeit.dto.BinaryContentDto;
 import com.sprint.mission.discodeit.dto.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.UserDto;
+import com.sprint.mission.discodeit.dto.UserStatusDto;
 import com.sprint.mission.discodeit.dto.UserStatusUpdateRequest;
 import com.sprint.mission.discodeit.dto.UserUpdateRequest;
 import com.sprint.mission.discodeit.service.BinaryContentService;
@@ -42,10 +43,12 @@ public class UserController {
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class)))
   })
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public UserDto join(@RequestPart("userCreateRequest") UserCreateRequest dto,
+  public ResponseEntity<UserDto> join(@RequestPart("userCreateRequest") UserCreateRequest dto,
       @RequestPart(value = "profile", required = false) MultipartFile profile) throws IOException {
 
-    return userService.create(dto, profile);
+    return ResponseEntity
+        .status(HttpStatus.CREATED)
+        .body(userService.create(dto, profile));
   }
 
   // 사용자 정보 수정
@@ -56,12 +59,14 @@ public class UserController {
       @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음")
   })
   @RequestMapping(value = "/{userId}", method = RequestMethod.PATCH, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public UserDto update(
+  public ResponseEntity<UserDto> update(
       @PathVariable UUID userId,
       @RequestPart("userUpdateRequest") UserUpdateRequest dto,
       @RequestPart(value = "profile", required = false) MultipartFile profile) throws IOException {
 
-    return userService.update(userId, dto, profile);
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(userService.update(userId, dto, profile));
   }
 
   // 사용자 삭제
@@ -70,8 +75,11 @@ public class UserController {
       @ApiResponse(responseCode = "204", description = "삭제 성공")
   })
   @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE)
-  public void delete(@PathVariable UUID userId) {
+  public ResponseEntity<Void> delete(@PathVariable UUID userId) {
     userService.delete(userId);
+    return ResponseEntity
+        .status(HttpStatus.NO_CONTENT)
+        .build();
   }
 
   // 모든 사용자 조회
@@ -99,8 +107,10 @@ public class UserController {
       @ApiResponse(responseCode = "404", description = "사용자 상태 정보를 찾을 수 없음")
   })
   @RequestMapping(value = "/{userId}/userStatus", method = RequestMethod.PATCH)
-  public UserDto updateStatus(@PathVariable UUID userId,
+  public ResponseEntity<UserStatusDto> updateStatus(@PathVariable UUID userId,
       @RequestBody UserStatusUpdateRequest dto) {
-    return userStatusService.updateByUserId(userId, dto);
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(userStatusService.updateByUserId(userId, dto));
   }
 }

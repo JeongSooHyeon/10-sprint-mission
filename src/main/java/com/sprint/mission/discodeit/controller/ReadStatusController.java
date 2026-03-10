@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,8 +32,10 @@ public class ReadStatusController {
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = ReadStatusDto.class)))
   })
   @RequestMapping(method = RequestMethod.POST)
-  public ReadStatusDto create(@RequestBody ReadStatusCreateRequest dto) {
-    return readStatusService.create(dto);
+  public ResponseEntity<ReadStatusDto> create(@RequestBody ReadStatusCreateRequest dto) {
+    return ResponseEntity
+        .status(HttpStatus.CREATED)
+        .body(readStatusService.create(dto));
   }
 
   // 특정 채널 메시지 수신 정보 수정
@@ -42,9 +46,11 @@ public class ReadStatusController {
       @ApiResponse(responseCode = "404", description = "해당 ID의 읽음 상태 정보를 찾을 수 없음")
   })
   @RequestMapping(value = "/{readStatusId}", method = RequestMethod.PATCH)
-  public ReadStatusDto update(@PathVariable UUID readStatusId,
+  public ResponseEntity<ReadStatusDto> update(@PathVariable UUID readStatusId,
       @RequestBody ReadStatusUpdateRequest dto) {
-    return readStatusService.update(readStatusId, dto);
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(readStatusService.update(readStatusId, dto));
   }
 
   // 특정 사용자의 메시지 수신 정보 조회
@@ -57,7 +63,9 @@ public class ReadStatusController {
           ))
   })
   @RequestMapping(method = RequestMethod.GET)
-  public List<ReadStatusDto> findAllByUserId(@RequestParam UUID userId) {
-    return readStatusService.findAllByUserId(userId);
+  public ResponseEntity<List<ReadStatusDto>> findAllByUserId(@RequestParam UUID userId) {
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(readStatusService.findAllByUserId(userId));
   }
 }

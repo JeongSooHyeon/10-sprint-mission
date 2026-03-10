@@ -24,9 +24,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "messages")
 @NoArgsConstructor
-public class Message extends BaseUpdatableEntity implements Serializable {
-
-  private static final long serialVersionUID = 1L;
+public class Message extends BaseUpdatableEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "author_id")

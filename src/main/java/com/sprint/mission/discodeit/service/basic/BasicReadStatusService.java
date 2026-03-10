@@ -45,7 +45,7 @@ public class BasicReadStatusService implements ReadStatusService {
         .orElseGet(() -> {
           // 2. 진짜 없으면 그때 생성한다.
           ReadStatus newStatus = new ReadStatus(user,
-              channel, Instant.now());
+              channel, readStatusCreateRequest.lastReadAt());
           return readStatusMapper.toReadStatusDto(readStatusRepository.save(newStatus));
         });
   }

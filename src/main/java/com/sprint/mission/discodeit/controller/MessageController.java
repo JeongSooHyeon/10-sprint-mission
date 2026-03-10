@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.controller;
 import com.sprint.mission.discodeit.dto.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.MessageDto;
 import com.sprint.mission.discodeit.dto.MessageUpdateRequest;
+import com.sprint.mission.discodeit.dto.response.PageResponse;
 import com.sprint.mission.discodeit.service.BinaryContentService;
 import com.sprint.mission.discodeit.service.MessageService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,12 +13,17 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,12 +45,14 @@ public class MessageController {
           content = @Content(mediaType = "multipart/form-data", schema = @Schema(implementation = MessageDto.class)))
   })
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public MessageDto send(
+  public ResponseEntity<MessageDto> send(
       @RequestPart("messageCreateRequest") MessageCreateRequest dto,
       @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments)
       throws IOException {
 
-    return messageService.create(dto, attachments);
+    return ResponseEntity
+        .status(HttpStatus.CREATED)
+        .body(messageService.create(dto, attachments));
   }
 
   // 메시지 수정
@@ -55,9 +63,11 @@ public class MessageController {
       @ApiResponse(responseCode = "404", description = "메시지를 찾을 수 없음")
   })
   @RequestMapping(value = "/{messageId}", method = RequestMethod.PATCH)
-  public MessageDto update(@PathVariable UUID messageId,
+  public ResponseEntity<MessageDto> update(@PathVariable UUID messageId,
       @RequestBody MessageUpdateRequest dto) {
-    return messageService.update(messageId, dto);
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(messageService.update(messageId, dto));
   }
 
   // 메시지 삭제
@@ -66,8 +76,11 @@ public class MessageController {
       @ApiResponse(responseCode = "204", description = "삭제 성공")
   })
   @RequestMapping(value = "/{messageId}", method = RequestMethod.DELETE)
-  public void delete(@PathVariable UUID messageId) {
+  public ResponseEntity<Void> delete(@PathVariable UUID messageId) {
     messageService.delete(messageId);
+    return ResponseEntity
+        .status(HttpStatus.NO_CONTENT)
+        .build();
   }
 
   // 조회
@@ -83,28 +96,14 @@ public class MessageController {
           ))
   })
   @RequestMapping(method = RequestMethod.GET)
-  public Slice<MessageDto> getMessages(
-      @RequestParam(required = true) UUID channelId,
-      @RequestParam(required = false) String keyword,
-      @RequestParam(required = false) UUID userId,
-      Pageable pageable) {
+  public ResponseEntity<PageResponse<MessageDto>> getMessages(
+      @RequestParam UUID channelId,
+      @RequestParam(required = false) Instant cursor,
+      @PageableDefault(size = 50, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
 
-    // 키워드 검색
-    if (userId != null && keyword != null) {
-      return messageService.searchMessage(userId, channelId, keyword, pageable);
-    }
-
-    // 특정 채널의 메시지 목록 조회
-    if (userId != null && channelId != null) {
-      return messageService.findAllByChannelId(userId, channelId, pageable);
-    }
-
-    // 특정 사용자가 보낸 메시지 조회
-    if (userId != null) {
-      return messageService.getUserMessages(userId, pageable);
-    }
-
-    return Page.empty();
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(messageService.getMessages(channelId, cursor, pageable));
   }
 
 

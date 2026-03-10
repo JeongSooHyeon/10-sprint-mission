@@ -2,6 +2,7 @@ package com.sprint.mission.discodeit.repository;
 
 import com.sprint.mission.discodeit.entity.Message;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -17,20 +18,29 @@ public interface MessageRepository extends JpaRepository<Message, UUID> {
   @Query("SELECT m FROM Message m JOIN FETCH m.author JOIN FETCH m.channel LEFT JOIN FETCH m.attachments WHERE m.author.id = :userId")
   Slice<Message> findAllByUserId(@Param("userId") UUID userId, Pageable pageable);
 
-  @Query("SELECT m FROM Message m JOIN FETCH m.author JOIN FETCH m.channel LEFT JOIN FETCH m.attachments WHERE m.channel.id = :channelId")
-  Slice<Message> findAllByChannelId(@Param("channelId") UUID channelId, Pageable pageable);
-
   void deleteByChannelId(UUID channelId);
 
   void deleteByAuthorId(UUID authorId);
 
   Optional<Message> findFirstByChannelIdOrderByCreatedAtDesc(UUID channelId);
 
-  Slice<Message> findAllByChannelIdOrderByCreatedAtDesc(UUID channelId, Pageable pageable);
-
-  Slice<Message> findByChannelIdAndContentContaining(
-      UUID channelId,
-      String keyword,
+  @Query("SELECT m FROM Message m " +
+      "JOIN FETCH m.author " +
+      "JOIN FETCH m.channel " +
+      "WHERE m.channel.id = :channelId " +
+      "ORDER BY m.createdAt DESC, m.id DESC")
+  Slice<Message> findAllByChannelId(
+      @Param("channelId") UUID channelId,
       Pageable pageable);
 
+  @Query("SELECT m FROM Message m " +
+      "JOIN FETCH m.author " +
+      "JOIN FETCH m.channel " +
+      "WHERE m.channel.id = :channelId " +
+      "AND m.createdAt < :cursor " +
+      "ORDER BY m.createdAt DESC, m.id DESC")
+  Slice<Message> findAllByChannelIdBeforeCursor(
+      @Param("channelId") UUID channelId,
+      @Param("cursor") Instant cursor,
+      Pageable pageable);
 }

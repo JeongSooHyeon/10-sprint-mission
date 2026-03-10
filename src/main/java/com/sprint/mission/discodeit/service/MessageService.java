@@ -6,6 +6,7 @@ import com.sprint.mission.discodeit.dto.MessageUpdateRequest;
 
 import com.sprint.mission.discodeit.dto.response.PageResponse;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -23,20 +24,22 @@ public interface MessageService {
   MessageDto findById(UUID id);
 
   // ReadAll
-  Slice<MessageDto> findAllByChannelId(UUID userId, UUID channelId, Pageable pageable);
+//  PageResponse<MessageDto> findAllByChannelId(UUID userId, UUID channelId, UUID cursor,
+//      Pageable pageable);
 
   // Update
   MessageDto update(UUID id, MessageUpdateRequest messageUpdateRequest);
 
-  Slice<MessageDto> searchMessage(UUID userId, UUID channelId, String keyword, Pageable pageable);
+//  PageResponse<MessageDto> searchMessage(UUID userId, UUID channelId, String keyword,
+//      Pageable pageable);
 
-  Slice<MessageDto> getUserMessages(UUID id, Pageable pageable);
+//  PageResponse<MessageDto> getUserMessages(UUID id, Pageable pageable);
 
 //    List<MessageResponseDto> getChannelMessages(UUID channel);
 
 //    UUID sendDirectMessage(UUID authorId, UUID receiverId, String bytes);
 
-  PageResponse<MessageDto> getMessages(UUID channelId, Pageable pageable);
+  PageResponse<MessageDto> getMessages(UUID channelId, Instant cursor, Pageable pageable);
 
   // Delete
   void delete(UUID id);
