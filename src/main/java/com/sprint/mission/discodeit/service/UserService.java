@@ -28,5 +28,4 @@ public interface UserService {
   // Delete
   void delete(UUID id);
 
-  void updateLastActiveTime(UUID id);
 }

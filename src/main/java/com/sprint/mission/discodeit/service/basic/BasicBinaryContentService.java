@@ -7,6 +7,7 @@ import com.sprint.mission.discodeit.mapper.BinaryContentMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.service.BinaryContentService;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +40,7 @@ public class BasicBinaryContentService implements BinaryContentService {
   @Transactional(readOnly = true)
   public BinaryContentDto findById(UUID id) {
     return binaryContentMapper.toBinaryContentDto(binaryContentRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("해당 파일이 없습니다.")));
+        .orElseThrow(() -> new EntityNotFoundException("해당 파일이 없습니다.")));
   }
 
   @Override

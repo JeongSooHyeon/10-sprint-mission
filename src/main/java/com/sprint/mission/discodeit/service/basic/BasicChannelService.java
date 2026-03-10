@@ -4,11 +4,14 @@ import com.sprint.mission.discodeit.dto.ChannelDto;
 import com.sprint.mission.discodeit.dto.PublicChannelUpdateRequest;
 import com.sprint.mission.discodeit.dto.PrivateChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.PublicChannelCreateRequest;
+import com.sprint.mission.discodeit.dto.UserDto;
 import com.sprint.mission.discodeit.entity.*;
 import com.sprint.mission.discodeit.mapper.ChannelMapper;
+import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.*;
 import com.sprint.mission.discodeit.service.ChannelService;
 import java.time.Instant;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +28,7 @@ public class BasicChannelService implements ChannelService {
   private final UserStatusRepository userStatusRepository;
   private final ReadStatusRepository readStatusRepository;
   private final ChannelMapper channelMapper;
+  private final UserMapper userMapper;
 
   @Override
   @Transactional
@@ -48,7 +52,7 @@ public class BasicChannelService implements ChannelService {
     privateChannelCreateRequest.participantIds()
         .forEach(uId -> {
           User user = userRepository.findById(uId)
-              .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
+              .orElseThrow(() -> new NoSuchElementException("해당 사용자가 없습니다."));
           ReadStatus readStatus = new ReadStatus(user, channel, Instant.now());
           readStatusRepository.save(readStatus);
         });
@@ -60,7 +64,7 @@ public class BasicChannelService implements ChannelService {
   @Transactional(readOnly = true)
   public ChannelDto findById(UUID id) {
     Channel channel = channelRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("실패 : 존재하지 않는 채널 ID입니다."));
+        .orElseThrow(() -> new NoSuchElementException("실패 : 존재하지 않는 채널 ID입니다."));
 
     return channelMapper.toChannelDto(channel);
   }
@@ -68,9 +72,31 @@ public class BasicChannelService implements ChannelService {
   @Override
   @Transactional(readOnly = true)
   public List<ChannelDto> findAllByUserId(UUID userId) {
-    return channelRepository.findAll().stream()
-        .filter(ch -> isVisibleToUser(ch, userId))
-        .map(channelMapper::toChannelDto)
+    List<Channel> channels = channelRepository.findAllByUserId(userId);
+    List<UUID> channelIds = channels.stream()
+        .map(Channel::getId)
+        .toList();
+
+    Map<UUID, List<UserDto>> participantsMap = readStatusRepository
+        .findAllByChannelIdIn(channelIds).stream()
+        .collect(Collectors.groupingBy(
+            rs -> rs.getChannel().getId(),
+            Collectors.mapping(rs -> userMapper.toUserDto(rs.getUser()), Collectors.toList())
+        ));
+
+    Map<UUID, Instant> lastMessageAtMap = messageRepository
+        .findLastMessagesByChannelIds(channelIds).stream()
+        .collect(Collectors.toMap(
+            m -> m.getChannel().getId(),
+            Message::getCreatedAt
+        ));
+
+    return channels.stream()
+        .map(ch -> channelMapper.toChannelDto(
+            ch,
+            participantsMap.getOrDefault(ch.getId(), List.of()),
+            lastMessageAtMap.get(ch.getId())
+        ))
         .toList();
   }
 
@@ -86,7 +112,7 @@ public class BasicChannelService implements ChannelService {
   @Transactional
   public ChannelDto update(UUID id, PublicChannelUpdateRequest publicChannelUpdateRequest) {
     Channel channel = channelRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("해당 채널이 없습니다."));
+        .orElseThrow(() -> new NoSuchElementException("해당 채널이 없습니다."));
     if (channel.getType().equals(IsPrivate.PRIVATE)) {
       throw new IllegalArgumentException("PRIVATE 채널은 수정할 수 없습니다.");
     }
@@ -99,9 +125,9 @@ public class BasicChannelService implements ChannelService {
   @Transactional
   public ChannelDto joinChannel(UUID userId, UUID channelId) {
     Channel channel = channelRepository.findById(channelId)
-        .orElseThrow(() -> new IllegalArgumentException("해당 채널이 없습니다."));
+        .orElseThrow(() -> new NoSuchElementException("해당 채널이 없습니다."));
     User user = userRepository.findById(userId)
-        .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자가 없습니다."));
+        .orElseThrow(() -> new NoSuchElementException("일치하는 사용자가 없습니다."));
 
     ReadStatus readStatus = new ReadStatus(user, channel, Instant.now());
     readStatusRepository.save(readStatus);
@@ -116,7 +142,7 @@ public class BasicChannelService implements ChannelService {
   @Transactional
   public void delete(UUID id) {
     Channel channel = channelRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("해당 채널이 없습니다."));
+        .orElseThrow(() -> new NoSuchElementException("해당 채널이 없습니다."));
 
     // 채널의 메시지 삭제하기
     messageRepository.deleteByChannelId(id);

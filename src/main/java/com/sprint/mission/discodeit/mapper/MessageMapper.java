@@ -19,6 +19,7 @@ public abstract class MessageMapper {
 
   @Mapping(target = "author", source = "author")
   @Mapping(source = ".", target = "attachments", qualifiedByName = "getAttachments")
+  // default_batch_fetch_size 설정
   @Mapping(source = "channel.id", target = "channelId")
   public abstract MessageDto toMessageDto(Message message);
 

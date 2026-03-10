@@ -30,9 +30,21 @@ public abstract class ChannelMapper {
 
   @Mapping(source = ".", target = "name", qualifiedByName = "getNameByPrivate")
   @Mapping(source = ".", target = "description", qualifiedByName = "getDescriptionByPrivate")
-  @Mapping(source = ".", target = "participants", qualifiedByName = "getParticipants")
-  @Mapping(source = ".", target = "lastMessageAt", qualifiedByName = "getLastMessageAt")
+  @Mapping(source = ".", target = "participants", ignore = true)
+  @Mapping(source = ".", target = "lastMessageAt", ignore = true)
   public abstract ChannelDto toChannelDto(Channel channel);
+
+  public ChannelDto toChannelDto(Channel channel, List<UserDto> participants,
+      Instant lastMessageAt) {
+    return new ChannelDto(
+        channel.getId(),
+        channel.getType(),
+        getNameByPrivate(channel),
+        getDescriptionByPrivate(channel),
+        participants,
+        lastMessageAt
+    );
+  }
 
   @Named("getNameByPrivate")
   protected String getNameByPrivate(Channel channel) {

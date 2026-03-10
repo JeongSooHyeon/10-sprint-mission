@@ -10,6 +10,7 @@ import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.AuthService;
 import jakarta.transaction.Transactional;
 import java.time.Instant;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +27,7 @@ public class BasicAuthService implements AuthService {
   public UserDto login(LoginRequest request) {
     User user = userRepository.findByUsername(request.username())
         .filter(u -> u.getPassword().equals(request.password()))
-        .orElseThrow(() -> new IllegalArgumentException("해당 정보와 일치하는 사용자가 없습니다."));
+        .orElseThrow(() -> new NoSuchElementException("해당 정보와 일치하는 사용자가 없습니다."));
 
     UserStatus userStatus = userStatusRepository.findByUserId(user.getId())
         .orElseGet(() -> {

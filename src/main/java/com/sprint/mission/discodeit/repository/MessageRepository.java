@@ -43,4 +43,10 @@ public interface MessageRepository extends JpaRepository<Message, UUID> {
       @Param("channelId") UUID channelId,
       @Param("cursor") Instant cursor,
       Pageable pageable);
+
+  @Query("SELECT m FROM Message m WHERE m.createdAt = (" +
+      "SELECT MAX(m2.createdAt) FROM Message m2" +
+      " WHERE m2.channel.id = m.channel.id) " +
+      "AND m.channel.id IN :channelIds")
+  List<Message> findLastMessagesByChannelIds(@Param("channelIds") List<UUID> channelIds);
 }
