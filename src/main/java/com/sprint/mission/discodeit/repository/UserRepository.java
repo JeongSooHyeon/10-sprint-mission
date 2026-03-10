@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface UserRepository extends JpaRepository<User, UUID> {
 
   @Override
-  @Query("SELECT u FROM User u JOIN FETCH u.status JOIN FETCH u.profile")
+  @Query("SELECT u FROM User u JOIN FETCH u.status LEFT JOIN FETCH u.profile")
   List<User> findAll();
 
   Optional<User> findByUsername(String username);

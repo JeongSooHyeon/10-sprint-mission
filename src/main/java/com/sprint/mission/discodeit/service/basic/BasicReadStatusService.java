@@ -12,6 +12,7 @@ import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.ReadStatusService;
 import java.time.Instant;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,10 +34,10 @@ public class BasicReadStatusService implements ReadStatusService {
   public ReadStatusDto create(ReadStatusCreateRequest readStatusCreateRequest) {
     // Channel, User 존재 여부 검증
     User user = userRepository.findById(readStatusCreateRequest.userId())
-        .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
+        .orElseThrow(() -> new NoSuchElementException("해당 사용자가 없습니다."));
 
     Channel channel = channelRepository.findById(readStatusCreateRequest.channelId())
-        .orElseThrow(() -> new IllegalArgumentException("해당 채널이 없습니다."));
+        .orElseThrow(() -> new NoSuchElementException("해당 채널이 없습니다."));
 
     // 중복된 데이터 검증
     return readStatusRepository.findByUserIdAndChannelId(readStatusCreateRequest.userId(),
@@ -56,14 +57,14 @@ public class BasicReadStatusService implements ReadStatusService {
     return readStatusMapper
         .toReadStatusDto(
             readStatusRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 ReadStatus가 없습니다.")));
+                .orElseThrow(() -> new NoSuchElementException("해당 ReadStatus가 없습니다.")));
   }
 
   @Override
   @Transactional(readOnly = true)
   public List<ReadStatusDto> findAllByUserId(UUID userId) {
     userRepository.findById(userId)
-        .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
+        .orElseThrow(() -> new NoSuchElementException("해당 사용자가 없습니다."));
 
     return readStatusRepository.findAllByUserId(userId).stream()
         .map(readStatusMapper::toReadStatusDto)
@@ -74,7 +75,7 @@ public class BasicReadStatusService implements ReadStatusService {
   @Transactional
   public ReadStatusDto update(UUID id, ReadStatusUpdateRequest readStatusUpdateRequest) {
     ReadStatus readStatus = readStatusRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("해당 ReadStatus가 없습니다."));
+        .orElseThrow(() -> new NoSuchElementException("해당 ReadStatus가 없습니다."));
     readStatus.updateLastReadAt(readStatusUpdateRequest.newLastReadAt());
     return readStatusMapper.toReadStatusDto(readStatus);
   }
@@ -83,7 +84,7 @@ public class BasicReadStatusService implements ReadStatusService {
   @Transactional
   public void delete(UUID id) {
     readStatusRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("해당 ReadStatus가 없습니다."));
+        .orElseThrow(() -> new NoSuchElementException("해당 ReadStatus가 없습니다."));
     readStatusRepository.deleteById(id);
   }
 

@@ -15,6 +15,7 @@ import jakarta.persistence.PersistenceContext;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Slice;
@@ -49,9 +50,9 @@ public class BasicMessageService implements MessageService {
       List<MultipartFile> attachments)
       throws IOException {
     User author = userRepository.findById(messageCreateRequest.authorId())
-        .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자가 없습니다."));
+        .orElseThrow(() -> new NoSuchElementException("일치하는 사용자가 없습니다."));
     Channel channel = channelRepository.findById(messageCreateRequest.channelId())
-        .orElseThrow(() -> new IllegalArgumentException("일치하는 채널이 없습니다."));
+        .orElseThrow(() -> new NoSuchElementException("일치하는 채널이 없습니다."));
 
     List<BinaryContent> savedContents = new ArrayList<>();
     if (attachments != null) {
@@ -99,7 +100,7 @@ public class BasicMessageService implements MessageService {
   @Transactional(readOnly = true)
   public MessageDto findById(UUID id) {
     Message message = messageRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 메시지 ID입니다."));
+        .orElseThrow(() -> new NoSuchElementException("존재하지 않는 메시지 ID입니다."));
 
     return messageMapper.toMessageDto(message);
   }
@@ -130,7 +131,7 @@ public class BasicMessageService implements MessageService {
   @Transactional
   public MessageDto update(UUID id, MessageUpdateRequest messageUpdateRequest) {
     Message message = messageRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("해당 메시지가 없습니다."));
+        .orElseThrow(() -> new NoSuchElementException("해당 메시지가 없습니다."));
 
     message.updateContent(messageUpdateRequest.newContent());
 
@@ -184,7 +185,7 @@ public class BasicMessageService implements MessageService {
   @Transactional
   public void delete(UUID id) {
     Message message = messageRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("해당 메시지가 없습니다."));
+        .orElseThrow(() -> new NoSuchElementException("해당 메시지가 없습니다."));
 
     // 메시지 자체 삭제
     messageRepository.deleteById(id);

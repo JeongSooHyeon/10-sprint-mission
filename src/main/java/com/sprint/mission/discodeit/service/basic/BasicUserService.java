@@ -69,9 +69,9 @@ public class BasicUserService implements UserService {
   @Transactional(readOnly = true)
   public UserDto findById(UUID id) {
     User user = userRepository.findById(id).orElseThrow(()
-        -> new IllegalArgumentException("실패 : 존재하지 않는 사용자 ID입니다."));
+        -> new NoSuchElementException("실패 : 존재하지 않는 사용자 ID입니다."));
     UserStatus userStatus = userStatusRepository.findByUserId(user.getId())
-        .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
+        .orElseThrow(() -> new NoSuchElementException("해당 사용자가 없습니다."));
     return userMapper.toUserDto(user);
 
   }
@@ -90,7 +90,7 @@ public class BasicUserService implements UserService {
   @Transactional
   public UserDto update(UUID id, UserUpdateRequest request, MultipartFile file) throws IOException {
     User user = userRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
+        .orElseThrow(() -> new NoSuchElementException("해당 사용자가 없습니다."));
 
     if (request.newUsername() != null && !request.newUsername().equals(user.getUsername())) {
       userRepository.findByUsername(request.newUsername())
@@ -136,7 +136,7 @@ public class BasicUserService implements UserService {
   @Transactional
   public void delete(UUID id) {
     User user = userRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
+        .orElseThrow(() -> new NoSuchElementException("해당 사용자가 없습니다."));
 
     // 사용자가 작성한 메시지 삭제
     messageRepository.deleteByAuthorId(id);
@@ -147,9 +147,7 @@ public class BasicUserService implements UserService {
     userRepository.deleteById(id);
   }
 
-  @Override
-  @Transactional
-  public void updateLastActiveTime(UUID id) {
+  private void updateLastActiveTime(UUID id) {
     Optional<UserStatus> userStatus = userStatusRepository.findByUserId(id);
     userStatus.ifPresent(us -> {
       us.update(Instant.now());
