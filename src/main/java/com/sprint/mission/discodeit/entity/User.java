@@ -1,55 +1,80 @@
 package com.sprint.mission.discodeit.entity;
 
-import com.sprint.mission.discodeit.dto.UserUpdateRequest;
+import com.sprint.mission.discodeit.entity.base.BaseUpdatableEntity;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import lombok.NoArgsConstructor;
 
 @Getter
-public class User extends BaseEntity implements Serializable {
+@Entity
+@Table(name = "users")
+@NoArgsConstructor
+public class User extends BaseUpdatableEntity {
 
-  private static final long serialVersionUID = 1L;
+  @Column(nullable = false, unique = true)
+  private String username;
 
-  private String name;
+  @Column(nullable = false, unique = true)
   private String email;
-  private String password;
-  private List<UUID> messageIds;
-  private List<UUID> channelIds;
-  private UUID profileId;
 
-  public User(String name, String email, String password, UUID profileId) {
-    super(UUID.randomUUID(), Instant.now());
-    this.name = name;
+  @Column(nullable = false)
+  private String password;
+
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "profile_id")
+  private BinaryContent profile;
+
+  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private UserStatus status;
+
+  public User(String username, String email, String password, BinaryContent profile) {
+    this.username = username;
     this.email = email;
     this.password = password;
-    this.messageIds = new ArrayList<>();
-    this.channelIds = new ArrayList<>();
-    this.profileId = profileId;
+    this.profile = profile;
   }
 
-  public User update(UserUpdateRequest dto) {
+  public void setUserStatus(UserStatus status) {
+    this.status = status;
+    if (status.getUser() != this) {
+      status.setUser(this);
+    }
+  }
+
+  public void setProfile(BinaryContent profile) {
+    this.profile = profile;
+  }
+
+  public User update(String newUserName, BinaryContent newProfile, String newEmail,
+      String newPassword) {
     boolean anyValueUpdated = false;
-    if (dto.newUsername() != null && !dto.newUsername().equals(this.name)) {
-      this.name = dto.newUsername();
+    if (newUserName != null && !newUserName.equals(this.username)) {
+      this.username = newUserName;
       anyValueUpdated = true;
     }
 
-    if (dto.newProfileId() != null && !dto.newProfileId().equals(this.profileId)) {
-      this.profileId = dto.newProfileId();
+    if (newProfile != null && !newProfile.getId().equals(this.profile.getId())) {
+      this.profile = newProfile;
       anyValueUpdated = true;
     }
 
-    if (dto.newEmail() != null && !dto.newEmail().equals(this.email)) {
-      this.email = dto.newEmail();
+    if (newEmail != null && !newEmail.equals(this.email)) {
+      this.email = newEmail;
       anyValueUpdated = true;
     }
 
-    if (dto.newPassword() != null && !dto.newPassword().equals(this.password)) {
-      this.password = dto.newPassword();
+    if (newPassword != null && !newPassword.equals(this.password)) {
+      this.password = newPassword;
       anyValueUpdated = true;
     }
 
@@ -60,30 +85,9 @@ public class User extends BaseEntity implements Serializable {
     return this;
   }
 
-  public void addMessages(UUID messageId) {
-    this.messageIds.add(messageId);
-  }
-
-  public void addChannel(UUID channelId) {
-    if (!this.channelIds.contains(channelId)) {
-      this.channelIds.add(channelId);
-    }
-  }
-
-  public void updateProfileId(UUID id) {
-    this.profileId = id;
-    this.onUpdate();
-  }
-
-  public void updateName(String name) {
-    this.name = name;
-    this.onUpdate();
-  }
-
   @Override
   public String toString() {
-    return "유저명 : " + name;
+    return "유저명 : " + username;
   }
-
 
 }

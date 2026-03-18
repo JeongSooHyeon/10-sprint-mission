@@ -1,10 +1,11 @@
 package com.sprint.mission.discodeit.controller;
 
 import com.sprint.mission.discodeit.dto.BinaryContentCreateDto;
-import com.sprint.mission.discodeit.dto.BinaryContentResponseDto;
+import com.sprint.mission.discodeit.dto.BinaryContentDto;
 import com.sprint.mission.discodeit.dto.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.UserDto;
-import com.sprint.mission.discodeit.dto.UserStatusUpdateByUserIdDto;
+import com.sprint.mission.discodeit.dto.UserStatusDto;
+import com.sprint.mission.discodeit.dto.UserStatusUpdateRequest;
 import com.sprint.mission.discodeit.dto.UserUpdateRequest;
 import com.sprint.mission.discodeit.service.BinaryContentService;
 import com.sprint.mission.discodeit.service.UserService;
@@ -41,30 +42,13 @@ public class UserController {
       @ApiResponse(responseCode = "201", description = "등록 성공",
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class)))
   })
-  @RequestMapping(method = RequestMethod.POST)
-  public UserDto join(@RequestPart("userCreateRequest") UserCreateRequest dto,
+  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<UserDto> join(@RequestPart("userCreateRequest") UserCreateRequest dto,
       @RequestPart(value = "profile", required = false) MultipartFile profile) throws IOException {
-    // profile 파일 처리
-    UUID profileId = null;
 
-    if (profile != null && !profile.isEmpty()) {
-      BinaryContentCreateDto binaryDto =
-          new BinaryContentCreateDto(profile.getContentType(), profile.getBytes(),
-              profile.getSize(), profile.getOriginalFilename());
-
-      BinaryContentResponseDto savedFile = binaryContentService.create(binaryDto);
-      profileId = savedFile.id();
-    }
-
-    // DTO에 newProfileId 세팅해서 새로 생성
-    UserCreateRequest newDto = new UserCreateRequest(
-        dto.username(),
-        dto.email(),
-        dto.password(),
-        profileId
-    );
-
-    return userService.create(newDto);
+    return ResponseEntity
+        .status(HttpStatus.CREATED)
+        .body(userService.create(dto, profile));
   }
 
   // 사용자 정보 수정
@@ -75,27 +59,14 @@ public class UserController {
       @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음")
   })
   @RequestMapping(value = "/{userId}", method = RequestMethod.PATCH, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public UserDto update(
+  public ResponseEntity<UserDto> update(
       @PathVariable UUID userId,
       @RequestPart("userUpdateRequest") UserUpdateRequest dto,
       @RequestPart(value = "profile", required = false) MultipartFile profile) throws IOException {
 
-    UUID profileId = null;
-
-    if (profile != null && !profile.isEmpty()) {
-      BinaryContentCreateDto binaryDto =
-          new BinaryContentCreateDto(profile.getContentType(), profile.getBytes(),
-              profile.getSize(), profile.getOriginalFilename());
-
-      BinaryContentResponseDto saved = binaryContentService.create(binaryDto);
-
-      profileId = saved.id();
-    }
-
-    UserUpdateRequest newDto =
-        new UserUpdateRequest(dto.newUsername(), profileId, dto.newEmail(), dto.newPassword());
-
-    return userService.update(userId, newDto);
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(userService.update(userId, dto, profile));
   }
 
   // 사용자 삭제
@@ -104,8 +75,11 @@ public class UserController {
       @ApiResponse(responseCode = "204", description = "삭제 성공")
   })
   @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE)
-  public void delete(@PathVariable UUID userId) {
+  public ResponseEntity<Void> delete(@PathVariable UUID userId) {
     userService.delete(userId);
+    return ResponseEntity
+        .status(HttpStatus.NO_CONTENT)
+        .build();
   }
 
   // 모든 사용자 조회
@@ -133,8 +107,10 @@ public class UserController {
       @ApiResponse(responseCode = "404", description = "사용자 상태 정보를 찾을 수 없음")
   })
   @RequestMapping(value = "/{userId}/userStatus", method = RequestMethod.PATCH)
-  public UserDto updateStatus(@PathVariable UUID userId,
-      @RequestBody UserStatusUpdateByUserIdDto dto) {
-    return userStatusService.updateByUserId(userId, dto);
+  public ResponseEntity<UserStatusDto> updateStatus(@PathVariable UUID userId,
+      @RequestBody UserStatusUpdateRequest dto) {
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(userStatusService.updateByUserId(userId, dto));
   }
 }

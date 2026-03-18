@@ -24,9 +24,9 @@
 //    }
 //
 //    @Override
-//    public Message create(UUID id, UUID channelId, String bytes) {
+//    public Message create(UUID id, UUID channel, String bytes) {
 //        User user = userService.findById(id);
-//        Channel channel = channelService.findById(channelId);
+//        Channel channel = channelService.findById(channel);
 //        Message message = new Message(user, channel, bytes);
 //        channel.addMessage(message);    // 채널에 메시지 추가
 //        return messageRespotory.save(message);
@@ -52,10 +52,10 @@
 //    }
 //
 //    @Override
-//    public List<Message> searchMessage(UUID channelId, String msg) {
-//        Channel channel = channelService.findById(channelId);
+//    public List<Message> searchMessage(UUID channel, String msg) {
+//        Channel channel = channelService.findById(channel);
 //        List<Message> messages = messageRespotory.readAll().stream()
-//                .filter(m -> m.getChannelId().equals(channelId))
+//                .filter(m -> m.getChannelId().equals(channel))
 //                .filter(m -> m.getContent().contains(msg))
 //                .collect(Collectors.toList());
 //

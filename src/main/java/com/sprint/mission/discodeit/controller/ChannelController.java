@@ -1,9 +1,9 @@
 package com.sprint.mission.discodeit.controller;
 
 import com.sprint.mission.discodeit.dto.ChannelDto;
-import com.sprint.mission.discodeit.dto.ChannelUpdateDto;
-import com.sprint.mission.discodeit.dto.PrivateChannelCreateDto;
-import com.sprint.mission.discodeit.dto.PublicChannelCreateDto;
+import com.sprint.mission.discodeit.dto.PublicChannelUpdateRequest;
+import com.sprint.mission.discodeit.dto.PrivateChannelCreateRequest;
+import com.sprint.mission.discodeit.dto.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.service.ChannelService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,8 +34,11 @@ public class ChannelController {
       @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터")
   })
   @RequestMapping(value = "/public", method = RequestMethod.POST)
-  public ChannelDto createPublicChannel(@RequestBody PublicChannelCreateDto dto) {
-    return channelService.createPublic(dto);
+  public ResponseEntity<ChannelDto> createPublicChannel(
+      @RequestBody PublicChannelCreateRequest dto) {
+    return ResponseEntity
+        .status(HttpStatus.CREATED)
+        .body(channelService.createPublic(dto));
   }
 
   // 비공개 채널 생성
@@ -43,8 +48,11 @@ public class ChannelController {
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = ChannelDto.class)))
   })
   @RequestMapping(value = "/private", method = RequestMethod.POST)
-  public ChannelDto createPrivateChannel(@RequestBody PrivateChannelCreateDto dto) {
-    return channelService.createPrivate(dto);
+  public ResponseEntity<ChannelDto> createPrivateChannel(
+      @RequestBody PrivateChannelCreateRequest dto) {
+    return ResponseEntity
+        .status(HttpStatus.CREATED)
+        .body(channelService.createPrivate(dto));
   }
 
   // 공개 채널 정보 수정
@@ -55,23 +63,27 @@ public class ChannelController {
       @ApiResponse(responseCode = "404", description = "채널을 찾을 수 없음")
   })
   @RequestMapping(value = "/{channelId}", method = RequestMethod.PATCH)
-  public ChannelDto updatePublicChannel(@PathVariable UUID channelId,
-      @RequestBody ChannelUpdateDto dto) {
-    return channelService.update(channelId, dto);
+  public ResponseEntity<ChannelDto> updatePublicChannel(@PathVariable UUID channelId,
+      @RequestBody PublicChannelUpdateRequest dto) {
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(channelService.update(channelId, dto));
   }
 
   // 채널에 멤버 추가
-  @Operation(summary = "채널 참여 (멤버 추가)", description = "특정 사용자를 해당 채널의 멤버로 추가합니다.")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "참여 성공",
-          content = @Content(mediaType = "application/json", schema = @Schema(implementation = ChannelDto.class)))
-  })
-  @RequestMapping(value = "/{channel-id}/join", method = RequestMethod.POST)
-  public ChannelDto joinChannel(@PathVariable("channel-id") UUID channelId,
-      @RequestParam UUID userId) {
-    return channelService.joinChannel(userId, channelId);
-
-  }
+//  @Operation(summary = "채널 참여 (멤버 추가)", description = "특정 사용자를 해당 채널의 멤버로 추가합니다.")
+//  @ApiResponses(value = {
+//      @ApiResponse(responseCode = "200", description = "참여 성공",
+//          content = @Content(mediaType = "application/json", schema = @Schema(implementation = ChannelDto.class)))
+//  })
+//  @RequestMapping(value = "/{channel-id}/join", method = RequestMethod.POST)
+//  public ResponseEntity<ChannelDto> joinChannel(@PathVariable("channel-id") UUID channelId,
+//      @RequestParam UUID userId) {
+//    return ResponseEntity
+//        .status(HttpStatus.OK)
+//        .body(channelService.joinChannel(userId, channelId));
+//
+//  }
 
   // 채널 삭제
   @Operation(summary = "채널 삭제", description = "ID에 해당하는 채널을 영구 삭제합니다.")
@@ -80,9 +92,11 @@ public class ChannelController {
       @ApiResponse(responseCode = "404", description = "채널 찾을 수 없음")
   })
   @RequestMapping(value = "/{channelId}", method = RequestMethod.DELETE)
-  public void delete(@PathVariable UUID channelId) {
-
+  public ResponseEntity<Void> delete(@PathVariable UUID channelId) {
     channelService.delete(channelId);
+    return ResponseEntity
+        .status(HttpStatus.NO_CONTENT)
+        .build();
   }
 
   // 모든 채널 목록 조회
@@ -94,7 +108,9 @@ public class ChannelController {
           ))
   })
   @RequestMapping(method = RequestMethod.GET)
-  public List<ChannelDto> findAll(@RequestParam UUID userId) {
-    return channelService.findAllByUserId(userId);
+  public ResponseEntity<List<ChannelDto>> findAll(@RequestParam UUID userId) {
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(channelService.findAllByUserId(userId));
   }
 }

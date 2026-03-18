@@ -5,17 +5,17 @@ import com.sprint.mission.discodeit.entity.User;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-public interface UserRepository {
-    User save(User user);
+public interface UserRepository extends JpaRepository<User, UUID> {
 
-    public Optional<User> findById(UUID id);
+  @Override
+  @Query("SELECT u FROM User u JOIN FETCH u.status LEFT JOIN FETCH u.profile")
+  List<User> findAll();
 
-    public Optional<User> findByName(String name);
+  Optional<User> findByUsername(String username);
 
-    public Optional<User> findByEmail(String email);
+  Optional<User> findByEmail(String email);
 
-    List<User> findAll();
-    void delete(UUID id);
-    void clear();
 }
