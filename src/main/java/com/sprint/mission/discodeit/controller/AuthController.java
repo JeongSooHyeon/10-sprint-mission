@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +51,7 @@ public class AuthController {
   })
 
   @RequestMapping(value = "/login", method = RequestMethod.POST)
-  public ResponseEntity<UserDto> login(@RequestBody LoginRequest dto) {
+  public ResponseEntity<UserDto> login(@RequestBody @Valid LoginRequest dto) {
     System.out.println("newUsername = " + dto.username());
     System.out.println("password = " + dto.password());
     return ResponseEntity

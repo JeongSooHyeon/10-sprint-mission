@@ -3,6 +3,9 @@ package com.sprint.mission.discodeit.service.basic;
 import com.sprint.mission.discodeit.dto.*;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
+import com.sprint.mission.discodeit.exception.user.UserNotFoundException;
+import com.sprint.mission.discodeit.exception.user.UserStatusAlreadyExistsException;
+import com.sprint.mission.discodeit.exception.user.UserStatusNotFoundException;
 import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.mapper.UserStatusMapper;
 import com.sprint.mission.discodeit.repository.UserRepository;
@@ -29,10 +32,10 @@ public class BasicUserStatusService implements UserStatusService {
   @Transactional
   public UserStatusDto create(UserStatusCreateDto userStatusCreateDto) {
     User user = userRepository.findById(userStatusCreateDto.userId())
-        .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
+        .orElseThrow(() -> new UserNotFoundException(userStatusCreateDto.userId()));
     userStatusRepository.findByUserId(user.getId())
         .ifPresent(i -> {
-          throw new IllegalArgumentException("해당 사용자의 UserStatus가 이미 있습니다.");
+          throw new UserStatusAlreadyExistsException(user.getId());
         });
 
     UserStatus userStatus = new UserStatus(user, userStatusCreateDto.lastActiveAt());
@@ -40,31 +43,31 @@ public class BasicUserStatusService implements UserStatusService {
     return userStatusMapper.toUserStatusDto(userStatus);
   }
 
-  @Override
-  @Transactional(readOnly = true)
-  public UserStatusDto findById(UUID id) {
-    return userStatusMapper.toUserStatusDto(userStatusRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("해당 UserStatus가 없습니다.")));
-  }
+//  @Override
+//  @Transactional(readOnly = true)
+//  public UserStatusDto findById(UUID id) {
+//    return userStatusMapper.toUserStatusDto(userStatusRepository.findById(id)
+//        .orElseThrow(() -> new UserStatusNotFoundException(id)));
+//  }
 
-  @Override
-  @Transactional(readOnly = true)
-  public List<UserStatusDto> findAll() {
-    return userStatusRepository.findAll().stream()
-        .map(userStatusMapper::toUserStatusDto)
-        .toList();
-  }
+//  @Override
+//  @Transactional(readOnly = true)
+//  public List<UserStatusDto> findAll() {
+//    return userStatusRepository.findAll().stream()
+//        .map(userStatusMapper::toUserStatusDto)
+//        .toList();
+//  }
 
-  @Override
-  @Transactional
-  public UserStatusDto update(UUID userStatusId,
-      UserStatusUpdateByIdDto userStatusUpdateByIdDto) {
-    UserStatus userStatus = userStatusRepository.findById(userStatusId)
-        .orElseThrow(() -> new IllegalArgumentException("해당 UserStatus가 없습니다."));
-
-    userStatus.update(userStatusUpdateByIdDto.newLastActiveAt());
-    return userStatusMapper.toUserStatusDto(userStatus);
-  }
+//  @Override
+//  @Transactional
+//  public UserStatusDto update(UUID userStatusId,
+//      UserStatusUpdateByIdDto userStatusUpdateByIdDto) {
+//    UserStatus userStatus = userStatusRepository.findById(userStatusId)
+//        .orElseThrow(() ->
+//
+//    userStatus.update(userStatusUpdateByIdDto.newLastActiveAt());
+//    return userStatusMapper.toUserStatusDto(userStatus);
+//  }
 
   // User 정보를 포함하여 반환
   @Override
@@ -72,17 +75,17 @@ public class BasicUserStatusService implements UserStatusService {
   public UserStatusDto updateByUserId(UUID userId,
       UserStatusUpdateRequest userStatusUpdateRequest) {
     UserStatus userStatus = userStatusRepository.findByUserId(userId)
-        .orElseThrow(() -> new IllegalArgumentException("해당 사용자의 상태정보가 없습니다."));
+        .orElseThrow(() -> new UserStatusNotFoundException(userId));
 
     userStatus.update(userStatusUpdateRequest.newLastActiveAt());
     return userStatusMapper.toUserStatusDto(userStatus);
   }
 
-  @Override
-  @Transactional
-  public void delete(UUID id) {
-    userStatusRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("해당 UserStatus가 없습니다."));
-    userStatusRepository.deleteById(id);
-  }
+//  @Override
+//  @Transactional
+//  public void delete(UUID id) {
+//    userStatusRepository.findById(id)
+//        .orElseThrow(() -> new UserStatusAlreadyExistsException(id));
+//    userStatusRepository.deleteById(id);
+//  }
 }
