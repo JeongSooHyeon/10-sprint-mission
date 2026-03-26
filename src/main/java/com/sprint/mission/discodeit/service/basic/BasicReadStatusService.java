@@ -14,6 +14,7 @@ import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.ReadStatusService;
+import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -46,8 +47,10 @@ public class BasicReadStatusService implements ReadStatusService {
         .map(readStatusMapper::toReadStatusDto) // 이미 있으면 그걸 그냥 리턴 (200 OK)
         .orElseGet(() -> {
           // 2. 진짜 없으면 그때 생성한다.
-          ReadStatus newStatus = new ReadStatus(user,
-              channel, readStatusCreateRequest.lastReadAt());
+          Instant lastReadAt = readStatusCreateRequest.lastReadAt() != null
+              ? readStatusCreateRequest.lastReadAt()
+              : Instant.now();
+          ReadStatus newStatus = new ReadStatus(user, channel, lastReadAt);
           return readStatusMapper.toReadStatusDto(readStatusRepository.save(newStatus));
         });
   }
@@ -77,7 +80,12 @@ public class BasicReadStatusService implements ReadStatusService {
   public ReadStatusDto update(UUID id, ReadStatusUpdateRequest readStatusUpdateRequest) {
     ReadStatus readStatus = readStatusRepository.findById(id)
         .orElseThrow(() -> new ReadStatusNotFoundException(id));
-    readStatus.updateLastReadAt(readStatusUpdateRequest.newLastReadAt());
+
+    Instant newLastReadAt = readStatusUpdateRequest.newLastReadAt() != null
+        ? readStatusUpdateRequest.newLastReadAt()
+        : Instant.now();
+
+    readStatus.updateLastReadAt(newLastReadAt);
     return readStatusMapper.toReadStatusDto(readStatus);
   }
 

@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,7 @@ public class ReadStatusController {
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = ReadStatusDto.class)))
   })
   @RequestMapping(method = RequestMethod.POST)
-  public ResponseEntity<ReadStatusDto> create(@RequestBody ReadStatusCreateRequest dto) {
+  public ResponseEntity<ReadStatusDto> create(@RequestBody @Valid ReadStatusCreateRequest dto) {
     return ResponseEntity
         .status(HttpStatus.CREATED)
         .body(readStatusService.create(dto));
@@ -47,7 +48,7 @@ public class ReadStatusController {
   })
   @RequestMapping(value = "/{readStatusId}", method = RequestMethod.PATCH)
   public ResponseEntity<ReadStatusDto> update(@PathVariable UUID readStatusId,
-      @RequestBody ReadStatusUpdateRequest dto) {
+      @RequestBody @Valid ReadStatusUpdateRequest dto) {
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(readStatusService.update(readStatusId, dto));

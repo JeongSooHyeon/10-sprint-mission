@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -37,7 +38,7 @@ public class ChannelController {
   })
   @RequestMapping(value = "/public", method = RequestMethod.POST)
   public ResponseEntity<ChannelDto> createPublicChannel(
-      @RequestBody PublicChannelCreateRequest dto) {
+      @RequestBody @Valid PublicChannelCreateRequest dto) {
 
     log.info("PUBLIC 채널 생성 요청: name={}", dto.name());
     ChannelDto result = channelService.createPublic(dto);
@@ -53,7 +54,7 @@ public class ChannelController {
   })
   @RequestMapping(value = "/private", method = RequestMethod.POST)
   public ResponseEntity<ChannelDto> createPrivateChannel(
-      @RequestBody PrivateChannelCreateRequest dto) {
+      @RequestBody @Valid PrivateChannelCreateRequest dto) {
 
     log.info("PRIVATE 채널 생성 요청: participantIds={}", dto.participantIds());
     ChannelDto result = channelService.createPrivate(dto);
@@ -70,7 +71,7 @@ public class ChannelController {
   })
   @RequestMapping(value = "/{channelId}", method = RequestMethod.PATCH)
   public ResponseEntity<ChannelDto> updatePublicChannel(@PathVariable UUID channelId,
-      @RequestBody PublicChannelUpdateRequest dto) {
+      @RequestBody @Valid PublicChannelUpdateRequest dto) {
 
     log.info("채널 수정 요청: channelId={}", channelId);
     ChannelDto result = channelService.update(channelId, dto);

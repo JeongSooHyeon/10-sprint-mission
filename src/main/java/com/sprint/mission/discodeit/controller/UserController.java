@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +46,8 @@ public class UserController {
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class)))
   })
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<UserDto> join(@RequestPart("userCreateRequest") UserCreateRequest dto,
+  public ResponseEntity<UserDto> join(
+      @RequestPart("userCreateRequest") @Valid UserCreateRequest dto,
       @RequestPart(value = "profile", required = false) MultipartFile profile) throws IOException {
 
     log.info("사용자 등록 요청: username={}, email={}", dto.username(), dto.email());
@@ -64,7 +66,7 @@ public class UserController {
   @RequestMapping(value = "/{userId}", method = RequestMethod.PATCH, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<UserDto> update(
       @PathVariable UUID userId,
-      @RequestPart("userUpdateRequest") UserUpdateRequest dto,
+      @RequestPart("userUpdateRequest") @Valid UserUpdateRequest dto,
       @RequestPart(value = "profile", required = false) MultipartFile profile) throws IOException {
 
     log.info("사용자 수정 요청: userId={}", userId);
@@ -112,7 +114,7 @@ public class UserController {
   })
   @RequestMapping(value = "/{userId}/userStatus", method = RequestMethod.PATCH)
   public ResponseEntity<UserStatusDto> updateStatus(@PathVariable UUID userId,
-      @RequestBody UserStatusUpdateRequest dto) {
+      @RequestBody @Valid UserStatusUpdateRequest dto) {
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(userStatusService.updateByUserId(userId, dto));
