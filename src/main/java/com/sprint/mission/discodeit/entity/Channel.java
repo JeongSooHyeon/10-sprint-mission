@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Channel extends BaseUpdatableEntity {
 
-  @Column
+  @Column(nullable = false)
   private String name;
 
   @Enumerated(EnumType.STRING)

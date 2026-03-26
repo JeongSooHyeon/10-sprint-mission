@@ -9,15 +9,15 @@ public interface UserStatusService {
 
   UserStatusDto create(UserStatusCreateDto userStatusCreateDto);
 
-  UserStatusDto findById(UUID id);
+//  UserStatusDto findById(UUID id);
 
-  List<UserStatusDto> findAll();
+//  List<UserStatusDto> findAll();
 
-  UserStatusDto update(UUID userStatusId, UserStatusUpdateByIdDto userStatusUpdateByIdDto);
+//  UserStatusDto update(UUID userStatusId, UserStatusUpdateByIdDto userStatusUpdateByIdDto);
 
   UserStatusDto updateByUserId(UUID userId,
       UserStatusUpdateRequest userStatusUpdateRequest);
 
-  void delete(UUID id);
+//  void delete(UUID id);
 
 }
