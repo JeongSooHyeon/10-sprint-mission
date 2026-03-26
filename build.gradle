@@ -37,6 +37,7 @@ dependencies {
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
     implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
     implementation 'org.glassfish:jakarta.el:4.0.2'
+    runtimeOnly 'com.h2database:h2'
 }
 
 tasks.named('test') {

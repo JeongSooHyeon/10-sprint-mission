@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ public class MessageController {
   })
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<MessageDto> send(
-      @RequestPart("messageCreateRequest") MessageCreateRequest dto,
+      @RequestPart("messageCreateRequest") @Valid MessageCreateRequest dto,
       @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments)
       throws IOException {
 
@@ -67,7 +68,7 @@ public class MessageController {
   })
   @RequestMapping(value = "/{messageId}", method = RequestMethod.PATCH)
   public ResponseEntity<MessageDto> update(@PathVariable UUID messageId,
-      @RequestBody MessageUpdateRequest dto) {
+      @RequestBody @Valid MessageUpdateRequest dto) {
 
     log.info("메시지 수정 요청: messageId={}", messageId);
     MessageDto result = messageService.update(messageId, dto);

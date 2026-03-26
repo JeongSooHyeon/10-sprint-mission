@@ -33,31 +33,31 @@ public class BinaryContentController {
   private final BinaryContentService binaryContentService;
   private final BinaryContentStorage storage;
 
-  // 바이너리 파일 생성
-//  @Operation(summary = "파일 업로드", description = "MultipartFile을 업로드하여 시스템에 저장")
-//  @ApiResponses(value = {
-//      @ApiResponse(responseCode = "201", description = "업로드 성공",
-//          content = @Content(mediaType = "application/json",
-//              schema = @Schema(implementation = BinaryContentDto.class))),
-//      @ApiResponse(responseCode = "400", description = "잘못된 요청 파라미터"),
-//      @ApiResponse(responseCode = "500", description = "서버 내부 오류")
-//
-//  })
-//  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//  public ResponseEntity<BinaryContentDto> create(@RequestPart("file") MultipartFile file)
-//      throws IOException {
-//
-//    BinaryContentCreateDto newDto = new BinaryContentCreateDto(
-//        file.getContentType(),
-//        file.getBytes(),
-//        file.getSize(),
-//        file.getOriginalFilename()
-//    );
-//
-//    return ResponseEntity
-//        .status(HttpStatus.CREATED)
-//        .body(binaryContentService.create(newDto));
-//  }
+  //   바이너리 파일 생성
+  @Operation(summary = "파일 업로드", description = "MultipartFile을 업로드하여 시스템에 저장")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "201", description = "업로드 성공",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = BinaryContentDto.class))),
+      @ApiResponse(responseCode = "400", description = "잘못된 요청 파라미터"),
+      @ApiResponse(responseCode = "500", description = "서버 내부 오류")
+
+  })
+  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<BinaryContentDto> create(@RequestPart("file") MultipartFile file)
+      throws IOException {
+
+    BinaryContentCreateDto newDto = new BinaryContentCreateDto(
+        file.getContentType(),
+        file.getBytes(),
+        file.getSize(),
+        file.getOriginalFilename()
+    );
+
+    return ResponseEntity
+        .status(HttpStatus.CREATED)
+        .body(binaryContentService.create(newDto));
+  }
 
   // 바아너리 파일 1개 조회
   @Operation(
