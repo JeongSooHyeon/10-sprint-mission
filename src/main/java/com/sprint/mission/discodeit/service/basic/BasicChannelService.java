@@ -88,6 +88,9 @@ public class BasicChannelService implements ChannelService {
   @Transactional(readOnly = true)
   public List<ChannelDto> findAllByUserId(UUID userId) {
     List<Channel> channels = channelRepository.findAllByUserId(userId);
+    if (channels.isEmpty()) {
+      return List.of();
+    }
     List<UUID> channelIds = channels.stream()
         .map(Channel::getId)
         .toList();
