@@ -55,7 +55,6 @@ public class MessageController {
 
     log.info("메시지 전송 요청: authorId={}, channelId={}", dto.authorId(), dto.channelId());
     MessageDto result = messageService.create(dto, attachments);
-    log.info("메시지 전송 완료: id={}", result.id());
     return ResponseEntity.status(HttpStatus.CREATED).body(result);
   }
 
@@ -72,7 +71,6 @@ public class MessageController {
 
     log.info("메시지 수정 요청: messageId={}", messageId);
     MessageDto result = messageService.update(messageId, dto);
-    log.info("메시지 수정 완료: messageId={}", messageId);
     return ResponseEntity.status(HttpStatus.OK).body(result);
   }
 
@@ -86,7 +84,6 @@ public class MessageController {
 
     log.info("메시지 삭제 요청: messageId={}", messageId);
     messageService.delete(messageId);
-    log.info("메시지 삭제 완료: messageId={}", messageId);
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 

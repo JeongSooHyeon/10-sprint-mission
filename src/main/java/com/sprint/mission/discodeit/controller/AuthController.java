@@ -52,8 +52,6 @@ public class AuthController {
 
   @RequestMapping(value = "/login", method = RequestMethod.POST)
   public ResponseEntity<UserDto> login(@RequestBody @Valid LoginRequest dto) {
-    System.out.println("newUsername = " + dto.username());
-    System.out.println("password = " + dto.password());
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(authService.login(dto));

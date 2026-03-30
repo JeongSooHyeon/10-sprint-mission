@@ -9,6 +9,7 @@ import com.sprint.mission.discodeit.exception.channel.ChannelNotFoundException;
 import com.sprint.mission.discodeit.exception.message.MessageNotFoundException;
 import com.sprint.mission.discodeit.exception.user.UserNotFoundException;
 import com.sprint.mission.discodeit.mapper.MessageMapper;
+import com.sprint.mission.discodeit.mapper.PageResponseMapper;
 import com.sprint.mission.discodeit.repository.*;
 import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
@@ -41,6 +42,8 @@ public class BasicMessageService implements MessageService {
   private final BinaryContentRepository binaryContentRepository;
   private final ReadStatusRepository readStatusRepository;
   private final BinaryContentStorage binaryContentStorage;
+  private final PageResponseMapper pageResponseMapper;
+
   @PersistenceContext
   private EntityManager entityManager;
 
@@ -106,27 +109,27 @@ public class BasicMessageService implements MessageService {
     return messageMapper.toMessageDto(message);
   }
 
-//  @Override
-//  @Transactional
-//  public PageResponse<MessageDto> findAllByChannelId(UUID userId, UUID channelId, UUID cursor,
-//      Pageable pageable) {
-//
-//    readStatusRepository.findByUserIdAndChannelId(userId, channelId)
-//        .ifPresentOrElse(
-//            rs -> rs.updateLastReadAt(Instant.now()),
-//            () -> {
-//              // 없으면(Public 채널 첫 방문 등) 새로 생성
-//              User user = userRepository.findById(userId)
-//                  .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
-//              Channel channel = channelRepository.findById(channelId)
-//                  .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채널입니다."));
-//              readStatusRepository.save(new ReadStatus(user, channel, Instant.now()));
-//            }
-//        );
-//
-//    Slice<Message> messageSlice = messageRepository.findAllByChannelId(channelId, pageable);
-//    return pageResponseMapper.fromSlice(messageSlice.map(messageMapper::toMessageDto));
-//  }
+  @Override
+  @Transactional
+  public PageResponse<MessageDto> findAllByChannelId(UUID userId, UUID channelId, UUID cursor,
+      Pageable pageable) {
+
+    readStatusRepository.findByUserIdAndChannelId(userId, channelId)
+        .ifPresentOrElse(
+            rs -> rs.updateLastReadAt(Instant.now()),
+            () -> {
+              // 없으면(Public 채널 첫 방문 등) 새로 생성
+              User user = userRepository.findById(userId)
+                  .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
+              Channel channel = channelRepository.findById(channelId)
+                  .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채널입니다."));
+              readStatusRepository.save(new ReadStatus(user, channel, Instant.now()));
+            }
+        );
+
+    Slice<Message> messageSlice = messageRepository.findAllByChannelId(channelId, pageable);
+    return pageResponseMapper.fromSlice(messageSlice.map(messageMapper::toMessageDto));
+  }
 
   @Override
   @Transactional

@@ -43,12 +43,10 @@ public class BasicUserService implements UserService {
 
     userRepository.findByUsername(request.username())
         .ifPresent(u -> {
-          log.warn("사용자 생성 실패 - 이미 존재하는 닉네임: username={}", request.username());
           throw new UserNameAlreadyExistsException(request.username());
         });
     userRepository.findByEmail(request.email())
         .ifPresent(u -> {
-          log.warn("사용자 생성 실패 - 이미 존재하는 이메일: email={}", request.email());
           throw new EmailAlreadyExistException(request.email());
         });
 
@@ -100,15 +98,11 @@ public class BasicUserService implements UserService {
     log.debug("사용자 수정 시작: id={}", id);
 
     User user = userRepository.findById(id)
-        .orElseThrow(() -> {
-          log.warn("사용자 수정 실패 - 존재하지 않는 사용자: id={}", id);
-          return new UserNotFoundException(id);
-        });
+        .orElseThrow(() -> new UserNotFoundException(id));
 
     if (request.newUsername() != null && !request.newUsername().equals(user.getUsername())) {
       userRepository.findByUsername(request.newUsername())
           .ifPresent(u -> {
-            log.warn("사용자 수정 실패 - 이미 존재하는 닉네임: {}", request.newUsername());
             throw new UserNameAlreadyExistsException(request.newUsername());
           });
     }
@@ -116,7 +110,6 @@ public class BasicUserService implements UserService {
     if (request.newEmail() != null && !request.newEmail().equals(user.getEmail())) {
       userRepository.findByEmail(request.newEmail())
           .ifPresent(u -> {
-            log.warn("사용자 수정 실패 - 이미 존재하는 이메일: {}", request.newEmail());
             throw new EmailAlreadyExistException(request.newEmail());
           });
     }
@@ -151,10 +144,7 @@ public class BasicUserService implements UserService {
   public void delete(UUID id) {
     log.debug("사용자 삭제 시작: id={}", id);
     User user = userRepository.findById(id)
-        .orElseThrow(() -> {
-          log.warn("사용자 삭제 실패 - 존재하지 않는 사용자: id={}", id);
-          return new UserNotFoundException(id);
-        });
+        .orElseThrow(() -> new UserNotFoundException(id));
 
     // 사용자가 작성한 메시지 삭제
     messageRepository.deleteByAuthorId(id);

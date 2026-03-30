@@ -42,7 +42,6 @@ public class ChannelController {
 
     log.info("PUBLIC 채널 생성 요청: name={}", dto.name());
     ChannelDto result = channelService.createPublic(dto);
-    log.info("PUBLIC 채널 생성 완료: id={}", result.id());
     return ResponseEntity.status(HttpStatus.CREATED).body(result);
   }
 
@@ -58,7 +57,6 @@ public class ChannelController {
 
     log.info("PRIVATE 채널 생성 요청: participantIds={}", dto.participantIds());
     ChannelDto result = channelService.createPrivate(dto);
-    log.info("PRIVATE 채널 생성 완료: id={}", result.id());
     return ResponseEntity.status(HttpStatus.CREATED).body(result);
   }
 
@@ -75,7 +73,6 @@ public class ChannelController {
 
     log.info("채널 수정 요청: channelId={}", channelId);
     ChannelDto result = channelService.update(channelId, dto);
-    log.info("채널 수정 완료: channelId={}", channelId);
     return ResponseEntity.status(HttpStatus.OK).body(result);
   }
 
@@ -105,7 +102,6 @@ public class ChannelController {
 
     log.info("채널 삭제 요청: channelId={}", channelId);
     channelService.delete(channelId);
-    log.info("채널 삭제 완료: channelId={}", channelId);
     return ResponseEntity
         .status(HttpStatus.NO_CONTENT)
         .build();
