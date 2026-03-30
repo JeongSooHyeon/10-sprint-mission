@@ -118,14 +118,6 @@ public class BasicChannelService implements ChannelService {
         .toList();
   }
 
-  private boolean isVisibleToUser(Channel channel, UUID userId) {
-    if (channel.getType().equals(IsPrivate.PUBLIC)) {
-      return true;
-    }
-    return readStatusRepository.findByUserIdAndChannelId(userId, channel.getId()).isPresent();
-  }
-
-
   @Override
   @Transactional
   public ChannelDto update(UUID id, PublicChannelUpdateRequest publicChannelUpdateRequest) {

@@ -1,5 +1,8 @@
 package com.sprint.mission.discodeit.exception;
 
+import com.sprint.mission.discodeit.exception.user.EmailAlreadyExistException;
+import com.sprint.mission.discodeit.exception.user.UserNameAlreadyExistsException;
+import com.sprint.mission.discodeit.exception.user.UserNotFoundException;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +17,34 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+  @ExceptionHandler(UserNameAlreadyExistsException.class)
+  public ResponseEntity<ErrorResponse> handleUserNameExists(UserNameAlreadyExistsException e) {
+    // 강사님 피드백 반영: 여기서 로깅!
+    log.warn("사용자 생성 실패 - 이미 존재하는 닉네임: {}", e.getMessage(), e);
+
+    return ResponseEntity
+        .status(e.getErrorCode().getStatus())
+        .body(ErrorResponse.of(e));
+  }
+
+  @ExceptionHandler(EmailAlreadyExistException.class)
+  public ResponseEntity<ErrorResponse> handleEmailExists(EmailAlreadyExistException e) {
+    log.warn("사용자 생성 실패 - 이미 존재하는 이메일: {}", e.getMessage(), e);
+
+    return ResponseEntity
+        .status(e.getErrorCode().getStatus())
+        .body(ErrorResponse.of(e));
+  }
+
+  @ExceptionHandler(EmailAlreadyExistException.class)
+  public ResponseEntity<ErrorResponse> handleEmailExists(UserNotFoundException e) {
+    log.warn("사용자 삭제 실패 - 존재하지 않는 사용자: {}", e.getMessage(), e);
+
+    return ResponseEntity
+        .status(e.getErrorCode().getStatus())
+        .body(ErrorResponse.of(e));
+  }
 
   @ExceptionHandler(DiscodeitException.class)
   public ResponseEntity<ErrorResponse> handleDiscodeitException(DiscodeitException e) {
@@ -44,6 +75,8 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleUnknown(Exception e) {
+    log.error("예상치 못한 서버 에러 발생: {}", e.getMessage(), e);
+
     return ResponseEntity
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .body(new ErrorResponse(
