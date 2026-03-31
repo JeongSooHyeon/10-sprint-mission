@@ -170,6 +170,9 @@ public class BasicMessageService implements MessageService {
   @Override
   @Transactional(readOnly = true)
   public PageResponse<MessageDto> getMessages(UUID channelId, Instant cursor, Pageable pageable) {
+    if (!channelRepository.existsById(channelId)) {
+      throw new ChannelNotFoundException(channelId);
+    }
     Slice<Message> messageSlice = (cursor == null)
         ? messageRepository.findAllByChannelId(channelId, pageable)
         : messageRepository.findAllByChannelIdBeforeCursor(channelId, cursor, pageable);

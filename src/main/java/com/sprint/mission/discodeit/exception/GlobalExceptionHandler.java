@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -37,7 +38,7 @@ public class GlobalExceptionHandler {
         .body(ErrorResponse.of(e));
   }
 
-  @ExceptionHandler(EmailAlreadyExistException.class)
+  @ExceptionHandler(UserNotFoundException.class)
   public ResponseEntity<ErrorResponse> handleEmailExists(UserNotFoundException e) {
     log.warn("사용자 삭제 실패 - 존재하지 않는 사용자: {}", e.getMessage(), e);
 
@@ -87,4 +88,5 @@ public class GlobalExceptionHandler {
             e.getClass().getSimpleName(),
             500));
   }
+
 }
