@@ -44,9 +44,6 @@ public class BasicMessageService implements MessageService {
   private final BinaryContentStorage binaryContentStorage;
   private final PageResponseMapper pageResponseMapper;
 
-  @PersistenceContext
-  private EntityManager entityManager;
-
   @Override
   @Transactional
   public MessageDto create(MessageCreateRequest messageCreateRequest,
@@ -73,8 +70,7 @@ public class BasicMessageService implements MessageService {
         BinaryContent content = new BinaryContent(file.getContentType(), file.getSize(),
             file.getOriginalFilename());
 
-        binaryContentRepository.save(content);
-        entityManager.flush();
+        binaryContentRepository.saveAndFlush(content);
 
         binaryContentStorage.put(content.getId(), file.getBytes());
         savedContents.add(content);
@@ -178,6 +174,7 @@ public class BasicMessageService implements MessageService {
         : messageRepository.findAllByChannelIdBeforeCursor(channelId, cursor, pageable);
 
     List<MessageDto> content = messageSlice.getContent().stream()
+        .filter(m -> cursor == null || m.getCreatedAt().isBefore(cursor))
         .map(messageMapper::toMessageDto)
         .toList();
 

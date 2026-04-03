@@ -9,6 +9,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.util.Objects;
+import java.util.UUID;
 import lombok.Getter;
 
 import java.io.Serializable;
@@ -63,9 +65,14 @@ public class User extends BaseUpdatableEntity {
       anyValueUpdated = true;
     }
 
-    if (newProfile != null && !newProfile.getId().equals(this.profile.getId())) {
-      this.profile = newProfile;
-      anyValueUpdated = true;
+    if (newProfile != null) {
+      UUID currentProfileId = (this.profile != null) ? this.profile.getId() : null;
+      UUID newProfileId = newProfile.getId(); // 여기서 null이 나올 수 있음
+
+      if (!Objects.equals(newProfileId, currentProfileId)) {
+        this.profile = newProfile;
+        anyValueUpdated = true;
+      }
     }
 
     if (newEmail != null && !newEmail.equals(this.email)) {

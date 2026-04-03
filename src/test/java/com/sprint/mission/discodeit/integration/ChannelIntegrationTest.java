@@ -56,7 +56,7 @@ class ChannelIntegrationTest extends IntegrationTest {
     User user = new User("달선", "dalsun@naver.com", "password123", null);
     User savedUser = userRepository.save(user);
     PrivateChannelCreateRequest request = new PrivateChannelCreateRequest(
-        List.of(user.getId()));
+        List.of(savedUser.getId()));
 
     mockMvc.perform(post("/api/channels/private")
             .contentType(MediaType.APPLICATION_JSON)

@@ -57,7 +57,7 @@ public class BasicUserService implements UserService {
           file.getSize(),
           file.getOriginalFilename()
       );
-      binaryContentRepository.save(profile);
+      profile = binaryContentRepository.save(profile);
       storage.put(profile.getId(), file.getBytes());
       log.debug("프로필 이미지 등록 완료: profileName={}", profile.getFileName());
     }
@@ -127,7 +127,7 @@ public class BasicUserService implements UserService {
           file.getSize(),
           file.getOriginalFilename()
       );
-      binaryContentRepository.save(profile);
+      profile = binaryContentRepository.save(profile);
       storage.put(profile.getId(), file.getBytes());
       log.debug("프로필 이미지 수정 완료: fileName={}", profile.getFileName());
     }

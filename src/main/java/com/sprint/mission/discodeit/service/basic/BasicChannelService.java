@@ -55,21 +55,24 @@ public class BasicChannelService implements ChannelService {
   public ChannelDto createPrivate(PrivateChannelCreateRequest privateChannelCreateRequest) {
     log.info("PRIVATE 채널 생성 시작: participantIds={}", privateChannelCreateRequest.participantIds());
 
-    Channel channel =
-        new Channel(null, IsPrivate.PRIVATE, null);
-    channelRepository.save(channel);
+    // 1. 참여자 유효성 먼저 확인 (리스트로 미리 가져오기)
+    List<User> participants = privateChannelCreateRequest.participantIds().stream()
+        .map(uId -> userRepository.findById(uId)
+            .orElseThrow(() -> {
+              log.warn("PRIVATE 채널 생성 실패 - 존재하지 않는 사용자: id={}", uId);
+              return new UserNotFoundException(uId);
+            }))
+        .toList();
 
-    // ReadStatus 생성
-    privateChannelCreateRequest.participantIds()
-        .forEach(uId -> {
-          User user = userRepository.findById(uId)
-              .orElseThrow(() -> {
-                log.warn("PRIVATE 채널 생성 실패 - 존재하지 않는 사용자: id={}", uId);
-                return new UserNotFoundException(uId);
-              });
-          ReadStatus readStatus = new ReadStatus(user, channel, Instant.now());
-          readStatusRepository.save(readStatus);
-        });
+    // 2. 유저가 모두 확인된 후에 채널 생성 및 저장
+    Channel channel = new Channel(null, IsPrivate.PRIVATE, null);
+    Channel savedChannel = channelRepository.save(channel);
+
+    // 3. ReadStatus 생성
+    participants.forEach(user -> {
+      ReadStatus readStatus = new ReadStatus(user, savedChannel, Instant.now());
+      readStatusRepository.save(readStatus);
+    });
     log.info("PRIVATE 채널 생성 완료: id={}", channel.getId());
 
     return channelMapper.toChannelDto(channel);
@@ -141,22 +144,22 @@ public class BasicChannelService implements ChannelService {
     return channelMapper.toChannelDto(channel);
   }
 
-  @Override
-  @Transactional
-  public ChannelDto joinChannel(UUID userId, UUID channelId) {
-    Channel channel = channelRepository.findById(channelId)
-        .orElseThrow(() -> new ChannelNotFoundException(channelId));
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new UserNotFoundException(userId));
-
-    ReadStatus readStatus = new ReadStatus(user, channel, Instant.now());
-    readStatusRepository.save(readStatus);
-
-    userStatusRepository.findByUserId(userId)
-        .ifPresent(status -> status.update(Instant.now()));
-
-    return channelMapper.toChannelDto(channel);
-  }
+//  @Override
+//  @Transactional
+//  public ChannelDto joinChannel(UUID userId, UUID channelId) {
+//    Channel channel = channelRepository.findById(channelId)
+//        .orElseThrow(() -> new ChannelNotFoundException(channelId));
+//    User user = userRepository.findById(userId)
+//        .orElseThrow(() -> new UserNotFoundException(userId));
+//
+//    ReadStatus readStatus = new ReadStatus(user, channel, Instant.now());
+//    readStatusRepository.save(readStatus);
+//
+//    userStatusRepository.findByUserId(userId)
+//        .ifPresent(status -> status.update(Instant.now()));
+//
+//    return channelMapper.toChannelDto(channel);
+//  }
 
   @Override
   @Transactional

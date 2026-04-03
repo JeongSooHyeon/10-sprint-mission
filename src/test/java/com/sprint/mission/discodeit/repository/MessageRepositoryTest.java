@@ -7,6 +7,7 @@ import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.IsPrivate;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.entity.UserStatus;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,9 @@ class MessageRepositoryTest {
   @Autowired
   private ChannelRepository channelRepository;
 
+  @Autowired
+  private UserStatusRepository userStatusRepository;
+
   private User user;
   private Channel channel;
 
@@ -44,7 +48,7 @@ class MessageRepositoryTest {
   void setUp() {
     user = new User("달선", "dalsun@naver.com", "ekftjs123", null);
     userRepository.save(user);
-
+    userStatusRepository.save(new UserStatus(user, Instant.now()));
     channel = new Channel("공지방", IsPrivate.PUBLIC, "공지방입니다.");
     channelRepository.save(channel);
   }
@@ -84,15 +88,16 @@ class MessageRepositoryTest {
 
   @Test
   @DisplayName("채널 ID로 가장 최근 메시지 조회 성공")
-  void find_first_by_channel_id_order_by_created_at_desc_success() {
+  void find_first_by_channel_id_order_by_created_at_desc_success() throws InterruptedException {
     // given
     Message message1 = new Message(user, channel, "첫 번째 메시지", new ArrayList<>());
     messageRepository.save(message1);
+    Thread.sleep(5);
     Message message2 = new Message(user, channel, "두 번째 메시지", new ArrayList<>());
     messageRepository.save(message2);
 
     // when
-    Optional<Message> result = messageRepository.findFirstByChannelIdOrderByCreatedAtDesc(
+    Optional<Message> result = messageRepository.findFirstByChannelIdOrderByCreatedAtDescIdDesc(
         channel.getId());
 
     // then
@@ -104,7 +109,7 @@ class MessageRepositoryTest {
   @DisplayName("채널 ID로 가장 최근 메시지 조회 실패 - 메시지 없음")
   void find_first_by_channel_id_order_by_created_at_desc_fail_no_messages() {
     // when
-    Optional<Message> result = messageRepository.findFirstByChannelIdOrderByCreatedAtDesc(
+    Optional<Message> result = messageRepository.findFirstByChannelIdOrderByCreatedAtDescIdDesc(
         channel.getId());
 
     // then
@@ -113,14 +118,19 @@ class MessageRepositoryTest {
 
   @Test
   @DisplayName("채널 ID로 메시지 페이징 조회 성공")
-  void find_all_by_channel_id_success() {
+  void find_all_by_channel_id_success() throws InterruptedException {
     // given
     Message message1 = new Message(user, channel, "첫 번째 메시지", new ArrayList<>());
-    Message message2 = new Message(user, channel, "두 번째 메시지", new ArrayList<>());
     messageRepository.save(message1);
-    messageRepository.save(message2);
+    messageRepository.flush();
 
-    Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
+    Thread.sleep(10);
+
+    Message message2 = new Message(user, channel, "두 번째 메시지", new ArrayList<>());
+    messageRepository.save(message2);
+    messageRepository.flush();
+
+    Pageable pageable = PageRequest.of(0, 10);
 
     // when
     Slice<Message> result = messageRepository.findAllByChannelId(channel.getId(), pageable);
@@ -145,17 +155,19 @@ class MessageRepositoryTest {
 
   @Test
   @DisplayName("커서 기반 메시지 페이징 조회 성공")
-  void find_all_by_channel_id_before_cursor_success() {
+  void find_all_by_channel_id_before_cursor_success() throws InterruptedException {
     // given
     Message message1 = new Message(user, channel, "첫 번째 메시지", new ArrayList<>());
-    messageRepository.save(message1);
+    messageRepository.saveAndFlush(message1);
 
-    Instant cursor = Instant.now();
+    Thread.sleep(100);
 
     Message message2 = new Message(user, channel, "두 번째 메시지", new ArrayList<>());
-    messageRepository.save(message2);
+    messageRepository.saveAndFlush(message2);
 
-    Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
+    Instant cursor = messageRepository.findById(message2.getId()).get().getCreatedAt();
+
+    Pageable pageable = PageRequest.of(0, 10);
 
     // when
     Slice<Message> result = messageRepository.findAllByChannelIdBeforeCursor(
@@ -183,11 +195,13 @@ class MessageRepositoryTest {
 
   @Test
   @DisplayName("채널별 마지막 메시지 조회 성공")
-  void find_last_messages_by_channel_ids_success() {
+  void find_last_messages_by_channel_ids_success() throws InterruptedException {
     // given
     Message message1 = new Message(user, channel, "첫 번째 메시지", new ArrayList<>());
-    Message message2 = new Message(user, channel, "두 번째 메시지", new ArrayList<>());
     messageRepository.save(message1);
+    Thread.sleep(50);
+
+    Message message2 = new Message(user, channel, "두 번째 메시지", new ArrayList<>());
     messageRepository.save(message2);
 
     // when
