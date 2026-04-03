@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import com.sprint.mission.discodeit.dto.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.UserDto;
 import com.sprint.mission.discodeit.dto.UserUpdateRequest;
+import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.exception.user.EmailAlreadyExistException;
@@ -34,6 +35,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(MockitoExtension.class)
@@ -69,6 +71,8 @@ class BasicUserServiceTest {
     // given
     UserCreateRequest request = new UserCreateRequest("달선", "dalsun@naver.com", "ekftjs123");
     UserDto userDto = new UserDto(UUID.randomUUID(), "달선", "dalsun@naver.com", null, true);
+    BinaryContent savedProfile = new BinaryContent("image/png", 1024L, "달선.png");
+    ReflectionTestUtils.setField(savedProfile, "id", UUID.randomUUID());
 
     MultipartFile file = mock(MultipartFile.class);
     when(file.isEmpty()).thenReturn(false);
@@ -80,7 +84,8 @@ class BasicUserServiceTest {
     when(userRepository.findByUsername("달선")).thenReturn(Optional.empty());
     when(userRepository.findByEmail("dalsun@naver.com")).thenReturn(Optional.empty());
     when(userMapper.toUserDto(any(User.class))).thenReturn(userDto);
-
+    when(binaryContentRepository.save(any(BinaryContent.class))).thenReturn(savedProfile);
+    
     // when
     UserDto result = userService.create(request, file);
 
@@ -116,6 +121,12 @@ class BasicUserServiceTest {
     UUID id = UUID.randomUUID();
     UserUpdateRequest request = new UserUpdateRequest("새로운 달선", "newDalsun@naver.com", "newnew123");
     User user = new User("달선", "dalsun@naver.com", "ekftjs123", null);
+    ReflectionTestUtils.setField(user, "id", id);
+
+    UUID newProfileId = UUID.randomUUID(); // 새로운 프로필용 ID 생성
+    BinaryContent savedProfile = new BinaryContent("image/png", 1024L, "new달선.png");
+    ReflectionTestUtils.setField(savedProfile, "id", newProfileId);
+
     UserDto userDto = new UserDto(UUID.randomUUID(), "새로운 달선", "newDalsun@naver.com", null, true);
     UserStatus userStatus = new UserStatus(user, Instant.now());
 
@@ -131,7 +142,7 @@ class BasicUserServiceTest {
     when(file.getBytes()).thenReturn(new byte[1024]);
     when(userMapper.toUserDto(any(User.class))).thenReturn(userDto);
     when(userStatusRepository.findByUserId(any(UUID.class))).thenReturn(Optional.of(userStatus));
-
+    when(binaryContentRepository.save(any(BinaryContent.class))).thenReturn(savedProfile);
     // when
     UserDto result = userService.update(id, request, file);
 

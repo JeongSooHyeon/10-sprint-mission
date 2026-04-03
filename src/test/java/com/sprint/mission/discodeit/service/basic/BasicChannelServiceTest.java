@@ -179,8 +179,6 @@ class BasicChannelServiceTest {
     UUID userId = UUID.randomUUID();
 
     when(channelRepository.findAllByUserId(userId)).thenReturn(new ArrayList<>());
-    when(readStatusRepository.findAllByChannelIdIn(any())).thenReturn(new ArrayList<>());
-    when(messageRepository.findLastMessagesByChannelIds(any())).thenReturn(new ArrayList<>());
 
     // when
     List<ChannelDto> result = channelService.findAllByUserId(userId);

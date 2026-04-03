@@ -3,6 +3,11 @@ spring:
     active: dev
   application:
     name: discodeit
+  boot:
+    admin:
+      client:
+        instance:
+          name: discodeit
   servlet:
     multipart:
       enabled: true

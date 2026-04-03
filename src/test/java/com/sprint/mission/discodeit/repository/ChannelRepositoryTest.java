@@ -5,7 +5,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.IsPrivate;
+import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.entity.User;
+import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -45,6 +47,9 @@ class ChannelRepositoryTest {
     channelRepository.save(privateChannel);
 
     // when
+    ReadStatus readStatus = new ReadStatus(user, privateChannel, Instant.now());
+    readStatusRepository.save(readStatus);
+    
     List<Channel> result = channelRepository.findAllByUserId(user.getId());
 
     // then

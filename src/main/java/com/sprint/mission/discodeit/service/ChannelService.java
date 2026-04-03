@@ -25,7 +25,7 @@ public interface ChannelService {
   ChannelDto update(UUID id, PublicChannelUpdateRequest publicChannelUpdateRequest);
 
   // 채널 참여
-  ChannelDto joinChannel(UUID userId, UUID channelId);
+//  ChannelDto joinChannel(UUID userId, UUID channelId);
 
 
   // Delete

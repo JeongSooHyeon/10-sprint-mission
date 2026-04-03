@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -29,6 +30,8 @@ import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
+import com.sprint.mission.discodeit.storage.BinaryContentStorage;
+import jakarta.persistence.EntityManager;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -43,6 +46,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(MockitoExtension.class)
 class BasicMessageServiceTest {
@@ -66,19 +70,37 @@ class BasicMessageServiceTest {
   private ReadStatusRepository readStatusRepository;
   @Mock
   private PageResponseMapper pageResponseMapper;
+  @Mock
+  private BinaryContentStorage binaryContentStorage;
 
   @Test
-  @DisplayName("메시지 생성 성공 - 첨부파일 없음")
-  void create_success_withoutAttachments() throws IOException {
+  @DisplayName("메시지 생성 성공 - 첨부파일 있음")
+  void create_success_with_attachments() throws IOException {
     // given
     UUID authorId = UUID.randomUUID();
     UUID channelId = UUID.randomUUID();
     UUID messageId = UUID.randomUUID();
+
     MessageCreateRequest request = new MessageCreateRequest(authorId, channelId, "안녕하세요");
+
     User author = new User("달선", "dalsun@naver.com", "ekftjs123", null);
     Channel channel = new Channel("공지방", IsPrivate.PUBLIC, "공지방입니다.");
+
     MessageDto dto = new MessageDto(messageId, Instant.now(), null, "안녕하세요", UUID.randomUUID(),
         null, null);
+
+    MultipartFile file1 = mock(MultipartFile.class);
+    MultipartFile file2 = mock(MultipartFile.class);
+
+    when(file1.getContentType()).thenReturn("image/png");
+    when(file1.getSize()).thenReturn(1024L);
+    when(file1.getOriginalFilename()).thenReturn("image1.png");
+    when(file1.getBytes()).thenReturn(new byte[]{1, 2, 3});
+
+    when(file2.getContentType()).thenReturn("image/jpeg");
+    when(file2.getSize()).thenReturn(2048L);
+    when(file2.getOriginalFilename()).thenReturn("image2.jpg");
+    when(file2.getBytes()).thenReturn(new byte[]{4, 5, 6});
 
     when(userRepository.findById(authorId)).thenReturn(Optional.of(author));
     when(channelRepository.findById(channelId)).thenReturn(Optional.of(channel));
@@ -88,13 +110,14 @@ class BasicMessageServiceTest {
     when(messageMapper.toMessageDto(any(Message.class))).thenReturn(dto);
 
     // when
-    MessageDto result = messageService.create(request, null);
+    MessageDto result = messageService.create(request, List.of(file1, file2));
 
     // then
     assertNotNull(result);
     assertEquals("안녕하세요", result.content());
     verify(messageRepository).save(any(Message.class));
-    verify(binaryContentRepository, never()).save(any(BinaryContent.class));
+    verify(binaryContentRepository, times(2)).saveAndFlush(any(BinaryContent.class));
+    verify(binaryContentStorage, times(2)).put(any(), any(byte[].class));
   }
 
   @Test
@@ -116,23 +139,25 @@ class BasicMessageServiceTest {
 
   @Test
   @DisplayName("채널 메시지 목록 조회 성공")
-  void findAllByChannelId_success_readStatusNotExists() {
+  void find_all_by_channel_id_success_read_status_not_exists() {
     // given
     UUID userId = UUID.randomUUID();
     UUID channelId = UUID.randomUUID();
     User user = new User("달선", "dalsun@naver.com", "ekftjs123", null);
     Channel channel = new Channel("공지방", IsPrivate.PUBLIC, "공지방입니다.");
     Slice<Message> messageSlice = mock(Slice.class);
+    when(messageSlice.map(any())).thenReturn(mock(Slice.class));
+
     PageResponse<MessageDto> pageResponse = new PageResponse<>(List.of(), null, 10, false, null);
 
     when(readStatusRepository.findByUserIdAndChannelId(userId, channelId))
         .thenReturn(Optional.empty());
     when(userRepository.findById(userId)).thenReturn(Optional.of(user));
     when(channelRepository.findById(channelId)).thenReturn(Optional.of(channel));
-    when(messageRepository.findAllByChannelId(eq(channelId), any(Pageable.class)))
+    when(messageRepository.findAllByChannelId(any(), any()))
         .thenReturn(messageSlice);
-    when(pageResponseMapper.fromSlice(any(Slice.class))).thenReturn(pageResponse);
 
+    when(pageResponseMapper.fromSlice(any(Slice.class))).thenReturn(pageResponse);
     // when
     PageResponse<MessageDto> result = messageService.findAllByChannelId(userId, channelId, null,
         Pageable.unpaged());
@@ -144,7 +169,7 @@ class BasicMessageServiceTest {
 
   @Test
   @DisplayName("채널 메시지 목록 조회 실패 - 존재하지 않는 사용자")
-  void findAllByChannelId_fail_userNotFound() {
+  void find_all_by_channel_id_fail_userNotFound() {
     // given
     UUID userId = UUID.randomUUID();
     UUID channelId = UUID.randomUUID();
@@ -190,7 +215,7 @@ class BasicMessageServiceTest {
 
   @Test
   @DisplayName("메시지 수정 실패 - 존재하지 않는 메시지")
-  void update_fail_messageNotFound() {
+  void update_fail_message_not_found() {
     // given
     UUID messageId = UUID.randomUUID();
     MessageUpdateRequest request = new MessageUpdateRequest("수정된 내용");
@@ -225,7 +250,7 @@ class BasicMessageServiceTest {
 
   @Test
   @DisplayName("메시지 삭제 실패 - 존재하지 않는 메시지")
-  void delete_fail_messageNotFound() {
+  void delete_fail_message_not_found() {
     // given
     UUID messageId = UUID.randomUUID();
 
