@@ -11,7 +11,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/channels")
+@Slf4j
 public class ChannelController {
 
   private final ChannelService channelService;
@@ -35,10 +38,11 @@ public class ChannelController {
   })
   @RequestMapping(value = "/public", method = RequestMethod.POST)
   public ResponseEntity<ChannelDto> createPublicChannel(
-      @RequestBody PublicChannelCreateRequest dto) {
-    return ResponseEntity
-        .status(HttpStatus.CREATED)
-        .body(channelService.createPublic(dto));
+      @RequestBody @Valid PublicChannelCreateRequest dto) {
+
+    log.info("PUBLIC 채널 생성 요청: name={}", dto.name());
+    ChannelDto result = channelService.createPublic(dto);
+    return ResponseEntity.status(HttpStatus.CREATED).body(result);
   }
 
   // 비공개 채널 생성
@@ -49,10 +53,11 @@ public class ChannelController {
   })
   @RequestMapping(value = "/private", method = RequestMethod.POST)
   public ResponseEntity<ChannelDto> createPrivateChannel(
-      @RequestBody PrivateChannelCreateRequest dto) {
-    return ResponseEntity
-        .status(HttpStatus.CREATED)
-        .body(channelService.createPrivate(dto));
+      @RequestBody @Valid PrivateChannelCreateRequest dto) {
+
+    log.info("PRIVATE 채널 생성 요청: participantIds={}", dto.participantIds());
+    ChannelDto result = channelService.createPrivate(dto);
+    return ResponseEntity.status(HttpStatus.CREATED).body(result);
   }
 
   // 공개 채널 정보 수정
@@ -64,10 +69,11 @@ public class ChannelController {
   })
   @RequestMapping(value = "/{channelId}", method = RequestMethod.PATCH)
   public ResponseEntity<ChannelDto> updatePublicChannel(@PathVariable UUID channelId,
-      @RequestBody PublicChannelUpdateRequest dto) {
-    return ResponseEntity
-        .status(HttpStatus.OK)
-        .body(channelService.update(channelId, dto));
+      @RequestBody @Valid PublicChannelUpdateRequest dto) {
+
+    log.info("채널 수정 요청: channelId={}", channelId);
+    ChannelDto result = channelService.update(channelId, dto);
+    return ResponseEntity.status(HttpStatus.OK).body(result);
   }
 
   // 채널에 멤버 추가
@@ -93,6 +99,8 @@ public class ChannelController {
   })
   @RequestMapping(value = "/{channelId}", method = RequestMethod.DELETE)
   public ResponseEntity<Void> delete(@PathVariable UUID channelId) {
+
+    log.info("채널 삭제 요청: channelId={}", channelId);
     channelService.delete(channelId);
     return ResponseEntity
         .status(HttpStatus.NO_CONTENT)

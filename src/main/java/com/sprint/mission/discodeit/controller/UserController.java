@@ -16,8 +16,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/users")
+@Slf4j
 public class UserController {
 
   private final UserService userService;
@@ -43,12 +46,14 @@ public class UserController {
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class)))
   })
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<UserDto> join(@RequestPart("userCreateRequest") UserCreateRequest dto,
+  public ResponseEntity<UserDto> join(
+      @RequestPart("userCreateRequest") @Valid UserCreateRequest dto,
       @RequestPart(value = "profile", required = false) MultipartFile profile) throws IOException {
 
-    return ResponseEntity
-        .status(HttpStatus.CREATED)
-        .body(userService.create(dto, profile));
+    log.info("사용자 등록 요청: username={}, email={}", dto.username(), dto.email());
+    UserDto result = userService.create(dto, profile);
+    log.info("사용자 등록 완료: username={}, email={}", dto.username(), dto.email());
+    return ResponseEntity.status(HttpStatus.CREATED).body(result);
   }
 
   // 사용자 정보 수정
@@ -61,12 +66,13 @@ public class UserController {
   @RequestMapping(value = "/{userId}", method = RequestMethod.PATCH, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<UserDto> update(
       @PathVariable UUID userId,
-      @RequestPart("userUpdateRequest") UserUpdateRequest dto,
+      @RequestPart("userUpdateRequest") @Valid UserUpdateRequest dto,
       @RequestPart(value = "profile", required = false) MultipartFile profile) throws IOException {
 
-    return ResponseEntity
-        .status(HttpStatus.OK)
-        .body(userService.update(userId, dto, profile));
+    log.info("사용자 수정 요청: userId={}", userId);
+    UserDto result = userService.update(userId, dto, profile);
+    log.info("사용자 수정 완료: userId={}", userId);
+    return ResponseEntity.status(HttpStatus.OK).body(result);
   }
 
   // 사용자 삭제
@@ -76,10 +82,10 @@ public class UserController {
   })
   @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE)
   public ResponseEntity<Void> delete(@PathVariable UUID userId) {
+    log.info("사용자 삭제 요청: userId={}", userId);
     userService.delete(userId);
-    return ResponseEntity
-        .status(HttpStatus.NO_CONTENT)
-        .build();
+    log.info("사용자 삭제 완료: userId={}", userId);
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 
   // 모든 사용자 조회
@@ -108,7 +114,7 @@ public class UserController {
   })
   @RequestMapping(value = "/{userId}/userStatus", method = RequestMethod.PATCH)
   public ResponseEntity<UserStatusDto> updateStatus(@PathVariable UUID userId,
-      @RequestBody UserStatusUpdateRequest dto) {
+      @RequestBody @Valid UserStatusUpdateRequest dto) {
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(userStatusService.updateByUserId(userId, dto));

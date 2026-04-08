@@ -4,13 +4,13 @@ import com.sprint.mission.discodeit.dto.UserDto;
 import com.sprint.mission.discodeit.dto.LoginRequest;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
+import com.sprint.mission.discodeit.exception.user.InvalidCredentialException;
 import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.AuthService;
 import jakarta.transaction.Transactional;
 import java.time.Instant;
-import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +27,7 @@ public class BasicAuthService implements AuthService {
   public UserDto login(LoginRequest request) {
     User user = userRepository.findByUsername(request.username())
         .filter(u -> u.getPassword().equals(request.password()))
-        .orElseThrow(() -> new NoSuchElementException("해당 정보와 일치하는 사용자가 없습니다."));
+        .orElseThrow(() -> new InvalidCredentialException(request.username()));
 
     UserStatus userStatus = userStatusRepository.findByUserId(user.getId())
         .orElseGet(() -> {

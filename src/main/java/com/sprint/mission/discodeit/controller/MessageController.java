@@ -12,10 +12,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -33,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/messages")
+@Slf4j
 public class MessageController {
 
   private final MessageService messageService;
@@ -46,13 +49,13 @@ public class MessageController {
   })
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<MessageDto> send(
-      @RequestPart("messageCreateRequest") MessageCreateRequest dto,
+      @RequestPart("messageCreateRequest") @Valid MessageCreateRequest dto,
       @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments)
       throws IOException {
 
-    return ResponseEntity
-        .status(HttpStatus.CREATED)
-        .body(messageService.create(dto, attachments));
+    log.info("메시지 전송 요청: authorId={}, channelId={}", dto.authorId(), dto.channelId());
+    MessageDto result = messageService.create(dto, attachments);
+    return ResponseEntity.status(HttpStatus.CREATED).body(result);
   }
 
   // 메시지 수정
@@ -64,10 +67,11 @@ public class MessageController {
   })
   @RequestMapping(value = "/{messageId}", method = RequestMethod.PATCH)
   public ResponseEntity<MessageDto> update(@PathVariable UUID messageId,
-      @RequestBody MessageUpdateRequest dto) {
-    return ResponseEntity
-        .status(HttpStatus.OK)
-        .body(messageService.update(messageId, dto));
+      @RequestBody @Valid MessageUpdateRequest dto) {
+
+    log.info("메시지 수정 요청: messageId={}", messageId);
+    MessageDto result = messageService.update(messageId, dto);
+    return ResponseEntity.status(HttpStatus.OK).body(result);
   }
 
   // 메시지 삭제
@@ -77,10 +81,10 @@ public class MessageController {
   })
   @RequestMapping(value = "/{messageId}", method = RequestMethod.DELETE)
   public ResponseEntity<Void> delete(@PathVariable UUID messageId) {
+
+    log.info("메시지 삭제 요청: messageId={}", messageId);
     messageService.delete(messageId);
-    return ResponseEntity
-        .status(HttpStatus.NO_CONTENT)
-        .build();
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 
   // 조회
