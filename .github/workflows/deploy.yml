@@ -56,19 +56,16 @@ jobs:
       - name: 태스크 정의 업데이트 (새 이미지 반영)
         id: update-task-def
         run: |
-          # 현재 태스크 정의 조회
           TASK_DEF=$(aws ecs describe-task-definition \
             --task-definition ${{ vars.ECS_TASK_DEFINITION }} \
             --query 'taskDefinition' \
             --output json)
 
-          # 새 이미지로 컨테이너 정의 업데이트
           NEW_TASK_DEF=$(echo $TASK_DEF | jq \
             --arg IMAGE "${{ needs.build-and-push.outputs.image-uri }}" \
             '.containerDefinitions[0].image = $IMAGE
             | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)')
 
-          # 새 태스크 정의 등록
           NEW_REVISION=$(aws ecs register-task-definition \
             --cli-input-json "$NEW_TASK_DEF" \
             --query 'taskDefinition.taskDefinitionArn' \
@@ -82,6 +79,7 @@ jobs:
             --cluster ${{ vars.ECS_CLUSTER }} \
             --service ${{ vars.ECS_SERVICE }} \
             --desired-count 0
+          sleep 30
 
       - name: ECS 서비스 업데이트 (새 태스크 정의 배포)
         run: |
