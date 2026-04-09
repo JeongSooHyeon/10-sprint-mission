@@ -46,14 +46,14 @@ jobs:
     needs: build-and-push
 
     steps:
-      - name: AWS CLI 설정
+      - name: AWS CLI 설정 (ECS는 실제 리전 사용)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      - name: 태스크 정의 업데이트
+      - name: 태스크 정의 업데이트 (새 이미지 반영)
         id: update-task-def
         run: |
           # 현재 태스크 정의 조회
@@ -76,21 +76,18 @@ jobs:
 
           echo "task-def-arn=$NEW_REVISION" >> $GITHUB_OUTPUT
 
-      - name: 기존 서비스 중단
+      - name: 기존 서비스 중단 (프리티어 리소스 고려)
         run: |
           aws ecs update-service \
             --cluster ${{ vars.ECS_CLUSTER }} \
             --service ${{ vars.ECS_SERVICE }} \
             --desired-count 0
 
-          aws ecs wait services-stable \
-            --cluster ${{ vars.ECS_CLUSTER }} \
-            --services ${{ vars.ECS_SERVICE }}
-
-      - name: ECS 서비스 업데이트
+      - name: ECS 서비스 업데이트 (새 태스크 정의 배포)
         run: |
           aws ecs update-service \
             --cluster ${{ vars.ECS_CLUSTER }} \
             --service ${{ vars.ECS_SERVICE }} \
             --task-definition ${{ steps.update-task-def.outputs.task-def-arn }} \
+            --force-new-deployment \
             --desired-count 1
