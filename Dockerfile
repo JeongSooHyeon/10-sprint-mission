@@ -1,23 +1,31 @@
-# 베이스 이미지
-FROM amazoncorretto:17
+# ===== 빌드 스테이지 =====
+FROM amazoncorretto:17 AS builder
 
-# 작업 디렉토리
 WORKDIR /app
 
-# 파일 복사
-COPY . .
+# 의존성 캐시 레이어 (소스 변경 시에도 의존성은 재다운로드 안 함)
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle .
+COPY settings.gradle .
+RUN chmod +x gradlew && ./gradlew dependencies --no-daemon
 
-# Gradle Wrapper로 빌드
-RUN chmod +x gradlew && ./gradlew clean build -x test
+# 소스 복사 및 빌드
+COPY src src
+RUN ./gradlew build -x test --no-daemon
 
-# 80포트 노출
-EXPOSE 80
+# ===== 런타임 스테이지 =====
+FROM amazoncorretto:17-al2023-headless
 
-# 프로젝트 정보 환경 변수 설정
+WORKDIR /app
+
 ENV PROJECT_NAME=discodeit
 ENV PROJECT_VERSION=1.2-M8
-# JVM 환경 변수
 ENV JVM_OPTS=""
 
-# 애플리케이션 실행 명령어 설정
-CMD ["sh", "-c", "java $JVM_OPTS -jar build/libs/${PROJECT_NAME}-${PROJECT_VERSION}.jar"]
+# 빌드 스테이지에서 jar만 복사
+COPY --from=builder /app/build/libs/${PROJECT_NAME}-${PROJECT_VERSION}.jar app.jar
+
+EXPOSE 80
+
+CMD ["sh", "-c", "java $JVM_OPTS -jar app.jar"]
